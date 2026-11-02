@@ -1,6 +1,6 @@
 import { random, summarize } from "@mark1russell7/expression";
 import { describe, expect, it } from "vitest";
-import { boundSign, classify, dyadic as D, PREDICATES, structuralZero } from "./index.ts";
+import { boundSign, CALL_SITE_RULES, classify, dyadic as D, pointSideTieLow, PREDICATES, segmentPairClosed, structuralZero } from "./index.ts";
 import type { SignForm } from "./index.ts";
 import { boxPairPoint, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import * as O from "./oracle.test-helper.ts";
@@ -148,5 +148,41 @@ describe("the exact answers agree with the rational oracle", () => {
       const eps = rnd() < 0.3 ? 1e-9 : 0;
       expect(classify("boxPair", boxPairPoint(a, b, eps)).exactAnswer).toBe(O.overlaps(a, b, eps));
     }
+  });
+});
+
+describe("the rules of the call sites", () => {
+  const v = (x: number, y: number): [number, number] => [x, y];
+  it("gives -1 for the zero side of outOf, as highways does", () => {
+    // The input of screen-v1/hub-chain/s0: p is the exact midpoint of the chord a b.
+    const point = pointSidePoint(v(2984, 102), v(2000, 182.71875), v(3968, 21.28125));
+    expect(classify(PREDICATES.pointSide, point).exactAnswer).toBe(0);
+    const r = classify(CALL_SITE_RULES["physics.outOf"]!, point, -1);
+    expect(r.exactAnswer).toBe(-1);
+    expect(r.floatWrong).toBe(false);
+  });
+
+  it("counts a touch as a crossing of the mesh, as highways does", () => {
+    // The input of screen-v1/tiny-uniform/s0: the end d of c d is on the segment a b.
+    const point = segmentPairPoint(v(10, 42), v(10, 237), v(90, 169.842811927414), v(10, 132.157188072586));
+    expect(classify(PREDICATES.segmentPair, point).exactAnswer).toBe(false);
+    const r = classify(CALL_SITE_RULES["mesh.crossing"]!, point, true);
+    expect(r.exactAnswer).toBe(true);
+    expect(r.floatWrong).toBe(false);
+  });
+
+  it("does not cross two collinear segments of the mesh", () => {
+    const point = segmentPairPoint(v(0, 0), v(2, 0), v(1, 0), v(3, 0));
+    expect(classify(segmentPairClosed, point).exactAnswer).toBe(false);
+  });
+
+  it("gives the same answer as the default rules away from a zero sign", () => {
+    const pairs = [
+      segmentPairPoint(v(0, 0), v(2, 2), v(0, 2), v(2, 0)),
+      segmentPairPoint(v(0, 0), v(1, 0), v(0, 1), v(1, 1)),
+    ];
+    for (const p of pairs) expect(classify(segmentPairClosed, p).exactAnswer).toBe(classify(PREDICATES.segmentPair, p).exactAnswer);
+    expect(classify(pointSideTieLow, pointSidePoint(v(0, 1), v(0, 0), v(1, 0))).exactAnswer).toBe(1);
+    expect(classify(pointSideTieLow, pointSidePoint(v(0, -1), v(0, 0), v(1, 0))).exactAnswer).toBe(-1);
   });
 });

@@ -9,7 +9,7 @@ import { boundSign, exactValue, floatValue, structuralZero } from "./expressions
 import type { Point, Sign, SignForm } from "./expressions.ts";
 import { COUNT_FIELDS, parseLine, SHARED_END_FIELD } from "./input.ts";
 import type { CountKind, CountLine, FloatAnswer, Line, Vec } from "./input.ts";
-import { boxPairPoint, pointSidePoint, PREDICATES, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
+import { boxPairPoint, CALL_SITE_RULES, pointSidePoint, PREDICATES, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import type { Answer, Predicate, PredicateName } from "./predicates.ts";
 
 /** The A1 bound, the bound sign, the exact sign and the float sign of one sign expression of an input. */
@@ -286,13 +286,13 @@ export interface Census {
 function point(line: Line): { predicate: Predicate; point: Point } | undefined {
   switch (line.form) {
     case "segmentPair":
-      return { predicate: PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
+      return { predicate: CALL_SITE_RULES[line.line.fn] ?? PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
     case "segmentBox":
       return { predicate: PREDICATES.segmentBox, point: segmentBoxPoint(line.line.a, line.line.b, line.line.box, line.line.eps) };
     case "segmentRect":
       return { predicate: segmentRect, point: segmentRectPoint(line.line.a, line.line.b, line.line.rect, line.line.eps) };
     case "pointSide":
-      return { predicate: PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
+      return { predicate: CALL_SITE_RULES[line.line.fn] ?? PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
     case "boxPair":
       return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
     default:

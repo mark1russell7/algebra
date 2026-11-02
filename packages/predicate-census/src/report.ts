@@ -92,6 +92,7 @@ export const ASSUMPTIONS: readonly string[] = [
   "The structural filter gives the sign 0 to an orientation with two equal points. undecidedFiltered uses it.",
   "A line without floatAnswer gets the float answer of the census: the same sign rule with plain float values.",
   "A point-side test with a truth value as its float answer is not compared with the exact sign.",
+  "CALL_SITE_RULES gives the rule of a call site with its own rule: mesh.crossing counts a touch, and physics.outOf gives -1 for a zero sign.",
 ];
 
 /**

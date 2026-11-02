@@ -60,6 +60,39 @@ export const pointSide: Predicate = {
   answer: (s) => s(side),
 };
 
+/**
+ * The closed crossing of two segments, as the `crossing` function of the mesh of highways. A touch or a shared end is
+ * a crossing. Two collinear segments do not cross. The rule asks all four signs. The tolerances of highways on the
+ * shares are not in this rule, so a share near 0 or 1 can give a float-wrong record.
+ */
+export const segmentPairClosed: Predicate = {
+  name: "segmentPair",
+  signs: [abc, abd, cda, cdb],
+  answer: (s) => {
+    const [d1, d2, d3, d4] = [s(cda), s(cdb), s(abc), s(abd)];
+    return (d1 !== 0 || d2 !== 0) && d1 * d2 <= 0 && d3 * d4 <= 0;
+  },
+};
+
+/**
+ * The side of the point `p` against the line `ab`, as `outOf` of the physics router of highways. The answer is 1 when
+ * `orient(a,b,p)` is positive, and -1 for a zero or a negative sign.
+ */
+export const pointSideTieLow: Predicate = {
+  name: "pointSide",
+  signs: [side],
+  answer: (s) => (s(side) > 0 ? 1 : -1),
+};
+
+/**
+ * The predicates of the call sites whose rule is not the default rule of their form. The key is the `fn` field of an
+ * input line.
+ */
+export const CALL_SITE_RULES: Readonly<Record<string, Predicate>> = {
+  "mesh.crossing": segmentPairClosed,
+  "physics.outOf": pointSideTieLow,
+};
+
 /** A part of an expression that can be the constant 0 or 1. The builders fold these constants. */
 type Part = Expression | 0 | 1 | -1;
 
