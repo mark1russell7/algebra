@@ -50,6 +50,18 @@ jobs:
           node-version: 26
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The census examines the lines of highways that its rules copy, at the commit of the dump run.
+      - name: The commit of the dump run
+        id: dump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "sha=$(gh run view "$RUN" -R "$REPO" --json headSha -q .headSha)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ steps.dump.outputs.sha }}
+          path: highways-tree
+          persist-credentials: false
       # The dump repository is public, so the token of this run can read its artifacts.
       - name: Download the dump
         env:
@@ -64,7 +76,7 @@ jobs:
       - name: Census
         working-directory: packages/predicate-census
         run: |
-          /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
+          /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" --highways "$GITHUB_WORKSPACE/highways-tree" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
           tail -n 25 "$RUNNER_TEMP/out/time-$SET.txt"
       # The raw records: the records of the census and the input dump, kept 90 days (highways keeps its own 30 days).
       - name: Keep the raw records

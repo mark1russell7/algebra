@@ -60,6 +60,101 @@ export const pointSide: Predicate = {
   answer: (s) => s(side),
 };
 
+/**
+ * The closed crossing of two segments, as the `crossing` function of the mesh of highways. A touch or a shared end is
+ * a crossing. Two collinear segments do not cross. The rule asks all four signs. The tolerances of highways on the
+ * shares are not in this rule, so a share near 0 or 1 can give a float-wrong record.
+ */
+export const segmentPairClosed: Predicate = {
+  name: "segmentPair",
+  signs: [abc, abd, cda, cdb],
+  answer: (s) => {
+    const [d1, d2, d3, d4] = [s(cda), s(cdb), s(abc), s(abd)];
+    return (d1 !== 0 || d2 !== 0) && d1 * d2 <= 0 && d3 * d4 <= 0;
+  },
+};
+
+/**
+ * The side of the point `p` against the line `ab`, as `outOf` of the physics router of highways. The answer is 1 when
+ * `orient(a,b,p)` is positive, and -1 for a zero or a negative sign.
+ */
+export const pointSideTieLow: Predicate = {
+  name: "pointSide",
+  signs: [side],
+  answer: (s) => (s(side) > 0 ? 1 : -1),
+};
+
+/** A line of the source of highways that a rule of the census copies. */
+export interface RuleSource {
+  /** The file, from the root of the highways repository. */
+  readonly file: string;
+  /** The line number at the commit `commit`. */
+  readonly line: number;
+  /** The text of the line, without the indent. */
+  readonly text: string;
+}
+
+/** The rule of a call site of highways: the predicate of the census, and the lines of highways that it copies. */
+export interface CallSiteRule {
+  readonly predicate: Predicate;
+  /** The commit of highways with the lines of `sources`. */
+  readonly commit: string;
+  readonly sources: readonly RuleSource[];
+}
+
+/**
+ * The rules of the call sites whose rule is not the default rule of their form. The key is the `fn` field of an
+ * input line. This table is a copy of the rules of highways. `checkRuleSources` finds a copy that is not current.
+ */
+export const CALL_SITE_RULES: Readonly<Record<string, CallSiteRule>> = {
+  "mesh.crossing": {
+    predicate: segmentPairClosed,
+    commit: "23fb143edd1b5f6750de9a0e3473ecc2e4d33c32",
+    sources: [
+      { file: "packages/core/src/highways/mesh/index.ts", line: 55, text: "if (Math.abs(den) < 1e-12) return undefined;" },
+      {
+        file: "packages/core/src/highways/mesh/index.ts",
+        line: 59,
+        text: "return t >= -eps && t <= 1 + eps && u >= -eps && u <= 1 + eps ? { t: Math.max(0, Math.min(1, t)), u: Math.max(0, Math.min(1, u)) } : undefined;",
+      },
+    ],
+  },
+  "physics.outOf": {
+    predicate: pointSideTieLow,
+    commit: "23fb143edd1b5f6750de9a0e3473ecc2e4d33c32",
+    sources: [{ file: "packages/core/src/routers/physics.ts", line: 109, text: "const k = cross > 0 ? 1 : -1;" }],
+  },
+};
+
+/** The result of the check of one source line of a rule. */
+export interface RuleSourceCheck {
+  readonly fn: string;
+  readonly file: string;
+  readonly line: number;
+  /** The line of the text in the checked tree, or `null` when the file does not have the text. */
+  readonly foundAt: number | null;
+  /** The value is `true` when the file has the text. A text at another line is a warning, not a failure. */
+  readonly holds: boolean;
+}
+
+/**
+ * This function examines each source line of `CALL_SITE_RULES` in a tree of highways.
+ *
+ * @param read - This function gives the text of a file of the tree, or `null` when the tree does not have it.
+ * @returns One result for each source line.
+ */
+export function checkRuleSources(read: (file: string) => string | null): RuleSourceCheck[] {
+  const out: RuleSourceCheck[] = [];
+  for (const [fn, rule] of Object.entries(CALL_SITE_RULES)) {
+    for (const s of rule.sources) {
+      const lines = read(s.file)?.split(/\r?\n/) ?? [];
+      const at = lines[s.line - 1]?.trim() === s.text ? s.line : lines.findIndex((l) => l.trim() === s.text) + 1;
+      out.push({ fn, file: s.file, line: s.line, foundAt: at === 0 ? null : at, holds: at !== 0 });
+    }
+  }
+  return out;
+}
+
 /** A part of an expression that can be the constant 0 or 1. The builders fold these constants. */
 type Part = Expression | 0 | 1 | -1;
 
