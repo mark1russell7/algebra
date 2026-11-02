@@ -1,0 +1,109 @@
+# The public API of @mark1russell7/rational
+#
+# The names of each entry of the exports field, and the declaration of each name, without comments
+# and private members. The command `api-report check` compares this file with the built .d.ts files.
+# To accept a change of the API, start the build, then `api-report update`, and review the diff.
+
+## . (build/index.d.ts): 24 names
+
+ONE: build/index.d.ts#ONE
+type Rational: build/index.d.ts#Rational
+ZERO: build/index.d.ts#ZERO
+abs: build/index.d.ts#abs
+add: build/index.d.ts#add
+ceil: build/index.d.ts#ceil
+cmp: build/index.d.ts#cmp
+compare: build/index.d.ts#compare
+div: build/index.d.ts#div
+equals: build/index.d.ts#equals
+floor: build/index.d.ts#floor
+fromDecimal: build/index.d.ts#fromDecimal
+fromFloat: build/index.d.ts#fromFloat
+fromNumber: build/index.d.ts#fromNumber
+inverse: build/index.d.ts#inverse
+isInteger: build/index.d.ts#isInteger
+mul: build/index.d.ts#mul
+neg: build/index.d.ts#neg
+pow: build/index.d.ts#pow
+rational: build/index.d.ts#rational
+sign: build/index.d.ts#sign
+sub: build/index.d.ts#sub
+toNumber: build/index.d.ts#toNumber
+toString: build/index.d.ts#toString
+
+## Declarations
+
+### build/index.d.ts#ONE
+export declare const ONE: Rational;
+
+### build/index.d.ts#Rational
+interface Rational {
+  readonly n: bigint;
+  readonly d: bigint;
+}
+
+### build/index.d.ts#ZERO
+export declare const ZERO: Rational;
+
+### build/index.d.ts#abs
+export declare const abs: (a: Rational) => Rational;
+
+### build/index.d.ts#add
+export declare const add: (a: Rational, b: Rational) => Rational;
+
+### build/index.d.ts#ceil
+export declare const ceil: (a: Rational) => Rational;
+
+### build/index.d.ts#cmp
+export declare const cmp: (a: Rational, b: Rational) => -1 | 0 | 1;
+
+### build/index.d.ts#compare
+export declare const compare: (a: Rational, b: Rational) => -1 | 0 | 1;
+
+### build/index.d.ts#div
+export declare const div: (a: Rational, b: Rational) => Rational;
+
+### build/index.d.ts#equals
+export declare const equals: (a: Rational, b: Rational) => boolean;
+
+### build/index.d.ts#floor
+export declare const floor: (a: Rational) => Rational;
+
+### build/index.d.ts#fromDecimal
+export declare const fromDecimal: (text: string) => Rational;
+
+### build/index.d.ts#fromFloat
+export declare const fromFloat: (value: number) => Rational;
+
+### build/index.d.ts#fromNumber
+export declare const fromNumber: (value: number) => Rational;
+
+### build/index.d.ts#inverse
+export declare const inverse: (a: Rational) => Rational;
+
+### build/index.d.ts#isInteger
+export declare const isInteger: (a: Rational) => boolean;
+
+### build/index.d.ts#mul
+export declare const mul: (a: Rational, b: Rational) => Rational;
+
+### build/index.d.ts#neg
+export declare const neg: (a: Rational) => Rational;
+
+### build/index.d.ts#pow
+export declare const pow: (a: Rational, exponent: number) => Rational;
+
+### build/index.d.ts#rational
+export declare const rational: (n: bigint, d?: bigint) => Rational;
+
+### build/index.d.ts#sign
+export declare const sign: (a: Rational) => -1 | 0 | 1;
+
+### build/index.d.ts#sub
+export declare const sub: (a: Rational, b: Rational) => Rational;
+
+### build/index.d.ts#toNumber
+export declare const toNumber: (a: Rational) => number;
+
+### build/index.d.ts#toString
+export declare const toString: (a: Rational) => string;
