@@ -1,0 +1,69 @@
+# The census of the predicate inputs (roadmap item A13). It downloads the predicate dumps of a highways run,
+# starts packages/predicate-census on each set and keeps each report as an artifact.
+# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra census.yml -f run=<run id>
+name: Census
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: The repository of the dump run
+        default: mark1russell7/highways
+      run:
+        description: The id of the dump run
+        required: true
+      sets:
+        description: The sets, as a JSON list
+        default: '["exact-v1","exact-v1-bounds","fixtures","fixtures-large","screen-v1","screen-v2","screen-v3"]'
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      # The runners are shared by all repositories of the account (the rule runner-budget)
+      max-parallel: 3
+      matrix:
+        set: ${{ fromJSON(inputs.sets) }}
+    env:
+      SET: ${{ matrix.set }}
+      RUN: ${{ inputs.run }}
+      REPO: ${{ inputs.repo }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The dump repository is public, so the token of this run can read its artifacts.
+      - name: Download the dump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/dump" "$RUNNER_TEMP/in" "$RUNNER_TEMP/out"
+          gh run download "$RUN" -R "$REPO" -n "predicate-dump-$SET" -D "$RUNNER_TEMP/dump"
+          ls -la "$RUNNER_TEMP/dump"
+          for f in "$RUNNER_TEMP"/dump/*.jsonl.gz; do gzip -dc "$f" > "$RUNNER_TEMP/in/$(basename "$f" .gz)"; done
+          wc -l "$RUNNER_TEMP"/in/*.jsonl
+          cp "$RUNNER_TEMP"/dump/*.md "$RUNNER_TEMP/out/" || true
+      - name: Census
+        working-directory: packages/predicate-census
+        run: |
+          /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
+          tail -n 25 "$RUNNER_TEMP/out/time-$SET.txt"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: census-${{ matrix.set }}
+          path: ${{ runner.temp }}/out
+          retention-days: 90
