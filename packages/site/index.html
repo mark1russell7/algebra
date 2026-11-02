@@ -4,90 +4,204 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>algebra: one expression, many evaluators</title>
-    <meta name="description" content="One expression document and many evaluators: float with an error bound, exact rational and interval. Each evaluator states its error." />
+    <meta name="description" content="A live explorer of the float orientation test: float signs, A1 intervals and exact signs on a grid of ulp steps, with the real float-wrong inputs of the A13 census." />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23202a44'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='18' font-style='italic' text-anchor='middle' fill='%23fcfcfb'%3Ex%3C/text%3E%3C/svg%3E" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to the content</a>
     <header class="top">
-      <div class="wrap">
-        <div class="brand">
-          <h1 class="wordmark">algebra</h1>
-          <nav class="links" aria-label="Links">
-            <a href="#what">What it is</a>
-            <a href="#packages">Packages</a>
-            <a href="#roadmap">Roadmap</a>
-            <a href="#census">First result</a>
-            <a href="releases/">Releases</a>
-            <a href="status/">Status</a>
-            <a href="https://github.com/mark1russell7/algebra">GitHub</a>
-          </nav>
-        </div>
-        <p class="lead">One expression, many evaluators: exact, fast and with a known error.</p>
+      <div class="wrap top-row">
+        <a class="wordmark" href="./" aria-label="algebra, home">algebra</a>
+        <nav class="links" aria-label="Sections">
+          <a href="#explorer">Explorer</a>
+          <a href="#evaluators">Evaluators</a>
+          <a href="#census">Census</a>
+          <a href="#packages">Packages</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="releases/">Releases</a>
+          <a href="status/">Status</a>
+          <a href="https://github.com/mark1russell7/algebra">GitHub</a>
+        </nav>
       </div>
     </header>
 
-    <main id="main" class="wrap">
-      <section id="what" aria-labelledby="what-title">
-        <h2 id="what-title">What algebra is</h2>
-        <p>
-          An expression is one document, for example <code>{ "type": "add", "value": [x, y] }</code>. Many evaluators read the
-          same document. A new evaluator is a new answer to the same question. No document changes.
-        </p>
-        <ul class="evaluators">
-          <li>
-            <strong>Float</strong>
-            <span>A fast value, and a bound of its rounding error.</span>
-          </li>
-          <li>
-            <strong>Exact rational</strong>
-            <span>A value over <code>bigint</code>, always in lowest terms. Its error is 0.</span>
-          </li>
-          <li>
-            <strong>Interval</strong>
-            <span>An interval that contains the true value.</span>
-          </li>
-        </ul>
-        <p class="rule">Each evaluator states its error. A result without an error bound is not a result.</p>
+    <main id="main">
+      <section id="explorer" class="wrap hero" aria-labelledby="hero-title">
+        <div class="hero-head">
+          <h1 id="hero-title">One expression, many evaluators: exact, fast and with a known error.</h1>
+          <p class="lead">
+            Below, the orientation test <code>orient(p,q,r)</code> runs live in your browser. Each cell moves one point by a
+            whole number of ulps. The float sign is wrong in the dark cells. The interval of the bounds marks the cells
+            where it cannot fix the sign. The exact sign is always right.
+          </p>
+        </div>
+
+        <div class="explorer" id="ex">
+          <div class="toolbar" role="group" aria-label="The input of the grid">
+            <label class="field wide">
+              <span class="field-label">Input</span>
+              <select id="ex-preset"></select>
+            </label>
+            <label class="field">
+              <span class="field-label">Sign</span>
+              <select id="ex-sign"></select>
+            </label>
+            <div class="field">
+              <span class="field-label" id="ex-move-label">Moved point</span>
+              <div class="seg" id="ex-move" role="radiogroup" aria-labelledby="ex-move-label"></div>
+            </div>
+            <div class="field">
+              <span class="field-label" id="ex-zoom-label">Step</span>
+              <div class="stepper" role="group" aria-labelledby="ex-zoom-label">
+                <button type="button" id="ex-zoom-in" aria-label="Smaller step: zoom in">+</button>
+                <output id="ex-step" aria-live="polite">1 ulp</output>
+                <button type="button" id="ex-zoom-out" aria-label="Larger step: zoom out">&minus;</button>
+              </div>
+            </div>
+            <label class="field">
+              <span class="field-label">Cells</span>
+              <select id="ex-size">
+                <option value="128">128 &times; 128</option>
+                <option value="256" selected>256 &times; 256</option>
+              </select>
+            </label>
+            <div class="field">
+              <span class="field-label">View</span>
+              <div class="pad" role="group" aria-label="Move the view">
+                <button type="button" data-pan="left" aria-label="Move the view left">&larr;</button>
+                <button type="button" data-pan="up" aria-label="Move the view up">&uarr;</button>
+                <button type="button" data-pan="down" aria-label="Move the view down">&darr;</button>
+                <button type="button" data-pan="right" aria-label="Move the view right">&rarr;</button>
+                <button type="button" id="ex-reset">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <p class="preset-note" id="ex-note"></p>
+
+          <div class="panels" id="ex-panels">
+            <figure class="panel" data-panel="float">
+              <figcaption><strong>Float</strong><span>The sign of the float value. Dark cells have the wrong sign.</span></figcaption>
+              <div class="canvas-box"><canvas tabindex="0" aria-label="The float signs of the grid. Use the arrow keys to move the cursor."></canvas></div>
+            </figure>
+            <figure class="panel" data-panel="interval">
+              <figcaption><strong>Interval</strong><span>The sign that the A1 interval fixes. Hatched cells: no sign.</span></figcaption>
+              <div class="canvas-box"><canvas tabindex="0" aria-label="The signs that the interval fixes. Use the arrow keys to move the cursor."></canvas></div>
+            </figure>
+            <figure class="panel" data-panel="exact">
+              <figcaption><strong>Exact</strong><span>The exact sign, from the exact value over <code>bigint</code>.</span></figcaption>
+              <div class="canvas-box"><canvas tabindex="0" aria-label="The exact signs of the grid. Use the arrow keys to move the cursor."></canvas></div>
+            </figure>
+          </div>
+
+          <div class="legend" aria-label="The colors of the grid">
+            <span><i class="sw pos"></i>positive</span>
+            <span><i class="sw neg"></i>negative</span>
+            <span><i class="sw zero"></i>zero</span>
+            <span><i class="sw wrong"></i>float sign is wrong</span>
+            <span><i class="sw undecided"></i>interval fixes no sign</span>
+            <span><i class="sw line"></i>exact zero line</span>
+            <span class="hint">Drag to move. Wheel or <kbd>+</kbd> <kbd>&minus;</kbd> to zoom. Click a cell to keep its numbers.</span>
+          </div>
+
+          <div class="tiles" id="ex-tiles" aria-live="polite"></div>
+
+          <div class="detail-row">
+            <div class="readout" id="ex-readout" aria-live="polite"></div>
+            <figure class="scene">
+              <figcaption id="ex-scene-cap">The input at its own scale</figcaption>
+              <svg id="ex-scene" role="img" aria-labelledby="ex-scene-cap"></svg>
+              <p class="scene-note" id="ex-scene-note"></p>
+            </figure>
+          </div>
+        </div>
       </section>
 
-      <section id="packages" aria-labelledby="packages-title">
+      <section id="evaluators" class="wrap block" aria-labelledby="ev-title">
+        <div class="block-head">
+          <h2 id="ev-title">One document, each evaluator</h2>
+          <p>
+            Type an expression and its values. The page reads the text into one expression document. Each evaluator
+            then reads the same document. Each result states its error.
+          </p>
+        </div>
+        <div class="playground">
+          <div class="pg-input">
+            <div class="chips" id="pg-presets" role="group" aria-label="Example expressions"></div>
+            <label class="field">
+              <span class="field-label">Expression</span>
+              <input id="pg-text" type="text" spellcheck="false" autocomplete="off" />
+            </label>
+            <p class="pg-error" id="pg-error" role="alert"></p>
+            <div class="pg-vars" id="pg-vars"></div>
+            <details class="pg-doc">
+              <summary>The document</summary>
+              <pre id="pg-doc"></pre>
+            </details>
+          </div>
+          <div class="pg-results" id="pg-results" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="census" class="wrap block" aria-labelledby="census-title">
+        <div class="block-head">
+          <h2 id="census-title">The census of A13: real inputs of highways</h2>
+          <p>
+            The census sends each real input of the geometric predicates of
+            <a href="https://github.com/mark1russell7/highways">highways</a> through the float signs and the exact signs.
+          </p>
+          <p class="provisional" role="note">
+            <strong>Provisional.</strong> The census of 7 highways sets is in progress (the rerun with the call-site
+            rules). The page shows <code>exact-v1</code> now.
+          </p>
+        </div>
+        <div class="totals">
+          <div class="tile big"><span class="num">194&#8239;549&#8239;364</span><span class="cap">predicate tests on <code>exact-v1</code></span></div>
+          <div class="tile big"><span class="num">40</span><span class="cap">boards</span></div>
+          <div class="tile big good"><span class="num">0</span><span class="cap">wrong signs that a user sees and exact signs fix</span></div>
+        </div>
+        <div class="census-grid">
+          <div>
+            <h3>The cases where the float answer is not the exact answer</h3>
+            <p class="small">Select a class to see what it means.</p>
+            <div class="classes" id="classes" role="group" aria-label="The classes of the cases"></div>
+            <div class="class-detail" id="class-detail" aria-live="polite"></div>
+            <p class="result">
+              Exact signs fix no error that a user sees on these inputs. A count of 0 ranks item A5, the exact
+              predicates, lower.
+            </p>
+          </div>
+          <div>
+            <h3>Real float-wrong inputs</h3>
+            <p class="small" id="nm-note"></p>
+            <div class="chips" id="nm-sets" role="group" aria-label="Show the records of this set"></div>
+            <div class="table-box">
+              <table class="records">
+                <thead>
+                  <tr><th scope="col">Board and call site</th><th scope="col">Signs that flip</th><th scope="col">Answer</th><th scope="col"><span class="sr">Open</span></th></tr>
+                </thead>
+                <tbody id="nm-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="packages" class="wrap block small-block" aria-labelledby="packages-title">
         <h2 id="packages-title">Packages</h2>
         <ul class="packages" id="package-list"></ul>
       </section>
 
-      <section id="roadmap" aria-labelledby="roadmap-title">
+      <section id="roadmap" class="wrap block small-block" aria-labelledby="roadmap-title">
         <h2 id="roadmap-title">Roadmap</h2>
-        <p>
+        <p class="small">
           The build reads these items from
           <a href="https://github.com/mark1russell7/algebra/blob/main/docs/ROADMAP.md"><code>docs/ROADMAP.md</code></a>.
           Select an item to see its summary.
         </p>
         <div class="filters" role="group" aria-label="Show the items with this status" id="filters"></div>
         <ol class="items" id="items"></ol>
-      </section>
-
-      <section id="census" aria-labelledby="census-title">
-        <h2 id="census-title">First result: the census of A13</h2>
-        <p>
-          The census sends the real inputs of the geometric predicates of
-          <a href="https://github.com/mark1russell7/highways">highways</a> through the float signs and the exact signs. The input
-          is the <code>exact-v1</code> dump of highways.
-        </p>
-        <div class="totals">
-          <div><span class="num">194 549 364</span><span class="cap">predicate tests</span></div>
-          <div><span class="num">40</span><span class="cap">boards</span></div>
-          <div><span class="num">0</span><span class="cap">errors that exact signs fix</span></div>
-        </div>
-        <p>Each case where the float answer is not the exact answer has a class. Select a class to see what it means.</p>
-        <div class="classes" id="classes" role="group" aria-label="The classes of the cases"></div>
-        <div class="class-detail" id="class-detail" aria-live="polite"></div>
-        <p class="result">
-          Exact signs fix no error that a user sees on these inputs. A count of 0 ranks item A5, the exact predicates, lower.
-          The census is in
-          <a href="https://github.com/mark1russell7/algebra/tree/main/packages/predicate-census"><code>packages/predicate-census</code></a>.
-        </p>
       </section>
     </main>
 

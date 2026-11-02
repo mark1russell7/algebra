@@ -1,5 +1,10 @@
 import "./style.css";
+import nearMissJson from "../data/near-misses.json";
+import { startClasses, startRecords } from "./census-view.ts";
+import { Explorer } from "./explorer.ts";
 import { inlineHtml, type PackageInfo, type RoadmapItem, type StatusKind } from "./index.ts";
+import { startPlayground } from "./playground.ts";
+import { CLASSROOM, parseNearMisses, presetOfRecord } from "./presets.ts";
 
 declare const __ROADMAP__: readonly RoadmapItem[];
 declare const __PACKAGES__: readonly PackageInfo[];
@@ -11,6 +16,25 @@ function byId(id: string): HTMLElement {
   if (!element) throw new Error(`The page has no element #${id}.`);
   return element;
 }
+
+// The explorer: the classroom input, then each real record of the census.
+const file = parseNearMisses(nearMissJson);
+const records = file.records.map((r, k) => presetOfRecord(r, k));
+const groups = new Map<string, string>();
+for (const p of CLASSROOM) groups.set(p.id, "Classroom");
+for (const p of records) groups.set(p.id, `Census records: ${p.record?.set ?? ""}`);
+const explorer = new Explorer(byId("ex"));
+explorer.setPresets([...CLASSROOM, ...records], groups);
+// A link can name a preset, for example ?preset=record-13.
+const asked = new URLSearchParams(window.location.search).get("preset");
+if (asked) explorer.load(asked);
+
+startPlayground();
+startClasses();
+startRecords(file, (index) => {
+  explorer.load(`record-${index}`);
+  byId("explorer").scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+});
 
 // The packages, from the package.json of each package at build time.
 byId("package-list").innerHTML = __PACKAGES__.map((pkg) => {
@@ -49,71 +73,4 @@ byId("filters").addEventListener("click", (event) => {
 renderFilters();
 renderItems();
 
-// The three classes of the A13 census on the exact-v1 dump of highways.
-interface CensusClass {
-  readonly id: number;
-  readonly name: string;
-  readonly cases: number;
-  readonly meaning: string;
-  readonly finding: string;
-}
-
-const classes: readonly CensusClass[] = [
-  {
-    id: 1,
-    name: "A wrong sign that exact signs fix",
-    cases: 0,
-    meaning: "The float sign is wrong, a user sees the error in the drawing, and the exact sign gives the correct drawing.",
-    finding: "No test of the dump is in this class. This class is the reason for exact predicates, and it is empty.",
-  },
-  {
-    id: 2,
-    name: "A tie at a tolerance",
-    cases: 5,
-    meaning: "The exact clipped length of a segment in a box is equal to the tolerance eps 0.5. The float length is a little larger, so the float test says that the segment hits the box.",
-    finding: "Four ties are in a measure and one is in a router. An A/B run of the router showed no change of a route, a cost or a measure.",
-  },
-  {
-    id: 3,
-    name: "A fault in the rule of the measure",
-    cases: 1,
-    meaning: "Two routes share a run of a line, and one route leaves on the other side. The crossing count misses this true crossing.",
-    finding: "Exact signs do not fix this case. The fix is a rule for a shared run in the crossing measure of highways, with no new predicate.",
-  },
-];
-
-const most = Math.max(...classes.map((entry) => entry.cases), 1);
-let selected = 2;
-
-byId("classes").innerHTML = classes.map((entry) => {
-  const width = (entry.cases / most) * 100;
-  return `<button type="button" class="bar-row" data-class="${entry.id}" aria-pressed="false">
-    <span class="bar-label">Class ${entry.id}<span class="bar-name">${entry.name}</span></span>
-    <span class="bar-track"><span class="bar c${entry.id}" style="width:${width}%"></span><span class="bar-value">${entry.cases} ${entry.cases === 1 ? "case" : "cases"}</span></span>
-  </button>`;
-}).join("");
-
-function showClass(): void {
-  for (const row of byId("classes").querySelectorAll<HTMLElement>(".bar-row")) {
-    row.setAttribute("aria-pressed", String(Number(row.dataset["class"]) === selected));
-  }
-  const entry = classes.find((item) => item.id === selected) ?? classes[0];
-  if (!entry) return;
-  byId("class-detail").innerHTML = `<h3>Class ${entry.id}: ${entry.name}</h3><p>${inlineHtml(entry.meaning)}</p><p>${inlineHtml(entry.finding)}</p>`;
-}
-
-function pick(event: Event): void {
-  const target = (event.target as HTMLElement).closest<HTMLElement>(".bar-row");
-  const id = Number(target?.dataset["class"]);
-  if (!target || id === selected) return;
-  selected = id;
-  showClass();
-}
-
-byId("classes").addEventListener("click", pick);
-byId("classes").addEventListener("mouseover", (event) => {
-  if (window.matchMedia("(hover: hover)").matches) pick(event);
-});
-showClass();
-
-byId("foot").innerHTML = `Built from commit <code>${inlineHtml(__BUILD__.sha)}</code> on ${inlineHtml(__BUILD__.date)}. MIT license. No trackers, no external fonts.`;
+byId("foot").innerHTML = `Built from commit <code>${inlineHtml(__BUILD__.sha)}</code> on ${inlineHtml(__BUILD__.date)}. Each number on this page comes from the packages of this repository, live in your browser, or from the census records. MIT license. No trackers, no external fonts.`;

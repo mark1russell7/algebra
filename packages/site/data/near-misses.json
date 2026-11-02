@@ -1,0 +1,1907 @@
+{
+ "note": "Real float-wrong inputs of the A13 census (algebra run 41541049679) of the highways dump run 41470089660. Each has at least one sign where float and exact differ.",
+ "records": [
+  {
+   "set": "exact-v1",
+   "case": "exact-v1/clustered/s4",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     55.9876242377924,
+     173.598000519594
+    ],
+    "b": [
+     69,
+     184.75
+    ],
+    "c": [
+     52.513525345190686,
+     150.06887620151872
+    ],
+    "d": [
+     59,
+     194
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -5.684341886080802e-14,
+      5.684341886080802e-14
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 82810
+   }
+  },
+  {
+   "set": "exact-v1",
+   "case": "exact-v1/clustered/s4",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     55.9876242377924,
+     173.598000519594
+    ],
+    "b": [
+     69,
+     184.75
+    ],
+    "c": [
+     52.513525345190686,
+     150.06887620151872
+    ],
+    "d": [
+     59,
+     194
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -5.684341886080802e-14,
+      5.684341886080802e-14
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 82839
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n18/s4",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     384.9244871481028,
+     238
+    ],
+    "b": [
+     297.48448200656225,
+     39.17778693595818
+    ],
+    "c": [
+     330.81129941837986,
+     271
+    ],
+    "d": [
+     297.48448200656225,
+     39.17778693595817
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -2.7284841053187847e-12,
+      2.7284841053187847e-12
+     ]
+    },
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -1.0913936421275139e-11,
+      7.275957614183426e-12
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 448929
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n18/s4",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     384.9244871481028,
+     238
+    ],
+    "b": [
+     297.48448200656225,
+     39.17778693595818
+    ],
+    "c": [
+     330.81129941837986,
+     271
+    ],
+    "d": [
+     297.48448200656225,
+     39.17778693595817
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -2.7284841053187847e-12,
+      2.7284841053187847e-12
+     ]
+    },
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -1.0913936421275139e-11,
+      7.275957614183426e-12
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 448978
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n18/s5",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     107,
+     142.25
+    ],
+    "b": [
+     128.77985204739912,
+     170.86109214538965
+    ],
+    "c": [
+     95.75,
+     239.58333333333334
+    ],
+    "d": [
+     134,
+     160
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 465404
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n18/s5",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     107,
+     142.25
+    ],
+    "b": [
+     128.77985204739912,
+     170.86109214538965
+    ],
+    "c": [
+     95.75,
+     239.58333333333334
+    ],
+    "d": [
+     134,
+     160
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 465492
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n24/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     309.7037037037037,
+     117.85185185185185
+    ],
+    "b": [
+     241.37037037037038,
+     97.18518518518519
+    ],
+    "c": [
+     336.27777777777777,
+     125.88888888888889
+    ],
+    "d": [
+     211,
+     88
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1092250
+   }
+  },
+  {
+   "set": "exact-v1-bounds",
+   "case": "exact-v1-bounds/fanout-n24/s6",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     175.6,
+     383.2
+    ],
+    "b": [
+     183.66666666666666,
+     340.6666666666667
+    ],
+    "c": [
+     171.2,
+     406.4
+    ],
+    "d": [
+     191,
+     302
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,b)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1248947
+   }
+  },
+  {
+   "set": "fixtures",
+   "case": "fixtures/small-clustered",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 3,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 76953
+   }
+  },
+  {
+   "set": "fixtures",
+   "case": "fixtures/small-clustered",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 77178
+   }
+  },
+  {
+   "set": "fixtures",
+   "case": "fixtures/small-clustered",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     90,
+     360
+    ],
+    "b": [
+     156,
+     491
+    ],
+    "c": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "d": [
+     97.32557977413207,
+     374.54016591532275
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 175632
+   }
+  },
+  {
+   "set": "fixtures",
+   "case": "fixtures/case-dense-groups",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 3,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     856.1534090909091,
+     485.39886363636367
+    ],
+    "b": [
+     880.4750000000001,
+     422.1550000000001
+    ],
+    "c": [
+     877.6136363636365,
+     429.59545454545463
+    ],
+    "d": [
+     870.4602272727274,
+     448.19659090909096
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1306217
+   }
+  },
+  {
+   "set": "fixtures",
+   "case": "fixtures/case-dense-groups",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     856.1534090909091,
+     485.39886363636367
+    ],
+    "b": [
+     880.4750000000001,
+     422.1550000000001
+    ],
+    "c": [
+     877.6136363636365,
+     429.59545454545463
+    ],
+    "d": [
+     870.4602272727274,
+     448.19659090909096
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1307640
+   }
+  },
+  {
+   "set": "fixtures-large",
+   "case": "fixtures-large/large-clustered",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 2,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     1632.7272727272727,
+     3116
+    ],
+    "b": [
+     822.1818181818181,
+     5345
+    ],
+    "box": {
+     "x": 1094,
+     "y": 4485,
+     "w": 34,
+     "h": 19
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y1)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.656612873077393e-10,
+      4.656612873077393e-10
+     ]
+    },
+    {
+     "name": "len(x1,y1)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -1.2198195868942963e-12,
+      1.2198195868942963e-12
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 10
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 3,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 87173
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/small-clustered/s0",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 87398
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     90,
+     360
+    ],
+    "b": [
+     156,
+     491
+    ],
+    "c": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "d": [
+     97.32557977413207,
+     374.54016591532275
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 185852
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/small-clustered/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 453073
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/small-clustered/s2",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 453868
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/packed-grid/s1",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 186,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     1540,
+     474.54545454545456
+    ],
+    "b": [
+     140,
+     65.45454545454545
+    ],
+    "box": {
+     "x": 700,
+     "y": 270,
+     "w": 140,
+     "h": 90
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y0)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -1.7462298274040222e-10,
+      1.1641532182693481e-10
+     ]
+    },
+    {
+     "name": "len(x1,y0)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.324656217244223e-14,
+      6.486984325866334e-14
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1548238
+   }
+  },
+  {
+   "set": "screen-v1",
+   "case": "screen-v1/packed-grid/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/whole/curriculum/index.ts:146",
+   "weight": 28,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     1540,
+     83.57142857142857
+    ],
+    "b": [
+     700,
+     546.4285714285714
+    ],
+    "c": [
+     1540,
+     315
+    ],
+    "d": [
+     1120,
+     315
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -8.731149137020111e-11,
+      8.731149137020111e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1581329
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 3,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 131560
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s0",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 131785
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     90,
+     360
+    ],
+    "b": [
+     156,
+     491
+    ],
+    "c": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "d": [
+     97.32557977413207,
+     374.54016591532275
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 230239
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 497460
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s2",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 498255
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/small-clustered/s5",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     713,
+     335
+    ],
+    "b": [
+     787.4875000000001,
+     279.1625
+    ],
+    "c": [
+     758.0522104754577,
+     301.2278529629351
+    ],
+    "d": [
+     751.8539364840921,
+     305.8742181113544
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1147962
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/packed-grid/s1",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 186,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     1540,
+     474.54545454545456
+    ],
+    "b": [
+     140,
+     65.45454545454545
+    ],
+    "box": {
+     "x": 700,
+     "y": 270,
+     "w": 140,
+     "h": 90
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y0)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -1.7462298274040222e-10,
+      1.1641532182693481e-10
+     ]
+    },
+    {
+     "name": "len(x1,y0)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.324656217244223e-14,
+      6.486984325866334e-14
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7291544
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/packed-grid/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/whole/curriculum/index.ts:146",
+   "weight": 28,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     1540,
+     83.57142857142857
+    ],
+    "b": [
+     700,
+     546.4285714285714
+    ],
+    "c": [
+     1540,
+     315
+    ],
+    "d": [
+     1120,
+     315
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -8.731149137020111e-11,
+      8.731149137020111e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7324635
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/packed-grid/s3",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 164,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     420,
+     462.85714285714283
+    ],
+    "b": [
+     1260,
+     77.14285714285714
+    ],
+    "box": {
+     "x": 700,
+     "y": 180,
+     "w": 140,
+     "h": 90
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y1)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -8.731149137020111e-11,
+      8.731149137020111e-11
+     ]
+    },
+    {
+     "name": "len(x1,y1)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -6.513157858230539e-15,
+      6.513157858230539e-15
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7327815
+   }
+  },
+  {
+   "set": "screen-v2",
+   "case": "screen-v2/packed-grid/s3",
+   "fn": "physics.outOf",
+   "via": "src/routers/physics.ts:195",
+   "weight": 12036,
+   "predicate": "pointSide",
+   "input": {
+    "p": [
+     350,
+     315
+    ],
+    "a": [
+     583.3333333333334,
+     90
+    ],
+    "b": [
+     116.66666666666666,
+     540
+    ]
+   },
+   "floatAnswer": -1,
+   "exactAnswer": 1,
+   "flips": [
+    {
+     "name": "orient(a,b,p)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.3655745685100555e-11,
+      4.3655745685100555e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7337019
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 3,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 131560
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s0",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "b": [
+     97.32557977413207,
+     374.54016591532275
+    ],
+    "c": [
+     90,
+     360
+    ],
+    "d": [
+     156,
+     491
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,c)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 131785
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s0",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     90,
+     360
+    ],
+    "b": [
+     156,
+     491
+    ],
+    "c": [
+     129.4905948334925,
+     438.382847321023
+    ],
+    "d": [
+     97.32557977413207,
+     374.54016591532275
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(c,d,a)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 230239
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/quality.ts:183",
+   "weight": 2,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 497460
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s2",
+   "fn": "routes.segmentsCrossInside",
+   "via": "src/bench/measures/routes.ts:106",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     683.5293333333333,
+     736.4839999999999
+    ],
+    "b": [
+     644,
+     785
+    ],
+    "c": [
+     747,
+     711
+    ],
+    "d": [
+     661.2940833333333,
+     763.7742499999999
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.547473508864641e-13,
+      4.547473508864641e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 498255
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/small-clustered/s5",
+   "fn": "geom.segmentsCross",
+   "via": "src/bench/measures/lanes.ts:58",
+   "weight": 1,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     713,
+     335
+    ],
+    "b": [
+     787.4875000000001,
+     279.1625
+    ],
+    "c": [
+     758.0522104754577,
+     301.2278529629351
+    ],
+    "d": [
+     751.8539364840921,
+     305.8742181113544
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -9.094947017729282e-13,
+      9.094947017729282e-13
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 1147962
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/packed-grid/s1",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 186,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     1540,
+     474.54545454545456
+    ],
+    "b": [
+     140,
+     65.45454545454545
+    ],
+    "box": {
+     "x": 700,
+     "y": 270,
+     "w": 140,
+     "h": 90
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y0)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -1.7462298274040222e-10,
+      1.1641532182693481e-10
+     ]
+    },
+    {
+     "name": "len(x1,y0)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.324656217244223e-14,
+      6.486984325866334e-14
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7291544
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/packed-grid/s2",
+   "fn": "geom.segmentsCross",
+   "via": "src/whole/curriculum/index.ts:146",
+   "weight": 28,
+   "predicate": "segmentPair",
+   "input": {
+    "a": [
+     1540,
+     83.57142857142857
+    ],
+    "b": [
+     700,
+     546.4285714285714
+    ],
+    "c": [
+     1540,
+     315
+    ],
+    "d": [
+     1120,
+     315
+    ]
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "orient(a,b,d)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -8.731149137020111e-11,
+      8.731149137020111e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7324635
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/packed-grid/s3",
+   "fn": "geom.segmentHitsBox",
+   "via": "src/geom.ts:121",
+   "weight": 164,
+   "predicate": "segmentBox",
+   "input": {
+    "a": [
+     420,
+     462.85714285714283
+    ],
+    "b": [
+     1260,
+     77.14285714285714
+    ],
+    "box": {
+     "x": 700,
+     "y": 180,
+     "w": 140,
+     "h": 90
+    },
+    "eps": 0
+   },
+   "floatAnswer": false,
+   "exactAnswer": true,
+   "flips": [
+    {
+     "name": "diff(x1,y1)",
+     "exactSign": -1,
+     "floatSign": 0,
+     "bounds": [
+      -8.731149137020111e-11,
+      8.731149137020111e-11
+     ]
+    },
+    {
+     "name": "len(x1,y1)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -6.513157858230539e-15,
+      6.513157858230539e-15
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7327815
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/packed-grid/s3",
+   "fn": "physics.outOf",
+   "via": "src/routers/physics.ts:195",
+   "weight": 12036,
+   "predicate": "pointSide",
+   "input": {
+    "p": [
+     350,
+     315
+    ],
+    "a": [
+     583.3333333333334,
+     90
+    ],
+    "b": [
+     116.66666666666666,
+     540
+    ]
+   },
+   "floatAnswer": -1,
+   "exactAnswer": 1,
+   "flips": [
+    {
+     "name": "orient(a,b,p)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -4.3655745685100555e-11,
+      4.3655745685100555e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 7337019
+   }
+  },
+  {
+   "set": "screen-v3",
+   "case": "screen-v3/two-hubs/s0",
+   "fn": "physics.outOf",
+   "via": "src/routers/physics.ts:195",
+   "weight": 288,
+   "predicate": "pointSide",
+   "input": {
+    "p": [
+     532,
+     270
+    ],
+    "a": [
+     800,
+     355.76
+    ],
+    "b": [
+     364,
+     216.24
+    ]
+   },
+   "floatAnswer": -1,
+   "exactAnswer": 1,
+   "flips": [
+    {
+     "name": "orient(a,b,p)",
+     "exactSign": 1,
+     "floatSign": 0,
+     "bounds": [
+      -1.4551915228366852e-11,
+      1.4551915228366852e-11
+     ]
+    }
+   ],
+   "source": {
+    "census": "41541049679",
+    "dump": "41470089660",
+    "line": 8898167
+   }
+  }
+ ]
+}
