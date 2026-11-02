@@ -19,6 +19,11 @@ on:
 permissions:
   contents: read
 
+# One census of a dump run at a time. A second start of the same run waits.
+concurrency:
+  group: census-${{ inputs.run }}
+  cancel-in-progress: false
+
 jobs:
   census:
     runs-on: ubuntu-latest
