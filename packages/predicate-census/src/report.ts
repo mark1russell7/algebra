@@ -5,11 +5,12 @@
  * @packageDocumentation
  */
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, type Hash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { StringDecoder } from "node:string_decoder";
 import { Tally } from "./census.ts";
-import type { Census, SharedEndCounts } from "./census.ts";
+import type { Census, SharedEndCounts, TallyOptions } from "./census.ts";
 
 /** An input file of a report. */
 export interface InputFile {
@@ -121,22 +122,60 @@ function git(args: readonly string[], cwd: string): string | null {
   }
 }
 
+/** The size of each read of an input file. A dump of several GB never becomes one string. */
+const CHUNK = 1 << 24;
+
+/**
+ * This function gives each line of a file, in order, from 1. It reads the file in chunks and adds each chunk to the
+ * hash. A line can end with `\n` or `\r\n`. The last line has no end.
+ */
+function forEachLine(file: string, hash: Hash, each: (text: string, lineNo: number) => void): void {
+  const fd = fs.openSync(file, "r");
+  const decoder = new StringDecoder("utf8");
+  const buffer = Buffer.alloc(CHUNK);
+  let rest = "";
+  let lineNo = 0;
+  const emit = (text: string): void => each(text.endsWith("\r") ? text.slice(0, -1) : text, ++lineNo);
+  try {
+    for (;;) {
+      const read = fs.readSync(fd, buffer, 0, CHUNK, null);
+      if (read === 0) break;
+      const bytes = buffer.subarray(0, read);
+      hash.update(bytes);
+      const text = rest + decoder.write(bytes);
+      let start = 0;
+      for (let end = text.indexOf("\n"); end !== -1; end = text.indexOf("\n", start)) {
+        emit(text.slice(start, end));
+        start = end + 1;
+      }
+      rest = text.slice(start);
+    }
+    emit(rest + decoder.end());
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
 /**
  * This function makes the report of a census over files and folders.
  *
  * @param paths - The `.jsonl` files and the folders.
  * @param repo - A folder in the work tree of algebra, for the commit.
+ * @param options - The sinks of the records. With a sink, the report has no records in memory.
  * @returns The report.
  */
-export function censusOfFiles(paths: readonly string[], repo: string): Report {
-  const tally = new Tally();
+export function censusOfFiles(paths: readonly string[], repo: string, options: TallyOptions = {}): Report {
+  const tally = new Tally(options);
   const files: InputFile[] = [];
   for (const file of findFiles(paths)) {
-    const bytes = fs.readFileSync(file);
     const name = path.relative(process.cwd(), file).split(path.sep).join("/");
-    const lines = bytes.toString("utf8").split(/\r?\n/);
-    lines.forEach((text, i) => tally.addText(name, i + 1, text));
-    files.push({ path: name, sha256: createHash("sha256").update(bytes).digest("hex"), lines: lines.filter((l) => l.trim() !== "").length });
+    const hash = createHash("sha256");
+    let count = 0;
+    forEachLine(file, hash, (text, lineNo) => {
+      if (text.trim() !== "") count++;
+      tally.addText(name, lineNo, text);
+    });
+    files.push({ path: name, sha256: hash.digest("hex"), lines: count });
   }
   const census = tally.result();
   const totals: Totals = {

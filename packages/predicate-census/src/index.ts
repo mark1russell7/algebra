@@ -59,6 +59,7 @@ export type {
   Rollup,
   SharedEndCounts,
   SignRecord,
+  TallyOptions,
   UnknownRecord,
 } from "./census.ts";
 export { ASSUMPTIONS, censusOfFiles, FAR_FILTER, findFiles } from "./report.ts";
