@@ -125,3 +125,43 @@ export function overlaps(a: { x: number; y: number; w: number; h: number }, b: {
   };
   return sign(margin(a.x, a.w, b.x, b.w)) > 0 && sign(margin(a.y, a.h, b.y, b.h)) > 0;
 }
+
+/** A box of packing: its left, top, right and bottom edges. */
+export interface Edges {
+  readonly l: number;
+  readonly t: number;
+  readonly r: number;
+  readonly b: number;
+}
+
+/** The exact overlap of two boxes of packing: the exact margin of each axis is larger than the float tolerance. */
+export function edgesOverlap(a: Edges, b: Edges, tolerance: number): boolean {
+  const margin = (lo1: number, hi1: number, lo2: number, hi2: number): Rat => {
+    const end = cmp(fromFloat(hi1), fromFloat(hi2)) <= 0 ? fromFloat(hi1) : fromFloat(hi2);
+    const start = cmp(fromFloat(lo1), fromFloat(lo2)) >= 0 ? fromFloat(lo1) : fromFloat(lo2);
+    return sub(end, start);
+  };
+  const tol = fromFloat(tolerance);
+  return cmp(margin(a.l, a.r, b.l, b.r), tol) > 0 && cmp(margin(a.t, a.b, b.t, b.b), tol) > 0;
+}
+
+/** The exact container test of packing: the box goes out of a fixed side by more than the tolerance. */
+export function outOfContainer(o: {
+  box: Edges;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  inset: number;
+  tolerance: number;
+  fixedW: boolean;
+  fixedH: boolean;
+}): boolean {
+  const f = fromFloat;
+  const [x, y, w, h, inset, tol] = [f(o.x), f(o.y), f(o.w), f(o.h), f(o.inset), f(o.tolerance)];
+  const below = (edge: number, side: Rat): boolean => cmp(f(edge), side) < 0;
+  const above = (edge: number, side: Rat): boolean => cmp(f(edge), side) > 0;
+  const outX = o.fixedW && (below(o.box.l, sub(add(x, inset), tol)) || above(o.box.r, add(sub(add(x, w), inset), tol)));
+  const outY = o.fixedH && (below(o.box.t, sub(add(y, inset), tol)) || above(o.box.b, add(sub(add(y, h), inset), tol)));
+  return outX || outY;
+}

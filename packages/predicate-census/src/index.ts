@@ -10,28 +10,39 @@ export { boundSign, exactValue, floatValue, orient, orientForm, signForm, struct
 export type { Point, PointExpr, PointVars, Sign, SignForm } from "./expressions.ts";
 export {
   boxPairLine,
+  containerLine,
   COUNT_FIELDS,
   countLine,
+  edgePairLine,
+  PACKING_UNMODELED,
+  packingCountLine,
   parseLine,
   pointSideLine,
   SHARED_END_FIELD,
   segmentBoxLine,
   segmentPairLine,
   segmentRectLine,
+  stripLine,
 } from "./input.ts";
 export type {
   Box,
   BoxPairLine,
+  ContainerLine,
   CountKind,
   CountLine,
+  EdgeBox,
+  EdgePairLine,
   FloatAnswer,
   Line,
   LineBase,
+  PackingCountLine,
+  PackingLineBase,
   PointSideLine,
   Rect,
   SegmentBoxLine,
   SegmentPairLine,
   SegmentRectLine,
+  StripLine,
   Vec,
 } from "./input.ts";
 export {
@@ -39,6 +50,10 @@ export {
   boxPairPoint,
   CALL_SITE_RULES,
   checkRuleSources,
+  containerPoint,
+  containerPredicate,
+  edgePair,
+  edgePairPoint,
   pointSide,
   pointSidePoint,
   pointSideTieLow,
@@ -50,9 +65,11 @@ export {
   segmentPairPoint,
   segmentRect,
   segmentRectPoint,
+  strip,
+  stripPoint,
 } from "./predicates.ts";
 export type { Answer, CallSiteRule, Predicate, PredicateName, RuleSource, RuleSourceCheck } from "./predicates.ts";
-export { classify, NEAR_COLLINEAR, nearLine, sharedVertex, Tally } from "./census.ts";
+export { classify, NEAR_COLLINEAR, nearLine, PACKING_PREDICATES, sharedVertex, Tally } from "./census.ts";
 export type {
   CaseSummary,
   Census,

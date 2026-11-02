@@ -1,6 +1,6 @@
 import { random, summarize } from "@mark1russell7/expression";
 import { describe, expect, it } from "vitest";
-import { boundSign, CALL_SITE_RULES, checkRuleSources, classify, dyadic as D, pointSideTieLow, PREDICATES, segmentPairClosed, structuralZero } from "./index.ts";
+import { boundSign, CALL_SITE_RULES, checkRuleSources, classify, containerPoint, containerPredicate, dyadic as D, edgePair, edgePairPoint, pointSideTieLow, PREDICATES, segmentPairClosed, strip, stripPoint, structuralZero } from "./index.ts";
 import type { SignForm } from "./index.ts";
 import { boxPairPoint, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import * as O from "./oracle.test-helper.ts";
@@ -211,5 +211,62 @@ describe("the check of the rule sources", () => {
     const checks = checkRuleSources(tree(0, "const k = cross > 0 ? 1 : -1;"));
     expect(checks.filter((c) => !c.holds).map((c) => c.fn)).toEqual(["physics.outOf"]);
     expect(checkRuleSources(() => null).some((c) => c.holds)).toBe(false);
+  });
+});
+
+describe("the predicates of packing", () => {
+  /** A coordinate of packing: a coordinate with ties, at an offset that makes some float differences round. */
+  const at = (rnd: () => number, base: number): number => base + coordinate(rnd) * (rnd() < 0.5 ? 1 : 1e-3);
+  const tolerance = (rnd: () => number): number => [0, 0.001, 0.25][Math.floor(rnd() * 3)] as number;
+  const edges = (rnd: () => number, base: number): O.Edges => {
+    const [l, t] = [at(rnd, base), at(rnd, base)];
+    return { l, t, r: l + coordinate(rnd), b: t + coordinate(rnd) };
+  };
+
+  it("for box pairs: the exact answer of the oracle, and the float answer of overlap of packing", () => {
+    const rnd = random(41);
+    for (let i = 0; i < RUNS; i++) {
+      const base = rnd() < 0.5 ? 0 : 2 ** Math.floor(rnd() * 40);
+      const [a, b, tol] = [edges(rnd, base), edges(rnd, base), tolerance(rnd)];
+      const r = classify(edgePair, edgePairPoint(a, b, tol));
+      expect(r.exactAnswer).toBe(O.edgesOverlap(a, b, tol));
+      // The float rule of packing, as `overlap` of its src/check.ts.
+      expect(r.floatAnswer).toBe(Math.min(a.r, b.r) - Math.max(a.l, b.l) > tol && Math.min(a.b, b.b) - Math.max(a.t, b.t) > tol);
+    }
+  });
+
+  it("for container tests: the exact answer of the oracle, and the float answer of checkHard of packing", () => {
+    const rnd = random(43);
+    for (let i = 0; i < RUNS; i++) {
+      const base = rnd() < 0.5 ? 0 : 2 ** Math.floor(rnd() * 40);
+      const [x, y] = [at(rnd, base), at(rnd, base)];
+      const [w, h, inset, tol] = [coordinate(rnd) * 4, coordinate(rnd) * 4, coordinate(rnd) / 10, tolerance(rnd)];
+      const [fixedW, fixedH] = [rnd() < 0.7, rnd() < 0.7];
+      const box = edges(rnd, base);
+      const line = { box, x, y, w, h, inset, tolerance: tol, fixedW, fixedH };
+      const r = classify(containerPredicate(fixedW, fixedH), containerPoint(line));
+      expect(r.exactAnswer).toBe(O.outOfContainer(line));
+      const outX = fixedW && (box.l < x + inset - tol || box.r > x + w - inset + tol);
+      const outY = fixedH && (box.t < y + inset - tol || box.b > y + h - inset + tol);
+      expect(r.floatAnswer).toBe(outX || outY);
+    }
+  });
+
+  it("for strip tests: the answer of edgeRange of packing, which is exact", () => {
+    const rnd = random(47);
+    for (let i = 0; i < RUNS; i++) {
+      const [ax, ay, bx, by, y0] = [coordinate(rnd), coordinate(rnd), coordinate(rnd), coordinate(rnd), coordinate(rnd)];
+      const y1 = y0 + coordinate(rnd);
+      const r = classify(strip, stripPoint({ ax, ay, bx, by, y0, y1 }));
+      const expected = !(Math.max(ay, by) <= y0 || Math.min(ay, by) >= y1);
+      expect([r.exactAnswer, r.floatAnswer]).toEqual([expected, expected]);
+    }
+  });
+
+  it("gives one container predicate for each pair of fixed sides, with only the signs of the fixed sides", () => {
+    expect(containerPredicate(true, false)).toBe(containerPredicate(true, false));
+    expect(containerPredicate(true, false).signs.map((s) => s.name)).toEqual(["l - (x + inset - tolerance)", "r - (x + w - inset + tolerance)"]);
+    expect(containerPredicate(false, false).signs).toEqual([]);
+    expect(classify(containerPredicate(false, false), containerPoint({ box: { l: -9, t: -9, r: 9, b: 9 }, x: 0, y: 0, w: null, h: null, inset: 0, tolerance: 0 })).exactAnswer).toBe(false);
   });
 });
