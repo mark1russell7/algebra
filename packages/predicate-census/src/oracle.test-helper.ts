@@ -67,39 +67,51 @@ export function crosses(a: V, b: V, c: V, d: V): boolean {
   return orient(a, b, c) * orient(a, b, d) < 0 && orient(c, d, a) * orient(c, d, b) < 0;
 }
 
+const max = (a: Rat, b: Rat): Rat => (cmp(a, b) >= 0 ? a : b);
+const min = (a: Rat, b: Rat): Rat => (cmp(a, b) <= 0 ? a : b);
+
 /**
- * The exact test of a segment against the open inside of a box, by a Liang-Barsky clip in rationals. Each side of
- * the box gives a strict bound on the parameter `t` of the segment, and `t` stays in `[0, 1]`.
+ * The exact copy of `geom.segmentHitsRect` of highways, in rationals: the Liang-Barsky clip of the segment to the
+ * rectangle, and a clipped part longer than `eps`. The length test compares squares, so it needs no square root.
  */
-export function hitsOpenBox(a: V, b: V, box: { x: number; y: number; w: number; h: number }): boolean {
+export function hitsRectExact(a: V, b: V, x0: Rat, y0: Rat, x1: Rat, y1: Rat, eps: number): boolean {
   const [ax, ay] = pt(a);
   const [bx, by] = pt(b);
-  const x0 = fromFloat(box.x);
-  const y0 = fromFloat(box.y);
-  const x1 = add(x0, fromFloat(box.w));
-  const y1 = add(y0, fromFloat(box.h));
   const dx = sub(bx, ax);
   const dy = sub(by, ay);
-  // Each constraint is alpha * t + beta > 0.
-  const constraints: [Rat, Rat][] = [
-    [dx, sub(ax, x0)],
-    [rat(-dx.n, dx.d), sub(x1, ax)],
-    [dy, sub(ay, y0)],
-    [rat(-dy.n, dy.d), sub(y1, ay)],
-  ];
-  let lo = ZERO;
-  let hi = ONE;
-  for (const [alpha, beta] of constraints) {
-    const s = sign(alpha);
-    if (s === 0) {
-      if (sign(beta) <= 0) return false;
+  let t0 = ZERO;
+  let t1 = ONE;
+  for (const [d, p, lo, hi] of [
+    [dx, ax, x0, x1],
+    [dy, ay, y0, y1],
+  ] as const) {
+    if (sign(d) === 0) {
+      if (cmp(p, lo) <= 0 || cmp(p, hi) >= 0) return false;
       continue;
     }
-    const t = div(rat(-beta.n, beta.d), alpha);
-    if (s > 0 && cmp(t, lo) > 0) lo = t;
-    if (s < 0 && cmp(t, hi) < 0) hi = t;
+    const ta = div(sub(lo, p), d);
+    const tb = div(sub(hi, p), d);
+    t0 = max(t0, min(ta, tb));
+    t1 = min(t1, max(ta, tb));
+    if (cmp(t0, t1) > 0) return false;
   }
-  return cmp(lo, hi) < 0;
+  const e = fromFloat(eps);
+  if (sign(e) < 0) return true;
+  const part = sub(t1, t0);
+  const length2 = mul(mul(part, part), add(mul(dx, dx), mul(dy, dy)));
+  return cmp(length2, mul(e, e)) > 0;
+}
+
+/** The exact copy of `geom.segmentHitsRect` for a rectangle `[x0, y0, x1, y1]` of floats. */
+export function hitsRect(a: V, b: V, rect: readonly [number, number, number, number], eps = 0): boolean {
+  return hitsRectExact(a, b, fromFloat(rect[0]), fromFloat(rect[1]), fromFloat(rect[2]), fromFloat(rect[3]), eps);
+}
+
+/** The exact copy of `geom.segmentHitsBox`, with the exact sums `x + w` and `y + h` as the far corner. */
+export function hitsBox(a: V, b: V, box: { x: number; y: number; w: number; h: number }, eps = 0): boolean {
+  const x0 = fromFloat(box.x);
+  const y0 = fromFloat(box.y);
+  return hitsRectExact(a, b, x0, y0, add(x0, fromFloat(box.w)), add(y0, fromFloat(box.h)), eps);
 }
 
 /** The exact overlap of two boxes: the margin minus `eps` is positive on each axis. */

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/predicate-census",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "A census of the real inputs of the geometric predicates of highways and packing: the signs that the A1 bounds cannot fix, and the wrong float answers.",

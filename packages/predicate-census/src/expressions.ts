@@ -20,6 +20,10 @@ export const minus = (x: Expression, y: Expression): Expression => ({ type: "sub
 export const times = (x: Expression, y: Expression): Expression => ({ type: "mul", value: [x, y] });
 /** This function gives the smaller of two parts. */
 export const least = (x: Expression, y: Expression): Expression => ({ type: "min", value: [x, y] });
+/** This function gives the negation of a part. */
+export const negate = (x: Expression): Expression => ({ type: "neg", value: x });
+/** This function gives a constant. */
+export const num = (x: number): Expression => ({ type: "num", value: x });
 /** This function gives the larger of two parts. */
 export const most = (x: Expression, y: Expression): Expression => ({ type: "max", value: [x, y] });
 
@@ -53,10 +57,18 @@ export function boundSign(bounds: readonly [number, number] | null): Sign | null
   return null;
 }
 
+/** The variable names of a point: its `x` and its `y`. */
+export type PointVars = readonly [string, string];
+
 /** A compiled sign: its name, its document and its evaluators. */
 export interface SignForm {
   readonly name: string;
   readonly doc: Expression;
+  /**
+   * The three points of an orientation sign, or `undefined` for another sign. When two of these points are equal,
+   * the value is exactly 0.
+   */
+  readonly points?: readonly [PointVars, PointVars, PointVars] | undefined;
   /** This function gives the A1 bound of the value, with each variable at a point interval. */
   bounds(point: Point): readonly [number, number] | null;
 }
@@ -69,11 +81,12 @@ export interface SignForm {
  * @param doc - The expression of the sign.
  * @returns The compiled sign.
  */
-export function signForm(name: string, doc: Expression): SignForm {
+export function signForm(name: string, doc: Expression, points?: readonly [PointVars, PointVars, PointVars]): SignForm {
   const plan = prepare(expressionMachine, doc, { verb: SUMMARY, fold: false });
   return {
     name,
     doc,
+    points,
     bounds(point) {
       const names: Record<string, readonly [number, number]> = {};
       for (const [k, x] of Object.entries(point)) names[k] = [x, x];
@@ -82,6 +95,40 @@ export function signForm(name: string, doc: Expression): SignForm {
       return (r.value as Summary).bounds;
     },
   };
+}
+
+/**
+ * This function compiles the orientation sign of three points of variables. The sign keeps the points for the
+ * structural filter.
+ *
+ * @param name - The name of the sign.
+ * @param p - The variables of the first point.
+ * @param q - The variables of the second point.
+ * @param r - The variables of the third point.
+ * @returns The compiled sign.
+ */
+export function orientForm(name: string, p: PointVars, q: PointVars, r: PointVars): SignForm {
+  const e = (x: PointVars): PointExpr => [v(x[0]), v(x[1])];
+  return signForm(name, orient(e(p), e(q), e(r)), [p, q, r]);
+}
+
+/**
+ * This function is the structural filter of a sign. Two equal points of an orientation give the value 0 exactly, so
+ * the filter gives the sign 0 without a bound. The filter compares the floats of the points.
+ *
+ * @param form - The sign.
+ * @param point - The value of each variable.
+ * @returns The value is `true` when two points of the orientation are equal.
+ */
+export function structuralZero(form: SignForm, point: Point): boolean {
+  if (form.points === undefined) return false;
+  const [p, q, r] = form.points.map((x) => [valueOf(point, x[0]), valueOf(point, x[1])] as const) as [
+    readonly [number, number],
+    readonly [number, number],
+    readonly [number, number],
+  ];
+  const same = (s: readonly [number, number], t: readonly [number, number]): boolean => s[0] === t[0] && s[1] === t[1];
+  return same(p, q) || same(q, r) || same(p, r);
 }
 
 function valueOf(point: Point, name: string): number {
