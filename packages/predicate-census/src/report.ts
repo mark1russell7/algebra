@@ -9,7 +9,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { Tally } from "./census.ts";
-import type { Census } from "./census.ts";
+import type { Census, SharedEndCounts } from "./census.ts";
 
 /** An input file of a report. */
 export interface InputFile {
@@ -27,10 +27,25 @@ export interface Report extends Census {
   readonly dirty: boolean | null;
   readonly createdAt: string;
   readonly files: readonly InputFile[];
-  readonly totals: { total: number; decided: number; undecided: number; unseen: number; unknown: number; floatWrong: number };
+  readonly totals: Totals;
   readonly assumptions: readonly string[];
   /** The check of the far assumption for each case with far inputs. */
   readonly farCheck: readonly FarCheck[];
+}
+
+/** The totals of a report over all cases. */
+export interface Totals {
+  total: number;
+  decided: number;
+  undecided: number;
+  /** The undecided inputs with the structural filter. */
+  undecidedFiltered: number;
+  unseen: number;
+  unknown: number;
+  floatWrong: number;
+  /** The float-wrong segment pairs with an end point near the line of the other segment. */
+  floatWrongNearCollinear: number;
+  readonly sharedEnd: SharedEndCounts;
 }
 
 /** The filter of the senders: an input whose value is larger than this filter has no line. */
@@ -65,11 +80,17 @@ function farChecks(census: Census): FarCheck[] {
 
 /** The assumptions of each report. */
 export const ASSUMPTIONS: readonly string[] = [
-  "A count line gives far inputs that have no line. The census counts them as decided and not float-wrong, without a check.",
-  "The check of that assumption is farCheck. A far input is decided when its value is larger than the largest bound width of the seen inputs.",
-  "An unseen near input of a truncated case is in total and in unseen, not in decided and not in undecided.",
+  "A total of a count line counts each test of its kind, the near tests too. The far tests are total - near.",
+  "The sender writes a line for each near test. Without a near field, near is the weight of the lines.",
+  "The census counts the far tests as decided and not float-wrong, without a check. farCheck examines this assumption.",
+  "A truncated case has near - seen unseen tests. They are in total and in unseen, not in decided and not in undecided.",
+  "nearCheck compares each near field with the weight of the lines. A case that is not truncated needs equal values.",
+  "A segment-box test follows geom.segmentHitsRect of highways: the clipped part must be longer than eps. Without eps, eps is zero.",
+  "The corners x + w and y + h of a box are exact sums, not float sums.",
   "A box pair overlaps when the margin minus eps is larger than zero on each axis. Without eps, eps is zero.",
+  "The structural filter gives the sign 0 to an orientation with two equal points. undecidedFiltered uses it.",
   "A line without floatAnswer gets the float answer of the census: the same sign rule with plain float values.",
+  "A point-side test with a truth value as its float answer is not compared with the exact sign.",
 ];
 
 /**
@@ -118,14 +139,29 @@ export function censusOfFiles(paths: readonly string[], repo: string): Report {
     files.push({ path: name, sha256: createHash("sha256").update(bytes).digest("hex"), lines: lines.filter((l) => l.trim() !== "").length });
   }
   const census = tally.result();
-  const totals = { total: 0, decided: 0, undecided: 0, unseen: 0, unknown: 0, floatWrong: 0 };
+  const totals: Totals = {
+    total: 0,
+    decided: 0,
+    undecided: 0,
+    undecidedFiltered: 0,
+    unseen: 0,
+    unknown: 0,
+    floatWrong: 0,
+    floatWrongNearCollinear: 0,
+    sharedEnd: { total: 0, undecided: 0, undecidedFiltered: 0 },
+  };
   for (const c of census.cases) {
     totals.total += c.total;
     totals.decided += c.decided;
     totals.undecided += c.undecided;
+    totals.undecidedFiltered += c.undecidedFiltered;
     totals.unseen += c.unseen;
     totals.unknown += c.unknown;
     totals.floatWrong += c.floatWrong;
+    totals.floatWrongNearCollinear += c.floatWrongNearCollinear;
+    totals.sharedEnd.total += c.sharedEnd.total;
+    totals.sharedEnd.undecided += c.sharedEnd.undecided;
+    totals.sharedEnd.undecidedFiltered += c.sharedEnd.undecidedFiltered;
   }
   const status = git(["status", "--porcelain"], repo);
   return {

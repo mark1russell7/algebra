@@ -24,5 +24,8 @@ if (out === undefined) {
 } else {
   fs.writeFileSync(out, text);
   const t = report.totals;
-  console.error(`${report.files.length} files: total ${t.total}, undecided ${t.undecided}, floatWrong ${t.floatWrong}, unseen ${t.unseen}, unknown ${t.unknown}. Report: ${out}`);
+  console.error(
+    `${report.files.length} files: total ${t.total}, undecided ${t.undecided} (${t.undecidedFiltered} with the filter), ` +
+      `floatWrong ${t.floatWrong}, unseen ${t.unseen}, unknown ${t.unknown}. Report: ${out}`,
+  );
 }

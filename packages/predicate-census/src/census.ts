@@ -4,12 +4,13 @@
  * @packageDocumentation
  */
 import * as D from "./dyadic.ts";
-import { boundSign, exactValue, floatValue } from "./expressions.ts";
-import type { Point, Sign } from "./expressions.ts";
-import { FAR_FIELDS, parseLine, unseenNear } from "./input.ts";
-import type { CountLine, Line } from "./input.ts";
-import { boxPairPoint, PREDICATES, segmentBoxPoint, segmentPairPoint } from "./predicates.ts";
-import type { PredicateName } from "./predicates.ts";
+import type { Dyadic } from "./dyadic.ts";
+import { boundSign, exactValue, floatValue, structuralZero } from "./expressions.ts";
+import type { Point, Sign, SignForm } from "./expressions.ts";
+import { COUNT_FIELDS, parseLine, SHARED_END_FIELD } from "./input.ts";
+import type { CountKind, CountLine, FloatAnswer, Line, Vec } from "./input.ts";
+import { boxPairPoint, pointSidePoint, PREDICATES, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
+import type { Answer, Predicate, PredicateName } from "./predicates.ts";
 
 /** The A1 bound, the bound sign, the exact sign and the float sign of one sign expression of an input. */
 export interface SignRecord {
@@ -17,6 +18,8 @@ export interface SignRecord {
   readonly bounds: readonly [number, number] | null;
   /** The sign that the bound fixes, or `null`. */
   readonly boundSign: Sign | null;
+  /** The sign that the structural filter or the bound fixes, or `null`. */
+  readonly filterSign: Sign | null;
   readonly exactSign: Sign;
   readonly floatSign: Sign;
   /** The value is `false` when the exact value is outside the bound. Then A1 has a defect. */
@@ -26,16 +29,21 @@ export interface SignRecord {
 /** The classification of one input. */
 export interface Classified {
   readonly predicate: PredicateName;
+  /** The signs that the exact rule or the rule of the bounds asked. */
   readonly signs: readonly SignRecord[];
-  /** The value is `true` when the bound does not fix one sign or more. */
+  /** The value is `true` when the rule of the bounds asks a sign that the bound does not fix. */
   readonly undecided: boolean;
-  readonly exactAnswer: boolean;
-  readonly floatAnswer: boolean;
+  /** The value is `true` when the rule asks a sign that the structural filter and the bound do not fix. */
+  readonly undecidedFiltered: boolean;
+  readonly exactAnswer: Answer;
+  readonly floatAnswer: Answer;
   /** The value is `input` when the line gave the float answer, and `census` when the census computed it. */
   readonly floatSource: "input" | "census";
+  /** The value is `false` when the float answer has a form that the census cannot compare with the exact answer. */
+  readonly floatCompared: boolean;
   readonly floatWrong: boolean;
   /** The answer of the bound signs, or `null` when the input is undecided. */
-  readonly boundAnswer: boolean | null;
+  readonly boundAnswer: Answer | null;
   /** The largest width of a bound of the input. */
   readonly maxWidth: number;
   /** The largest magnitude of a variable of the input. */
@@ -43,62 +51,138 @@ export interface Classified {
 }
 
 const floatSign = (x: number): Sign => (x > 0 ? 1 : x < 0 ? -1 : 0);
+const STOP = Symbol("undecided");
 
 /**
- * This function classifies one input of a predicate.
+ * This function classifies one input of a predicate. It applies the rule with the exact signs, the bound signs and the
+ * filtered signs. Without a given float answer, it also applies the rule with the float signs.
  *
- * @param predicate - The name of the predicate.
+ * @param predicate - The predicate, or its name.
  * @param point - The value of each variable of the predicate.
  * @param given - The float answer of the sender, if the line has one.
  * @returns The classification.
  */
-export function classify(predicate: PredicateName, point: Point, given?: boolean): Classified {
-  const p = PREDICATES[predicate];
-  const signs = p.signs.map((form): SignRecord => {
-    const bounds = form.bounds(point);
-    const exact = exactValue(form.doc, point);
-    const contained = bounds !== null && D.compareBound(bounds[0], exact) <= 0 && D.compareBound(bounds[1], exact) >= 0;
-    return {
-      name: form.name,
-      bounds,
-      boundSign: boundSign(bounds),
-      exactSign: D.sign(exact),
-      floatSign: floatSign(floatValue(form.doc, point)),
-      contained,
-    };
-  });
-  const undecided = signs.some((s) => s.boundSign === null);
-  const exactAnswer = p.answer(signs.map((s) => s.exactSign));
-  const floatAnswer = given ?? p.answer(signs.map((s) => s.floatSign));
+export function classify(predicate: PredicateName | Predicate, point: Point, given?: FloatAnswer): Classified {
+  const p = typeof predicate === "string" ? PREDICATES[predicate] : predicate;
+  const cache = new Map<SignForm, SignRecord>();
+  const record = (form: SignForm): SignRecord => {
+    let r = cache.get(form);
+    if (r === undefined) {
+      const bounds = form.bounds(point);
+      const exact = exactValue(form.doc, point);
+      const contained = bounds !== null && D.compareBound(bounds[0], exact) <= 0 && D.compareBound(bounds[1], exact) >= 0;
+      const bs = boundSign(bounds);
+      r = {
+        name: form.name,
+        bounds,
+        boundSign: bs,
+        filterSign: structuralZero(form, point) ? 0 : bs,
+        exactSign: D.sign(exact),
+        floatSign: floatSign(floatValue(form.doc, point)),
+        contained,
+      };
+      cache.set(form, r);
+    }
+    return r;
+  };
+  const run = (pick: (r: SignRecord) => Sign | null): Answer | null => {
+    try {
+      return p.answer((form) => {
+        const s = pick(record(form));
+        if (s === null) throw STOP;
+        return s;
+      });
+    } catch (e) {
+      if (e === STOP) return null;
+      throw e;
+    }
+  };
+  const exactAnswer = run((r) => r.exactSign) as Answer;
+  const boundAnswer = run((r) => r.boundSign);
+  const filteredAnswer = run((r) => r.filterSign);
+  const floatAnswer = given ?? (run((r) => r.floatSign) as Answer);
+  const floatCompared = typeof floatAnswer === typeof exactAnswer;
+  const signs = [...cache.values()];
   let maxWidth = 0;
   for (const s of signs) if (s.bounds !== null) maxWidth = Math.max(maxWidth, s.bounds[1] - s.bounds[0]);
   return {
-    predicate,
+    predicate: p.name,
     signs,
-    undecided,
+    undecided: boundAnswer === null,
+    undecidedFiltered: filteredAnswer === null,
     exactAnswer,
     floatAnswer,
     floatSource: given === undefined ? "census" : "input",
-    floatWrong: floatAnswer !== exactAnswer,
-    boundAnswer: undecided ? null : p.answer(signs.map((s) => s.boundSign as Sign)),
+    floatCompared,
+    floatWrong: floatCompared && floatAnswer !== exactAnswer,
+    boundAnswer,
     maxWidth,
     scale: Math.max(...Object.values(point).map(Math.abs)),
   };
+}
+
+/** The factor of the scale of an input that gives the distance of `nearCollinear`. */
+export const NEAR_COLLINEAR = 1e-9;
+
+const same = (p: Vec, q: Vec): boolean => p[0] === q[0] && p[1] === q[1];
+
+/**
+ * This function finds two equal end points of a segment pair. It compares the floats.
+ *
+ * @returns The value is `true` when two of the four end points are equal.
+ */
+export function sharedVertex(a: Vec, b: Vec, c: Vec, d: Vec): boolean {
+  const ps = [a, b, c, d];
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) if (same(ps[i] as Vec, ps[j] as Vec)) return true;
+  return false;
+}
+
+/**
+ * This function finds an end point near the line of the other segment. The test is exact: `orient(q,r,p)^2` must not
+ * be larger than `tol^2 * |r - q|^2`, with the float `tol`.
+ *
+ * @param tol - The largest distance.
+ * @returns The value is `true` when an end point is at a distance of `tol` or less from the line of the other segment.
+ */
+export function nearLine(a: Vec, b: Vec, c: Vec, d: Vec, tol: number): boolean {
+  const f = (p: Vec): [Dyadic, Dyadic] => [D.fromFloat(p[0]), D.fromFloat(p[1])];
+  const t = D.fromFloat(tol);
+  const t2 = D.mul(t, t);
+  const near = (q: Vec, r: Vec, p: Vec): boolean => {
+    const [qx, qy] = f(q);
+    const [rx, ry] = f(r);
+    const [px, py] = f(p);
+    const ux = D.sub(rx, qx);
+    const uy = D.sub(ry, qy);
+    const o = D.sub(D.mul(ux, D.sub(py, qy)), D.mul(uy, D.sub(px, qx)));
+    const l2 = D.add(D.mul(ux, ux), D.mul(uy, uy));
+    if (D.sign(l2) === 0) return false;
+    return D.compare(D.mul(o, o), D.mul(t2, l2)) <= 0;
+  };
+  return near(c, d, a) || near(c, d, b) || near(a, b, c) || near(a, b, d);
 }
 
 /** The counts of one case and function. */
 export interface Group {
   readonly case: string;
   readonly fn: string;
-  readonly predicate: PredicateName | "unknown";
-  /** The value is `lines` for input lines, `far` for the far count of a count line, and `unseen` for near inputs without a line. */
+  readonly predicate: PredicateName | "nearest" | "unknown";
+  /** The value is `lines` for input lines, `far` for the far tests of a count line, and `unseen` for near tests without a line. */
   readonly source: "lines" | "far" | "unseen";
+  /** The value is `true` for the segment pairs with an end point that is equal in both segments. */
+  readonly sharedEnd: boolean;
   total: number;
   decided: number;
   undecided: number;
+  /** The inputs that are undecided with the structural filter. */
+  undecidedFiltered: number;
   /** The inputs that the census did not see. They are not decided and not undecided. */
   unseen: number;
   floatWrong: number;
+  /** The float-wrong segment pairs with an end point near the line of the other segment. */
+  floatWrongNearCollinear: number;
+  /** The inputs whose float answer the census cannot compare with the exact answer. */
+  floatUncompared: number;
   /** The decided inputs whose bound answer is not the exact answer. A value other than 0 is a defect. */
   boundWrong: number;
   /** The inputs with an exact value outside its bound. A value other than 0 is a defect of A1. */
@@ -107,19 +191,29 @@ export interface Group {
   maxScale: number;
 }
 
+/** The counts of the shared-end segment pairs. */
+export interface SharedEndCounts {
+  total: number;
+  undecided: number;
+  undecidedFiltered: number;
+}
+
 /** The counts of one case. */
 export interface CaseSummary {
   readonly case: string;
   total: number;
   decided: number;
   undecided: number;
+  undecidedFiltered: number;
   unseen: number;
   floatWrong: number;
+  floatWrongNearCollinear: number;
   /** The lines with no known form. They are not decided and not undecided. */
   unknown: number;
   truncated: boolean;
-  /** The near inputs without a line of a truncated case, by the field of the count line. */
+  /** The near tests without a line of a truncated case, by the near field of the count line. */
   readonly unseenNear: Record<string, number>;
+  readonly sharedEnd: SharedEndCounts;
 }
 
 /** The raw record of an undecided or a wrong input. */
@@ -129,6 +223,11 @@ export interface InputRecord extends Classified {
   readonly case: string;
   readonly fn: string;
   readonly n: number;
+  readonly sharedEnd: boolean;
+  /** For a segment pair: an end point is near the line of the other segment, and the exact answer is a crossing. */
+  readonly nearCollinear?: boolean | undefined;
+  /** For a segment pair: two of the four end points are equal floats. */
+  readonly sharedVertex?: boolean | undefined;
   readonly input: unknown;
 }
 
@@ -140,28 +239,62 @@ export interface UnknownRecord {
   readonly input: unknown;
 }
 
+/** The check of one near field of a count line against the weight of the lines. */
+export interface NearCheck {
+  readonly case: string;
+  /** The near field, or `near.<fn>` for a function of the field `near`. */
+  readonly field: string;
+  readonly total: number | null;
+  readonly near: number;
+  /** The weight of the lines of the field. */
+  readonly seen: number;
+  /** The near tests without a line. Only a truncated case has them. */
+  readonly unseen: number;
+  /** The value is `true` when the lines agree with the count: `seen` is `near`, or not larger for a truncated case. */
+  readonly holds: boolean;
+}
+
+/** The counts of one predicate or one function over all cases. */
+export interface Rollup {
+  readonly key: string;
+  /** The predicates of the lines of the function. */
+  readonly predicates: string[];
+  total: number;
+  lines: number;
+  far: number;
+  unseen: number;
+  undecided: number;
+  undecidedFiltered: number;
+  floatWrong: number;
+  floatWrongNearCollinear: number;
+  floatUncompared: number;
+  unknown: number;
+  readonly sharedEnd: SharedEndCounts;
+}
+
 /** The result of a census. */
 export interface Census {
   readonly groups: readonly Group[];
   readonly cases: readonly CaseSummary[];
+  readonly nearCheck: readonly NearCheck[];
+  readonly byPredicate: readonly Rollup[];
+  readonly byFn: readonly Rollup[];
   readonly records: readonly InputRecord[];
   readonly unknown: readonly UnknownRecord[];
 }
 
-const NEAR_PREDICATE: Readonly<Record<string, PredicateName>> = {
-  nearSegmentPairs: "segmentPair",
-  nearBoxTests: "segmentBox",
-  nearPairs: "boxPair",
-};
-
-function point(line: Line): Point | undefined {
+function point(line: Line): { predicate: Predicate; point: Point } | undefined {
   switch (line.form) {
     case "segmentPair":
-      return segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d);
+      return { predicate: PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
     case "segmentBox":
-      return segmentBoxPoint(line.line.a, line.line.b, line.line.box);
+      return { predicate: PREDICATES.segmentBox, point: segmentBoxPoint(line.line.a, line.line.b, line.line.box, line.line.eps) };
+    case "segmentRect":
+      return { predicate: segmentRect, point: segmentRectPoint(line.line.a, line.line.b, line.line.rect, line.line.eps) };
+    case "pointSide":
+      return { predicate: PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
     case "boxPair":
-      return boxPairPoint(line.line.a, line.line.b, line.line.eps);
+      return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
     default:
       return undefined;
   }
@@ -172,30 +305,80 @@ function field(raw: unknown, name: string): string {
   return typeof x === "string" ? x : "(none)";
 }
 
+/** The counts of the count lines of one case. */
+interface Counts {
+  readonly total: Partial<Record<CountKind, number>>;
+  readonly near: Partial<Record<CountKind, number>>;
+  sharedEndNear: number | undefined;
+  readonly tests: Record<string, number>;
+  readonly nearByFn: Record<string, number>;
+  truncated: boolean;
+}
+
+/** The weight of the lines of one case. */
+interface Seen {
+  readonly byKind: Partial<Record<CountKind, number>>;
+  sharedEnd: number;
+  readonly byFn: Record<string, number>;
+}
+
+const KINDS = Object.keys(COUNT_FIELDS) as CountKind[];
+const inc = <K extends string>(o: Partial<Record<K, number>>, k: K, x: number): void => {
+  o[k] = (o[k] ?? 0) + x;
+};
+const order = <T>(m: Map<string, T>): T[] => [...m.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, x]) => x);
+const shared = (): SharedEndCounts => ({ total: 0, undecided: 0, undecidedFiltered: 0 });
+
+function emptyGroup(caseName: string, fn: string, predicate: Group["predicate"], source: Group["source"], sharedEnd: boolean): Group {
+  return {
+    case: caseName,
+    fn,
+    predicate,
+    source,
+    sharedEnd,
+    total: 0,
+    decided: 0,
+    undecided: 0,
+    undecidedFiltered: 0,
+    unseen: 0,
+    floatWrong: 0,
+    floatWrongNearCollinear: 0,
+    floatUncompared: 0,
+    boundWrong: 0,
+    boundViolations: 0,
+    maxWidth: 0,
+    maxScale: 0,
+  };
+}
+
+const groupKey = (g: Pick<Group, "case" | "fn" | "predicate" | "source" | "sharedEnd">): string =>
+  JSON.stringify([g.case, g.fn, g.predicate, g.source, g.sharedEnd]);
+
 /** A census that adds one line at a time. */
 export class Tally {
   readonly #groups = new Map<string, Group>();
-  readonly #cases = new Map<string, CaseSummary>();
+  readonly #counts = new Map<string, Counts>();
+  readonly #seen = new Map<string, Seen>();
   readonly #records: InputRecord[] = [];
   readonly #unknown: UnknownRecord[] = [];
 
-  #group(caseName: string, fn: string, predicate: Group["predicate"], source: Group["source"]): Group {
-    const key = JSON.stringify([caseName, fn, predicate, source]);
+  #group(caseName: string, fn: string, predicate: Group["predicate"], source: Group["source"], sharedEnd: boolean): Group {
+    const key = groupKey({ case: caseName, fn, predicate, source, sharedEnd });
     let g = this.#groups.get(key);
     if (g === undefined) {
-      g = { case: caseName, fn, predicate, source, total: 0, decided: 0, undecided: 0, unseen: 0, floatWrong: 0, boundWrong: 0, boundViolations: 0, maxWidth: 0, maxScale: 0 };
+      g = emptyGroup(caseName, fn, predicate, source, sharedEnd);
       this.#groups.set(key, g);
     }
     return g;
   }
 
-  #case(caseName: string): CaseSummary {
-    let c = this.#cases.get(caseName);
-    if (c === undefined) {
-      c = { case: caseName, total: 0, decided: 0, undecided: 0, unseen: 0, floatWrong: 0, unknown: 0, truncated: false, unseenNear: {} };
-      this.#cases.set(caseName, c);
+  #seenOf(caseName: string): Seen {
+    let s = this.#seen.get(caseName);
+    if (s === undefined) {
+      s = { byKind: {}, sharedEnd: 0, byFn: {} };
+      this.#seen.set(caseName, s);
     }
-    return c;
+    return s;
   }
 
   /**
@@ -228,71 +411,261 @@ export class Tally {
     const line = parseLine(raw);
     if (line.form === "unknown") return this.#addUnknown(file, lineNo, raw, line.error);
     if (line.form === "count") return this.#addCount(line.line);
-    const p = point(line) as Point;
+    const { predicate, point: p } = point(line) as { predicate: Predicate; point: Point };
     const { n, floatAnswer, fn } = line.line;
-    const result = classify(line.form, p, floatAnswer);
-    const g = this.#group(line.line.case, fn, line.form, "lines");
-    const c = this.#case(line.line.case);
+    const isShared = line.form === "segmentPair" && line.line.sharedEnd === true;
+    const result = classify(predicate, p, floatAnswer);
+    const g = this.#group(line.line.case, fn, predicate.name, "lines", isShared);
+    const seen = this.#seenOf(line.line.case);
+    inc(seen.byKind, predicate.name, n);
+    inc(seen.byFn, fn, n);
+    if (isShared) seen.sharedEnd += n;
     g.total += n;
-    c.total += n;
-    if (result.undecided) {
-      g.undecided += n;
-      c.undecided += n;
-    } else {
+    if (result.undecided) g.undecided += n;
+    else {
       g.decided += n;
-      c.decided += n;
       if (result.boundAnswer !== result.exactAnswer) g.boundWrong += n;
     }
-    if (result.floatWrong) {
-      g.floatWrong += n;
-      c.floatWrong += n;
-    }
+    if (result.undecidedFiltered) g.undecidedFiltered += n;
+    if (!result.floatCompared) g.floatUncompared += n;
     const violated = result.signs.some((s) => !s.contained);
     if (violated) g.boundViolations += n;
     g.maxWidth = Math.max(g.maxWidth, result.maxWidth);
     g.maxScale = Math.max(g.maxScale, result.scale);
-    if (result.undecided || result.floatWrong || violated || (!result.undecided && result.boundAnswer !== result.exactAnswer)) {
-      this.#records.push({ file, line: lineNo, case: line.line.case, fn, n, input: raw, ...result });
+    const boundWrong = !result.undecided && result.boundAnswer !== result.exactAnswer;
+    let extra: Pick<InputRecord, "nearCollinear" | "sharedVertex"> = {};
+    if (line.form === "segmentPair" && (result.undecided || result.floatWrong)) {
+      const { a, b, c, d } = line.line;
+      extra = {
+        nearCollinear: result.exactAnswer === true && nearLine(a, b, c, d, NEAR_COLLINEAR * result.scale),
+        sharedVertex: sharedVertex(a, b, c, d),
+      };
+    }
+    if (result.floatWrong) {
+      g.floatWrong += n;
+      if (extra.nearCollinear === true) g.floatWrongNearCollinear += n;
+    }
+    if (result.undecided || result.floatWrong || violated || boundWrong) {
+      this.#records.push({ file, line: lineNo, case: line.line.case, fn, n, sharedEnd: isShared, ...extra, input: raw, ...result });
     }
   }
 
   #addCount(line: CountLine): void {
-    const c = this.#case(line.case);
-    for (const [k, predicate] of Object.entries(FAR_FIELDS)) {
-      const x = (line as Record<string, unknown>)[k];
-      if (typeof x !== "number") continue;
-      const g = this.#group(line.case, "far", predicate, "far");
-      g.total += x;
-      g.decided += x;
-      c.total += x;
-      c.decided += x;
+    let c = this.#counts.get(line.case);
+    if (c === undefined) {
+      c = { total: {}, near: {}, sharedEndNear: undefined, tests: {}, nearByFn: {}, truncated: false };
+      this.#counts.set(line.case, c);
     }
+    const o = line as Record<string, unknown>;
+    for (const kind of KINDS) {
+      const t = o[COUNT_FIELDS[kind].total];
+      const x = o[COUNT_FIELDS[kind].near];
+      if (typeof t === "number") inc(c.total, kind, t);
+      if (typeof x === "number") inc(c.near, kind, x);
+    }
+    const se = o[SHARED_END_FIELD];
+    if (typeof se === "number") c.sharedEndNear = (c.sharedEndNear ?? 0) + se;
+    for (const [fn, x] of Object.entries(line.tests ?? {})) inc(c.tests, fn, x);
+    for (const [fn, x] of Object.entries(line.near ?? {})) inc(c.nearByFn, fn, x);
     if (line.truncated === true) c.truncated = true;
-    for (const [k, x] of Object.entries(unseenNear(line))) {
-      const g = this.#group(line.case, k, NEAR_PREDICATE[k] ?? "unknown", "unseen");
-      g.total += x;
-      g.unseen += x;
-      c.total += x;
-      c.unseen += x;
-      c.unseenNear[k] = (c.unseenNear[k] ?? 0) + x;
-    }
   }
 
   #addUnknown(file: string, lineNo: number, raw: unknown, error: string): void {
     const caseName = field(raw, "case");
-    const g = this.#group(caseName, field(raw, "fn"), "unknown", "lines");
+    const g = this.#group(caseName, field(raw, "fn"), "unknown", "lines", false);
     const n = raw !== null && typeof raw === "object" ? (raw as Record<string, unknown>)["n"] : undefined;
     const weight = typeof n === "number" && Number.isInteger(n) && n > 0 ? n : 1;
-    const c = this.#case(caseName);
     g.total += weight;
-    c.total += weight;
-    c.unknown += weight;
     this.#unknown.push({ file, line: lineNo, error, input: raw });
   }
 
-  /** This method gives the census so far, with the groups and the cases in a fixed order. */
+  /**
+   * This method gives the census so far, with the groups and the cases in a fixed order. The far tests of a kind are
+   * `total - near`. Without a near field, `near` is the weight of the lines. A truncated case has `near - seen` unseen
+   * tests.
+   */
   result(): Census {
-    const byKey = <T>(m: Map<string, T>): T[] => [...m.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, x]) => x);
-    return { groups: byKey(this.#groups), cases: byKey(this.#cases), records: [...this.#records], unknown: [...this.#unknown] };
+    const groups = new Map<string, Group>();
+    for (const [k, g] of this.#groups) groups.set(k, { ...g });
+    const add = (g: Group): void => {
+      const k = groupKey(g);
+      const old = groups.get(k);
+      if (old === undefined) groups.set(k, g);
+      else {
+        old.total += g.total;
+        old.decided += g.decided;
+        old.unseen += g.unseen;
+      }
+    };
+    const checks: NearCheck[] = [];
+    const check = (caseName: string, f: string, total: number | null, near: number, seen: number, truncated: boolean): number => {
+      const unseen = truncated ? Math.max(0, near - seen) : 0;
+      const holds = (truncated ? seen <= near : seen === near) && (total === null || near <= total);
+      checks.push({ case: caseName, field: f, total, near, seen, unseen, holds });
+      return unseen;
+    };
+    const unseenNear = new Map<string, Record<string, number>>();
+    const fnFar = new Map<string, Rollup>();
+    for (const [caseName, c] of this.#counts) {
+      const seen = this.#seen.get(caseName) ?? { byKind: {}, sharedEnd: 0, byFn: {} };
+      const own: Record<string, number> = {};
+      unseenNear.set(caseName, own);
+      for (const kind of KINDS) {
+        const fields = COUNT_FIELDS[kind];
+        const total = c.total[kind];
+        const sawn = seen.byKind[kind] ?? 0;
+        const near = c.near[kind] ?? sawn;
+        const predicate: Group["predicate"] = kind;
+        if (c.near[kind] !== undefined || total !== undefined) {
+          const unseen = check(caseName, fields.near, total ?? null, near, sawn, c.truncated);
+          if (unseen > 0) {
+            own[fields.near] = unseen;
+            let sharedUnseen = 0;
+            if (kind === "segmentPair" && c.sharedEndNear !== undefined) sharedUnseen = Math.min(unseen, Math.max(0, c.sharedEndNear - seen.sharedEnd));
+            for (const [isShared, x] of [
+              [false, unseen - sharedUnseen],
+              [true, sharedUnseen],
+            ] as const) {
+              if (x === 0) continue;
+              const g = emptyGroup(caseName, fields.near, predicate, "unseen", isShared);
+              g.total = x;
+              g.unseen = x;
+              add(g);
+            }
+          }
+        }
+        if (total !== undefined) {
+          const far = Math.max(0, total - near);
+          const g = emptyGroup(caseName, "far", predicate, "far", false);
+          g.total = far;
+          g.decided = far;
+          add(g);
+        }
+      }
+      if (c.sharedEndNear !== undefined) check(caseName, SHARED_END_FIELD, c.near.segmentPair ?? null, c.sharedEndNear, seen.sharedEnd, c.truncated);
+      for (const fn of new Set([...Object.keys(c.tests), ...Object.keys(c.nearByFn)])) {
+        const total = c.tests[fn];
+        const sawn = seen.byFn[fn] ?? 0;
+        const near = c.nearByFn[fn] ?? sawn;
+        const unseen = check(caseName, `near.${fn}`, total ?? null, near, sawn, c.truncated);
+        const r = fnFar.get(fn) ?? rollup(fn);
+        r.far += Math.max(0, (total ?? near) - near);
+        r.unseen += unseen;
+        fnFar.set(fn, r);
+      }
+    }
+    const all = order(groups);
+    const cases = new Map<string, CaseSummary>();
+    for (const g of all) {
+      let c = cases.get(g.case);
+      if (c === undefined) {
+        const counts = this.#counts.get(g.case);
+        c = {
+          case: g.case,
+          total: 0,
+          decided: 0,
+          undecided: 0,
+          undecidedFiltered: 0,
+          unseen: 0,
+          floatWrong: 0,
+          floatWrongNearCollinear: 0,
+          unknown: 0,
+          truncated: counts?.truncated ?? false,
+          unseenNear: unseenNear.get(g.case) ?? {},
+          sharedEnd: shared(),
+        };
+        cases.set(g.case, c);
+      }
+      c.total += g.total;
+      c.decided += g.decided;
+      c.undecided += g.undecided;
+      c.undecidedFiltered += g.undecidedFiltered;
+      c.unseen += g.unseen;
+      c.floatWrong += g.floatWrong;
+      c.floatWrongNearCollinear += g.floatWrongNearCollinear;
+      if (g.predicate === "unknown") c.unknown += g.total;
+      if (g.sharedEnd) addShared(c.sharedEnd, g);
+    }
+    for (const [caseName, c] of this.#counts) {
+      if (!cases.has(caseName)) {
+        cases.set(caseName, {
+          case: caseName,
+          total: 0,
+          decided: 0,
+          undecided: 0,
+          undecidedFiltered: 0,
+          unseen: 0,
+          floatWrong: 0,
+          floatWrongNearCollinear: 0,
+          unknown: 0,
+          truncated: c.truncated,
+          unseenNear: unseenNear.get(caseName) ?? {},
+          sharedEnd: shared(),
+        });
+      }
+    }
+    const byPredicate = new Map<string, Rollup>();
+    const byFn = new Map<string, Rollup>(fnFar);
+    for (const g of all) {
+      const p = byPredicate.get(g.predicate) ?? rollup(g.predicate);
+      addRollup(p, g);
+      byPredicate.set(g.predicate, p);
+      const mapped = this.#counts.get(g.case);
+      const hasMaps = mapped !== undefined && (Object.keys(mapped.tests).length > 0 || Object.keys(mapped.nearByFn).length > 0);
+      // A case with the maps `tests` and `near` gives the far and unseen tests of each function in `fnFar`.
+      if (g.source !== "lines" && hasMaps) continue;
+      const f = byFn.get(g.fn) ?? rollup(g.fn);
+      addRollup(f, g);
+      byFn.set(g.fn, f);
+    }
+    for (const r of byFn.values()) r.total = r.lines + r.far + r.unseen;
+    return {
+      groups: all,
+      cases: order(cases),
+      nearCheck: checks.sort((a, b) => (a.case === b.case ? (a.field < b.field ? -1 : 1) : a.case < b.case ? -1 : 1)),
+      byPredicate: order(byPredicate),
+      byFn: order(byFn),
+      records: [...this.#records],
+      unknown: [...this.#unknown],
+    };
   }
+}
+
+function rollup(key: string): Rollup {
+  return {
+    key,
+    predicates: [],
+    total: 0,
+    lines: 0,
+    far: 0,
+    unseen: 0,
+    undecided: 0,
+    undecidedFiltered: 0,
+    floatWrong: 0,
+    floatWrongNearCollinear: 0,
+    floatUncompared: 0,
+    unknown: 0,
+    sharedEnd: shared(),
+  };
+}
+
+function addShared(s: SharedEndCounts, g: Group): void {
+  s.total += g.total;
+  s.undecided += g.undecided;
+  s.undecidedFiltered += g.undecidedFiltered;
+}
+
+function addRollup(r: Rollup, g: Group): void {
+  if (!r.predicates.includes(g.predicate)) r.predicates.push(g.predicate);
+  r.total += g.total;
+  if (g.source === "lines") r.lines += g.total;
+  if (g.source === "far") r.far += g.total;
+  r.unseen += g.unseen;
+  r.undecided += g.undecided;
+  r.undecidedFiltered += g.undecidedFiltered;
+  r.floatWrong += g.floatWrong;
+  r.floatWrongNearCollinear += g.floatWrongNearCollinear;
+  r.floatUncompared += g.floatUncompared;
+  if (g.predicate === "unknown") r.unknown += g.total;
+  if (g.sharedEnd) addShared(r.sharedEnd, g);
 }

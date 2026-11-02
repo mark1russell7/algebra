@@ -1,5 +1,5 @@
 {"case":"synthetic-highways","totalSegmentPairs":1000,"totalBoxTests":500}
 {"case":"synthetic-packing","totalPairs":2000}
 {"id":"tr-near-line","case":"synthetic-truncated","fn":"segmentsCross","a":[0,0],"b":[4,0],"c":[2,-1],"d":[2,3],"floatAnswer":true,"expect":{"undecided":false,"exact":true,"floatWrong":false}}
-{"case":"synthetic-truncated","totalSegmentPairs":10,"truncated":true,"nearSegmentPairs":250000,"nearBoxTests":40}
+{"case":"synthetic-truncated","totalSegmentPairs":250010,"truncated":true,"nearSegmentPairs":250000,"nearSharedEnd":100,"nearBoxTests":40}
 {"id":"unknown-shape","case":"synthetic-highways","fn":"segmentsTouch","p":[0,0]}

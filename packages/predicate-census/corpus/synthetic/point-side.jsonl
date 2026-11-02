@@ -1,0 +1,5 @@
+{"id":"ps-left","case":"synthetic-side","fn":"highways.side","p":[0,1],"a":[0,0],"b":[1,0],"floatAnswer":1,"expect":{"undecided":false,"exact":1,"floatWrong":false}}
+{"id":"ps-on-line","case":"synthetic-side","fn":"highways.side","n":3,"p":[0.5,0],"a":[0,0],"b":[1,0],"floatAnswer":0,"expect":{"undecided":false,"exact":0,"floatWrong":false}}
+{"id":"ps-near-line-float-wrong","case":"synthetic-side","fn":"highways.side","p":[0.3502,0.35019999999999996],"a":[0.1,0.1],"b":[0.9,0.9],"floatAnswer":0,"expect":{"undecided":true,"exact":-1,"floatWrong":true}}
+{"id":"ps-boolean-answer","case":"synthetic-side","fn":"highways.side","n":2,"p":[0.3502,0.35019999999999996],"a":[0.1,0.1],"b":[0.9,0.9],"floatAnswer":true,"expect":{"undecided":true,"exact":-1,"floatWrong":false,"floatCompared":false}}
+{"id":"ps-shared-point","case":"synthetic-side","fn":"highways.side","p":[0.9,0.9],"a":[0.1,0.7],"b":[0.9,0.9],"floatAnswer":0,"expect":{"undecided":true,"undecidedFiltered":false,"exact":0,"floatWrong":false}}

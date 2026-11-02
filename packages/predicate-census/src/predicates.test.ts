@@ -1,7 +1,8 @@
 import { random, summarize } from "@mark1russell7/expression";
 import { describe, expect, it } from "vitest";
-import { boundSign, classify, dyadic as D, PREDICATES } from "./index.ts";
-import { boxPairPoint, segmentBoxPoint, segmentPairPoint } from "./predicates.ts";
+import { boundSign, classify, dyadic as D, PREDICATES, structuralZero } from "./index.ts";
+import type { SignForm } from "./index.ts";
+import { boxPairPoint, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import * as O from "./oracle.test-helper.ts";
 
 const RUNS = Number(process.env["PROPERTY_RUNS"] ?? 1000);
@@ -41,6 +42,25 @@ describe("the dyadic numbers", () => {
   });
 });
 
+describe("the structural filter", () => {
+  it("gives the sign 0 to an orientation with two equal points, and to no other sign", () => {
+    const [abc, , , cdb] = PREDICATES.segmentPair.signs as [SignForm, SignForm, SignForm, SignForm];
+    const shared = segmentPairPoint([0.1, 0.7], [0.37, 0.91], [0.37, 0.91], [0.2, 0.3]);
+    expect(structuralZero(abc, shared)).toBe(true);
+    expect(structuralZero(cdb, shared)).toBe(true);
+    expect(abc.bounds(shared)).not.toEqual([0, 0]);
+    expect(structuralZero(abc, segmentPairPoint([0.1, 0.7], [0.37, 0.91], [0.37, 0.9100000000000001], [0.2, 0.3]))).toBe(false);
+    for (const form of PREDICATES.segmentBox.signs) expect(structuralZero(form, segmentBoxPoint([0, 0], [0, 0], { x: 0, y: 0, w: 0, h: 0 }))).toBe(false);
+  });
+
+  it("decides a shared end that the bound does not decide", () => {
+    const r = classify("segmentPair", segmentPairPoint([0.1, 0.2], [0.7, 0.3], [0.7, 0.3], [0.2, 0.9]));
+    expect(r.undecided).toBe(true);
+    expect(r.undecidedFiltered).toBe(false);
+    expect(r.exactAnswer).toBe(false);
+  });
+});
+
 describe("the compiled signs", () => {
   it("give the same bound as summarize of A1", () => {
     const rnd = random(11);
@@ -66,19 +86,58 @@ describe("the exact answers agree with the rational oracle", () => {
     }
   });
 
-  it("for a segment and a box: the sign rule gives the answer of the Liang-Barsky clip", () => {
+  it("for a segment and a box: the sign rule gives the answer of the highways clip with eps", () => {
     const rnd = random(29);
+    let hits = 0;
+    let decided = 0;
+    const epsOf = (): number => [0, 1e-6, 0.05, 0.5][Math.floor(rnd() * 4)] as number;
+    for (let i = 0; i < RUNS; i++) {
+      const v = (): [number, number] => [coordinate(rnd), coordinate(rnd)];
+      const a = v();
+      const b = rnd() < 0.05 ? a : v();
+      const eps = epsOf();
+      const box = { x: coordinate(rnd), y: coordinate(rnd), w: coordinate(rnd), h: coordinate(rnd) };
+      const want = O.hitsBox(a, b, box, eps);
+      if (want) hits++;
+      const r = classify("segmentBox", segmentBoxPoint(a, b, box, eps));
+      expect([a, b, box, eps, r.exactAnswer]).toEqual([a, b, box, eps, want]);
+      if (!r.undecided) {
+        decided++;
+        expect(r.boundAnswer).toBe(want);
+      }
+      expect(r.signs.every((s) => s.contained)).toBe(true);
+    }
+    expect(hits).toBeGreaterThan(RUNS / 10);
+    expect(decided).toBeGreaterThan(RUNS / 2);
+  });
+
+  it("for a segment and a rectangle, a reversed rectangle too", () => {
+    const rnd = random(37);
     let hits = 0;
     for (let i = 0; i < RUNS; i++) {
       const v = (): [number, number] => [coordinate(rnd), coordinate(rnd)];
       const a = v();
       const b = rnd() < 0.05 ? a : v();
-      const box = { x: coordinate(rnd), y: coordinate(rnd), w: coordinate(rnd), h: coordinate(rnd) };
-      const want = O.hitsOpenBox(a, b, box);
+      const rect = [coordinate(rnd), coordinate(rnd), coordinate(rnd), coordinate(rnd)] as const;
+      const eps = rnd() < 0.5 ? 0 : 1e-6;
+      const want = O.hitsRect(a, b, rect, eps);
       if (want) hits++;
-      expect([a, b, box, classify("segmentBox", segmentBoxPoint(a, b, box)).exactAnswer]).toEqual([a, b, box, want]);
+      const r = classify(segmentRect, segmentRectPoint(a, b, rect, eps));
+      expect([a, b, rect, r.exactAnswer]).toEqual([a, b, rect, want]);
+      if (!r.undecided) expect(r.boundAnswer).toBe(want);
     }
-    expect(hits).toBeGreaterThan(RUNS / 10);
+    expect(hits).toBeGreaterThan(RUNS / 20);
+  });
+
+  it("for a point and a line: the exact sign", () => {
+    const rnd = random(41);
+    for (let i = 0; i < RUNS; i++) {
+      const v = (): [number, number] => [coordinate(rnd), coordinate(rnd)];
+      const [p, a, b] = [v(), v(), v()];
+      const r = classify("pointSide", pointSidePoint(p, a, b));
+      expect(r.exactAnswer).toBe(O.orient(a, b, p));
+      if (!r.undecided) expect(r.boundAnswer).toBe(r.exactAnswer);
+    }
   });
 
   it("for box pairs", () => {
