@@ -36,4 +36,4 @@ const result = summarize(doc, { bounds: { x: [0, 1] } });
 
 ## The generator
 
-`randomExpression(random(seed))` makes a random expression for a property test. The same seed gives the same expression. About a quarter of the literals are near-degenerate constants, for example `Number.MIN_VALUE` or `0.1`.
+`randomExpression(random(seed))` makes a random expression for a property test. The same seed gives the same expression. Approximately a quarter of the literals are near-degenerate constants, for example `Number.MIN_VALUE` or `0.1`.
