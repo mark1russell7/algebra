@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>algebra: one expression, many evaluators</title>
+    <meta name="description" content="One expression document and many evaluators: float with an error bound, exact rational and interval. Each evaluator states its error." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23202a44'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='18' font-style='italic' text-anchor='middle' fill='%23fcfcfb'%3Ex%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <header class="top">
+      <div class="wrap">
+        <div class="brand">
+          <h1 class="wordmark">algebra</h1>
+          <nav class="links" aria-label="Links">
+            <a href="#what">What it is</a>
+            <a href="#packages">Packages</a>
+            <a href="#roadmap">Roadmap</a>
+            <a href="#census">First result</a>
+            <a href="releases/">Releases</a>
+            <a href="status/">Status</a>
+            <a href="https://github.com/mark1russell7/algebra">GitHub</a>
+          </nav>
+        </div>
+        <p class="lead">One expression, many evaluators: exact, fast and with a known error.</p>
+      </div>
+    </header>
+
+    <main id="main" class="wrap">
+      <section id="what" aria-labelledby="what-title">
+        <h2 id="what-title">What algebra is</h2>
+        <p>
+          An expression is one document, for example <code>{ "type": "add", "value": [x, y] }</code>. Many evaluators read the
+          same document. A new evaluator is a new answer to the same question. No document changes.
+        </p>
+        <ul class="evaluators">
+          <li>
+            <strong>Float</strong>
+            <span>A fast value, and a bound of its rounding error.</span>
+          </li>
+          <li>
+            <strong>Exact rational</strong>
+            <span>A value over <code>bigint</code>, always in lowest terms. Its error is 0.</span>
+          </li>
+          <li>
+            <strong>Interval</strong>
+            <span>An interval that contains the true value.</span>
+          </li>
+        </ul>
+        <p class="rule">Each evaluator states its error. A result without an error bound is not a result.</p>
+      </section>
+
+      <section id="packages" aria-labelledby="packages-title">
+        <h2 id="packages-title">Packages</h2>
+        <ul class="packages" id="package-list"></ul>
+      </section>
+
+      <section id="roadmap" aria-labelledby="roadmap-title">
+        <h2 id="roadmap-title">Roadmap</h2>
+        <p>
+          The build reads these items from
+          <a href="https://github.com/mark1russell7/algebra/blob/main/docs/ROADMAP.md"><code>docs/ROADMAP.md</code></a>.
+          Select an item to see its summary.
+        </p>
+        <div class="filters" role="group" aria-label="Show the items with this status" id="filters"></div>
+        <ol class="items" id="items"></ol>
+      </section>
+
+      <section id="census" aria-labelledby="census-title">
+        <h2 id="census-title">First result: the census of A13</h2>
+        <p>
+          The census sends the real inputs of the geometric predicates of
+          <a href="https://github.com/mark1russell7/highways">highways</a> through the float signs and the exact signs. The input
+          is the <code>exact-v1</code> dump of highways.
+        </p>
+        <div class="totals">
+          <div><span class="num">194 549 364</span><span class="cap">predicate tests</span></div>
+          <div><span class="num">40</span><span class="cap">boards</span></div>
+          <div><span class="num">0</span><span class="cap">errors that exact signs fix</span></div>
+        </div>
+        <p>Each case where the float answer is not the exact answer has a class. Select a class to see what it means.</p>
+        <div class="classes" id="classes" role="group" aria-label="The classes of the cases"></div>
+        <div class="class-detail" id="class-detail" aria-live="polite"></div>
+        <p class="result">
+          Exact signs fix no error that a user sees on these inputs. A count of 0 ranks item A5, the exact predicates, lower.
+          The census is in
+          <a href="https://github.com/mark1russell7/algebra/tree/main/packages/predicate-census"><code>packages/predicate-census</code></a>.
+        </p>
+      </section>
+    </main>
+
+    <footer class="wrap foot" id="foot"></footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

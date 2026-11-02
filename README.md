@@ -21,7 +21,7 @@ An expression is a [coeval](https://github.com/mark1russell7/coeval) document: `
 
 ## Status
 
-Not started. Refer to [docs/ROADMAP.md](docs/ROADMAP.md).
+Refer to [docs/ROADMAP.md](docs/ROADMAP.md). The [site](https://mark1russell7.github.io/algebra/) shows the packages, the items of the roadmap and the first result.
 
 ## Writing style
 

@@ -1,0 +1,69 @@
+# Builds packages/site and publishes it to GitHub Pages at https://mark1russell7.github.io/algebra/, with
+# the shared Pages workflow of mark1russell7 (reusable-pages.yml of mark1russell7/template, its CI.md).
+# The Pages source of the repository is "GitHub Actions" (Settings > Pages).
+# The site reads the items of docs/ROADMAP.md and the package.json of each package at build time.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# One deployment at a time. A newer push cancels a deployment that waits.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  pages:
+    uses: mark1russell7/template/.github/workflows/reusable-pages.yml@3377b376fb6e39e4d65f130a98e74125d592f1f3 # main
+    # The build job of the shared workflow gets only the read permissions. Only its deploy job,
+    # which runs no code of the repository, writes to Pages.
+    permissions:
+      contents: read
+      actions: read
+      issues: read
+      pull-requests: read
+      checks: read
+      statuses: read
+      pages: write
+      id-token: write
+    with:
+      # The Vite config reads docs/ROADMAP.md. A bad table stops the build, and the old site stays.
+      build: pnpm --filter @algebra/site run build
+      out: packages/site/dist
+      env: '{"SITE_BASE": "/${{ github.event.repository.name }}"}'
+      # The site-pages action adds releases/, status/, data/releases.json and data/status.json to the built site.
+      roadmap: docs/ROADMAP.md
+      packages: "@mark1russell7/rational"
+      site-name: algebra
+
+  # This job examines the deployed site: the home page, the Releases page, the Status page and their data files.
+  # It starts no code of the repository and reads only the public site.
+  served:
+    needs: pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: The pages of the site are on the site
+        shell: bash
+        env:
+          SITE: ${{ needs.pages.outputs.page-url }}
+        run: |
+          set -euo pipefail
+          for f in "" data/releases.json data/status.json releases/ status/; do
+            # A new deployment can take some seconds to be served, so each file gets 5 tries.
+            ok=0
+            for i in 1 2 3 4 5; do
+              if curl -fsS -o /dev/null "${SITE%/}/$f"; then ok=1; break; fi
+              sleep 10
+            done
+            if [ "$ok" != 1 ]; then echo "::error::The site has no /$f."; exit 1; fi
+            echo "The site has /$f."
+          done
+          curl -fsS "${SITE%/}/" | grep -q "One expression, many evaluators" || { echo "::error::The home page has not the text of the site."; exit 1; }
+          curl -fsS "${SITE%/}/data/status.json" | node -e 'JSON.parse(require("node:fs").readFileSync(0, "utf8")); console.log("data/status.json is JSON.")'
+          curl -fsS "${SITE%/}/data/releases.json" | node -e 'JSON.parse(require("node:fs").readFileSync(0, "utf8")); console.log("data/releases.json is JSON.")'
