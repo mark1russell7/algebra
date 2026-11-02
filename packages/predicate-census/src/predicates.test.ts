@@ -1,6 +1,6 @@
 import { random, summarize } from "@mark1russell7/expression";
 import { describe, expect, it } from "vitest";
-import { boundSign, CALL_SITE_RULES, classify, dyadic as D, pointSideTieLow, PREDICATES, segmentPairClosed, structuralZero } from "./index.ts";
+import { boundSign, CALL_SITE_RULES, checkRuleSources, classify, dyadic as D, pointSideTieLow, PREDICATES, segmentPairClosed, structuralZero } from "./index.ts";
 import type { SignForm } from "./index.ts";
 import { boxPairPoint, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import * as O from "./oracle.test-helper.ts";
@@ -157,7 +157,7 @@ describe("the rules of the call sites", () => {
     // The input of screen-v1/hub-chain/s0: p is the exact midpoint of the chord a b.
     const point = pointSidePoint(v(2984, 102), v(2000, 182.71875), v(3968, 21.28125));
     expect(classify(PREDICATES.pointSide, point).exactAnswer).toBe(0);
-    const r = classify(CALL_SITE_RULES["physics.outOf"]!, point, -1);
+    const r = classify(CALL_SITE_RULES["physics.outOf"]!.predicate, point, -1);
     expect(r.exactAnswer).toBe(-1);
     expect(r.floatWrong).toBe(false);
   });
@@ -166,7 +166,7 @@ describe("the rules of the call sites", () => {
     // The input of screen-v1/tiny-uniform/s0: the end d of c d is on the segment a b.
     const point = segmentPairPoint(v(10, 42), v(10, 237), v(90, 169.842811927414), v(10, 132.157188072586));
     expect(classify(PREDICATES.segmentPair, point).exactAnswer).toBe(false);
-    const r = classify(CALL_SITE_RULES["mesh.crossing"]!, point, true);
+    const r = classify(CALL_SITE_RULES["mesh.crossing"]!.predicate, point, true);
     expect(r.exactAnswer).toBe(true);
     expect(r.floatWrong).toBe(false);
   });
@@ -184,5 +184,32 @@ describe("the rules of the call sites", () => {
     for (const p of pairs) expect(classify(segmentPairClosed, p).exactAnswer).toBe(classify(PREDICATES.segmentPair, p).exactAnswer);
     expect(classify(pointSideTieLow, pointSidePoint(v(0, 1), v(0, 0), v(1, 0))).exactAnswer).toBe(1);
     expect(classify(pointSideTieLow, pointSidePoint(v(0, -1), v(0, 0), v(1, 0))).exactAnswer).toBe(-1);
+  });
+});
+
+describe("the check of the rule sources", () => {
+  const sources = Object.values(CALL_SITE_RULES).flatMap((r) => r.sources);
+  const tree = (shift: number, drop?: string) => (file: string) => {
+    const mine = sources.filter((s) => s.file === file && s.text !== drop);
+    if (mine.length === 0 && !sources.some((s) => s.file === file)) return null;
+    const lines: string[] = Array.from({ length: 200 }, () => "");
+    for (const s of mine) lines[s.line - 1 + shift] = `    ${s.text}`;
+    return lines.join("\n");
+  };
+
+  it("holds for each line at its place", () => {
+    const checks = checkRuleSources(tree(0));
+    expect(checks).toHaveLength(sources.length);
+    expect(checks.every((c) => c.holds && c.foundAt === c.line)).toBe(true);
+  });
+
+  it("holds, with the new line, for a line that moved", () => {
+    expect(checkRuleSources(tree(3)).every((c) => c.holds && c.foundAt === c.line + 3)).toBe(true);
+  });
+
+  it("fails for a line that highways no longer has", () => {
+    const checks = checkRuleSources(tree(0, "const k = cross > 0 ? 1 : -1;"));
+    expect(checks.filter((c) => !c.holds).map((c) => c.fn)).toEqual(["physics.outOf"]);
+    expect(checkRuleSources(() => null).some((c) => c.holds)).toBe(false);
   });
 });

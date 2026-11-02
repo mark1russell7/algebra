@@ -286,13 +286,13 @@ export interface Census {
 function point(line: Line): { predicate: Predicate; point: Point } | undefined {
   switch (line.form) {
     case "segmentPair":
-      return { predicate: CALL_SITE_RULES[line.line.fn] ?? PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
+      return { predicate: CALL_SITE_RULES[line.line.fn]?.predicate ?? PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
     case "segmentBox":
       return { predicate: PREDICATES.segmentBox, point: segmentBoxPoint(line.line.a, line.line.b, line.line.box, line.line.eps) };
     case "segmentRect":
       return { predicate: segmentRect, point: segmentRectPoint(line.line.a, line.line.b, line.line.rect, line.line.eps) };
     case "pointSide":
-      return { predicate: CALL_SITE_RULES[line.line.fn] ?? PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
+      return { predicate: CALL_SITE_RULES[line.line.fn]?.predicate ?? PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
     case "boxPair":
       return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
     default:

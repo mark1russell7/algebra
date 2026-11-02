@@ -38,6 +38,7 @@ export {
   boxPair,
   boxPairPoint,
   CALL_SITE_RULES,
+  checkRuleSources,
   pointSide,
   pointSidePoint,
   pointSideTieLow,
@@ -50,7 +51,7 @@ export {
   segmentRect,
   segmentRectPoint,
 } from "./predicates.ts";
-export type { Answer, Predicate, PredicateName } from "./predicates.ts";
+export type { Answer, CallSiteRule, Predicate, PredicateName, RuleSource, RuleSourceCheck } from "./predicates.ts";
 export { classify, NEAR_COLLINEAR, nearLine, sharedVertex, Tally } from "./census.ts";
 export type {
   CaseSummary,
