@@ -294,3 +294,35 @@ describe("the tally", () => {
     ]);
   });
 });
+
+describe("the census of a large dump", () => {
+  it("gives each record to the sink and keeps none in memory", () => {
+    const inMemory = censusOfFiles([synthetic], here);
+    const sunk: unknown[] = [];
+    const unknown: unknown[] = [];
+    const streamed = censusOfFiles([synthetic], here, { onRecord: (r) => sunk.push(r), onUnknown: (r) => unknown.push(r) });
+    expect(streamed.records).toEqual([]);
+    expect(streamed.unknown).toEqual([]);
+    expect(sunk).toEqual(inMemory.records);
+    expect(unknown).toEqual(inMemory.unknown);
+    expect(streamed.totals).toEqual(inMemory.totals);
+    expect(streamed.files).toEqual(inMemory.files);
+  });
+
+  it("reads CRLF lines and a last line with no end, as one string per line", () => {
+    const dir = fs.mkdtempSync(path.join(here, "../.tmp-census-"));
+    try {
+      const source = fs.readFileSync(path.join(synthetic, fs.readdirSync(synthetic).filter((f) => f.endsWith(".jsonl"))[0] as string), "utf8");
+      const lines = source.split(/\r?\n/).filter((l) => l.trim() !== "");
+      fs.writeFileSync(path.join(dir, "a.jsonl"), lines.join("\r\n"));
+      fs.writeFileSync(path.join(dir, "b.jsonl"), lines.join("\n") + "\n");
+      const crlf = censusOfFiles([path.join(dir, "a.jsonl")], here);
+      const lf = censusOfFiles([path.join(dir, "b.jsonl")], here);
+      expect(crlf.totals).toEqual(lf.totals);
+      expect(crlf.files[0]?.lines).toBe(lines.length);
+      expect(crlf.records.map((r) => r.line)).toEqual(lf.records.map((r) => r.line));
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

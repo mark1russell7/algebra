@@ -69,6 +69,8 @@ pnpm --filter @mark1russell7/predicate-census census corpus/highways --out repor
 
 The command reads each `.jsonl` file of the given files and folders. It writes the report as JSON to the standard output, or to the file of `--out`. The report has the commit of algebra and the `sha256` hash of each input file. `byPredicate` and `byFn` give the counts over all cases.
 
+With `--out report.json`, the command writes each record as one line of `report.records.jsonl` and each unknown line to `report.unknown.jsonl`. Then `report.json` has only the counts. The command reads each input file in chunks, so a dump of several GB is not a problem.
+
 ## The corpus
 
 - `corpus/synthetic`: near-degenerate inputs with known answers. Each line has an `id` and its expected result in `expect`. The tests examine the census on these lines.

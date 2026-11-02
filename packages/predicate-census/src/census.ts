@@ -354,6 +354,17 @@ function emptyGroup(caseName: string, fn: string, predicate: Group["predicate"],
 const groupKey = (g: Pick<Group, "case" | "fn" | "predicate" | "source" | "sharedEnd">): string =>
   JSON.stringify([g.case, g.fn, g.predicate, g.source, g.sharedEnd]);
 
+/** The options of a tally. */
+export interface TallyOptions {
+  /**
+   * This function gets each record. With a sink, the tally keeps no record in memory, so the result has no records.
+   * A sink lets a census of a large dump write its records to a file one at a time.
+   */
+  readonly onRecord?: (record: InputRecord) => void;
+  /** This function gets each unknown line. With it, the tally keeps no unknown line in memory. */
+  readonly onUnknown?: (record: UnknownRecord) => void;
+}
+
 /** A census that adds one line at a time. */
 export class Tally {
   readonly #groups = new Map<string, Group>();
@@ -361,6 +372,18 @@ export class Tally {
   readonly #seen = new Map<string, Seen>();
   readonly #records: InputRecord[] = [];
   readonly #unknown: UnknownRecord[] = [];
+  readonly #onRecord: ((record: InputRecord) => void) | undefined;
+  readonly #onUnknown: ((record: UnknownRecord) => void) | undefined;
+
+  /**
+   * This constructor makes an empty tally.
+   *
+   * @param options - The sinks of the records and of the unknown lines.
+   */
+  constructor(options: TallyOptions = {}) {
+    this.#onRecord = options.onRecord;
+    this.#onUnknown = options.onUnknown;
+  }
 
   #group(caseName: string, fn: string, predicate: Group["predicate"], source: Group["source"], sharedEnd: boolean): Group {
     const key = groupKey({ case: caseName, fn, predicate, source, sharedEnd });
@@ -446,7 +469,9 @@ export class Tally {
       if (extra.nearCollinear === true) g.floatWrongNearCollinear += n;
     }
     if (result.undecided || result.floatWrong || violated || boundWrong) {
-      this.#records.push({ file, line: lineNo, case: line.line.case, fn, n, sharedEnd: isShared, ...extra, input: raw, ...result });
+      const record: InputRecord = { file, line: lineNo, case: line.line.case, fn, n, sharedEnd: isShared, ...extra, input: raw, ...result };
+      if (this.#onRecord === undefined) this.#records.push(record);
+      else this.#onRecord(record);
     }
   }
 
@@ -476,7 +501,9 @@ export class Tally {
     const n = raw !== null && typeof raw === "object" ? (raw as Record<string, unknown>)["n"] : undefined;
     const weight = typeof n === "number" && Number.isInteger(n) && n > 0 ? n : 1;
     g.total += weight;
-    this.#unknown.push({ file, line: lineNo, error, input: raw });
+    const record: UnknownRecord = { file, line: lineNo, error, input: raw };
+    if (this.#onUnknown === undefined) this.#unknown.push(record);
+    else this.#onUnknown(record);
   }
 
   /**

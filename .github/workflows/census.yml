@@ -66,6 +66,13 @@ jobs:
         run: |
           /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
           tail -n 25 "$RUNNER_TEMP/out/time-$SET.txt"
+      # The raw records: the records of the census and the input dump, kept 90 days (highways keeps its own 30 days).
+      - name: Keep the raw records
+        if: always()
+        run: |
+          gzip -f "$RUNNER_TEMP"/out/*.jsonl || true
+          cp "$RUNNER_TEMP"/dump/*.jsonl.gz "$RUNNER_TEMP/out/" || true
+          ls -la "$RUNNER_TEMP/out"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
