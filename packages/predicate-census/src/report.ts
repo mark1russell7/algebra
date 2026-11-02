@@ -42,6 +42,8 @@ export interface Totals {
   /** The undecided inputs with the structural filter. */
   undecidedFiltered: number;
   unseen: number;
+  /** The touch inputs of packing. They are in `decided`. */
+  touch: number;
   unknown: number;
   floatWrong: number;
   /** The float-wrong segment pairs with an end point near the line of the other segment. */
@@ -93,6 +95,17 @@ export const ASSUMPTIONS: readonly string[] = [
   "A line without floatAnswer gets the float answer of the census: the same sign rule with plain float values.",
   "A point-side test with a truth value as its float answer is not compared with the exact sign.",
   "CALL_SITE_RULES gives the rule of a call site with its own rule: mesh.crossing counts a touch, and physics.outOf gives -1 for a zero sign.",
+  "A packing line has the weight times. A packing case line gives far = total - near - touch for each function.",
+  "A packing touch input has only values of exactly 0 near. It has no line. The census counts it as decided and not float-wrong.",
+  "The census counts the far inputs of packing as decided and not float-wrong. The near rule of packing is 1e-9 times the scale of the inputs.",
+  "A packing box pair follows overlap of packing: the float margin min(right) - max(left) of each axis must be larger than tolerance.",
+  "The exact answer of a packing box pair compares the exact margin with the float tolerance. The float answer is the answer of packing.",
+  "The box a of a packing pair with gap already has the gap on each side. The census reads the boxes as packing gives them.",
+  "A packing container test follows checkHard: only a fixed side counts, against x + inset - tolerance or x + w - inset + tolerance.",
+  "The exact answer of a container test compares the edge with the exact side. The census float answer has the float sums of packing.",
+  "A fixed side of the container with an infinite size gives an unknown line, because JSON gives that size as null.",
+  "A packing strip test is the test of edgeRange that the segment has a part in the open strip. The census does not examine the range of xAt.",
+  "The packing functions xAt and samePlacements have no exact rule. Their near lines are unknown, with the reason of PACKING_UNMODELED.",
 ];
 
 /**
@@ -185,6 +198,7 @@ export function censusOfFiles(paths: readonly string[], repo: string, options: T
     undecided: 0,
     undecidedFiltered: 0,
     unseen: 0,
+    touch: 0,
     unknown: 0,
     floatWrong: 0,
     floatWrongNearCollinear: 0,
@@ -196,6 +210,7 @@ export function censusOfFiles(paths: readonly string[], repo: string, options: T
     totals.undecided += c.undecided;
     totals.undecidedFiltered += c.undecidedFiltered;
     totals.unseen += c.unseen;
+    totals.touch += c.touch;
     totals.unknown += c.unknown;
     totals.floatWrong += c.floatWrong;
     totals.floatWrongNearCollinear += c.floatWrongNearCollinear;

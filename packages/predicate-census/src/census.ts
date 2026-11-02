@@ -8,8 +8,23 @@ import type { Dyadic } from "./dyadic.ts";
 import { boundSign, exactValue, floatValue, structuralZero } from "./expressions.ts";
 import type { Point, Sign, SignForm } from "./expressions.ts";
 import { COUNT_FIELDS, parseLine, SHARED_END_FIELD } from "./input.ts";
-import type { CountKind, CountLine, FloatAnswer, Line, Vec } from "./input.ts";
-import { boxPairPoint, CALL_SITE_RULES, pointSidePoint, PREDICATES, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
+import type { CountKind, CountLine, FloatAnswer, Line, PackingCountLine, Vec } from "./input.ts";
+import {
+  boxPairPoint,
+  CALL_SITE_RULES,
+  containerPoint,
+  containerPredicate,
+  edgePair,
+  edgePairPoint,
+  pointSidePoint,
+  PREDICATES,
+  segmentBoxPoint,
+  segmentPairPoint,
+  segmentRect,
+  segmentRectPoint,
+  strip,
+  stripPoint,
+} from "./predicates.ts";
 import type { Answer, Predicate, PredicateName } from "./predicates.ts";
 
 /** The A1 bound, the bound sign, the exact sign and the float sign of one sign expression of an input. */
@@ -162,13 +177,26 @@ export function nearLine(a: Vec, b: Vec, c: Vec, d: Vec, tol: number): boolean {
   return near(c, d, a) || near(c, d, b) || near(a, b, c) || near(a, b, d);
 }
 
+/** The predicate of each function of packing. The functions `xAt` and `samePlacements` have no rule of the census. */
+export const PACKING_PREDICATES: Readonly<Record<string, Group["predicate"]>> = {
+  overlap: "boxPair",
+  container: "container",
+  edgeRange: "strip",
+  xAt: "xAt",
+  samePlacements: "samePlacements",
+};
+
 /** The counts of one case and function. */
 export interface Group {
   readonly case: string;
   readonly fn: string;
-  readonly predicate: PredicateName | "nearest" | "unknown";
-  /** The value is `lines` for input lines, `far` for the far tests of a count line, and `unseen` for near tests without a line. */
-  readonly source: "lines" | "far" | "unseen";
+  /** The predicate. The names `nearest`, `xAt` and `samePlacements` are tests without a rule of the census. */
+  readonly predicate: PredicateName | "nearest" | "xAt" | "samePlacements" | "unknown";
+  /**
+   * The value is `lines` for input lines, `far` for the far tests of a count line, and `unseen` for near tests without
+   * a line. The value `touch` is for the touch inputs of a packing case line: inputs with only values of exactly 0 near.
+   */
+  readonly source: "lines" | "far" | "unseen" | "touch";
   /** The value is `true` for the segment pairs with an end point that is equal in both segments. */
   readonly sharedEnd: boolean;
   total: number;
@@ -178,6 +206,8 @@ export interface Group {
   undecidedFiltered: number;
   /** The inputs that the census did not see. They are not decided and not undecided. */
   unseen: number;
+  /** The touch inputs of packing. They are decided and not float-wrong. */
+  touch: number;
   floatWrong: number;
   /** The float-wrong segment pairs with an end point near the line of the other segment. */
   floatWrongNearCollinear: number;
@@ -206,6 +236,8 @@ export interface CaseSummary {
   undecided: number;
   undecidedFiltered: number;
   unseen: number;
+  /** The touch inputs of packing. They are in `decided`. */
+  touch: number;
   floatWrong: number;
   floatWrongNearCollinear: number;
   /** The lines with no known form. They are not decided and not undecided. */
@@ -246,6 +278,8 @@ export interface NearCheck {
   readonly field: string;
   readonly total: number | null;
   readonly near: number;
+  /** The touch inputs of a packing function. The check needs `near + touch` not larger than `total`. */
+  readonly touch?: number | undefined;
   /** The weight of the lines of the field. */
   readonly seen: number;
   /** The near tests without a line. Only a truncated case has them. */
@@ -262,6 +296,8 @@ export interface Rollup {
   total: number;
   lines: number;
   far: number;
+  /** The touch inputs of packing. */
+  touch: number;
   unseen: number;
   undecided: number;
   undecidedFiltered: number;
@@ -279,6 +315,8 @@ export interface Census {
   readonly nearCheck: readonly NearCheck[];
   readonly byPredicate: readonly Rollup[];
   readonly byFn: readonly Rollup[];
+  /** The weight of the packing lines of each function and each near reason, for example `overlap` and `x:zero`. */
+  readonly nearReasons: Readonly<Record<string, Readonly<Record<string, number>>>>;
   readonly records: readonly InputRecord[];
   readonly unknown: readonly UnknownRecord[];
 }
@@ -295,6 +333,12 @@ function point(line: Line): { predicate: Predicate; point: Point } | undefined {
       return { predicate: CALL_SITE_RULES[line.line.fn]?.predicate ?? PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
     case "boxPair":
       return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
+    case "edgePair":
+      return { predicate: edgePair, point: edgePairPoint(line.line.a, line.line.b, line.line.tolerance) };
+    case "container":
+      return { predicate: containerPredicate(line.line.fixedW, line.line.fixedH), point: containerPoint(line.line) };
+    case "strip":
+      return { predicate: strip, point: stripPoint(line.line) };
     default:
       return undefined;
   }
@@ -317,10 +361,22 @@ interface Counts {
 
 /** The weight of the lines of one case. */
 interface Seen {
-  readonly byKind: Partial<Record<CountKind, number>>;
+  readonly byKind: Partial<Record<CountKind | PredicateName, number>>;
   sharedEnd: number;
   readonly byFn: Record<string, number>;
+  /** The count of the near lines of packing, without their weight. */
+  packingLines: number;
 }
+
+/** The counts of the case lines of packing for one case. */
+interface PackingCounts {
+  readonly totals: Record<string, number>;
+  readonly near: Record<string, number>;
+  readonly touch: Record<string, number>;
+  lines: number;
+}
+
+const newSeen = (): Seen => ({ byKind: {}, sharedEnd: 0, byFn: {}, packingLines: 0 });
 
 const KINDS = Object.keys(COUNT_FIELDS) as CountKind[];
 const inc = <K extends string>(o: Partial<Record<K, number>>, k: K, x: number): void => {
@@ -341,6 +397,7 @@ function emptyGroup(caseName: string, fn: string, predicate: Group["predicate"],
     undecided: 0,
     undecidedFiltered: 0,
     unseen: 0,
+    touch: 0,
     floatWrong: 0,
     floatWrongNearCollinear: 0,
     floatUncompared: 0,
@@ -369,7 +426,9 @@ export interface TallyOptions {
 export class Tally {
   readonly #groups = new Map<string, Group>();
   readonly #counts = new Map<string, Counts>();
+  readonly #packing = new Map<string, PackingCounts>();
   readonly #seen = new Map<string, Seen>();
+  readonly #reasons = new Map<string, Record<string, number>>();
   readonly #records: InputRecord[] = [];
   readonly #unknown: UnknownRecord[] = [];
   readonly #onRecord: ((record: InputRecord) => void) | undefined;
@@ -398,10 +457,21 @@ export class Tally {
   #seenOf(caseName: string): Seen {
     let s = this.#seen.get(caseName);
     if (s === undefined) {
-      s = { byKind: {}, sharedEnd: 0, byFn: {} };
+      s = newSeen();
       this.#seen.set(caseName, s);
     }
     return s;
+  }
+
+  /** This method adds the weight of a near line of packing to its case and to its near reasons. */
+  #addPackingLine(caseName: string, fn: string, near: readonly unknown[], n: number): void {
+    this.#seenOf(caseName).packingLines += 1;
+    let r = this.#reasons.get(fn);
+    if (r === undefined) {
+      r = {};
+      this.#reasons.set(fn, r);
+    }
+    for (const reason of near) inc(r, String(reason), n);
   }
 
   /**
@@ -432,13 +502,15 @@ export class Tally {
    */
   add(file: string, lineNo: number, raw: unknown): void {
     const line = parseLine(raw);
-    if (line.form === "unknown") return this.#addUnknown(file, lineNo, raw, line.error);
+    if (line.form === "unknown") return this.#addUnknown(file, lineNo, raw, line.error, line.sender);
     if (line.form === "count") return this.#addCount(line.line);
+    if (line.form === "packingCount") return this.#addPackingCount(line.line);
     const { predicate, point: p } = point(line) as { predicate: Predicate; point: Point };
     const { n, floatAnswer, fn } = line.line;
     const isShared = line.form === "segmentPair" && line.line.sharedEnd === true;
     const result = classify(predicate, p, floatAnswer);
     const g = this.#group(line.line.case, fn, predicate.name, "lines", isShared);
+    if (line.form === "edgePair" || line.form === "container" || line.form === "strip") this.#addPackingLine(line.line.case, fn, line.line.near, n);
     const seen = this.#seenOf(line.line.case);
     inc(seen.byKind, predicate.name, n);
     inc(seen.byFn, fn, n);
@@ -495,12 +567,31 @@ export class Tally {
     if (line.truncated === true) c.truncated = true;
   }
 
-  #addUnknown(file: string, lineNo: number, raw: unknown, error: string): void {
+  #addPackingCount(line: PackingCountLine): void {
+    let c = this.#packing.get(line.case);
+    if (c === undefined) {
+      c = { totals: {}, near: {}, touch: {}, lines: 0 };
+      this.#packing.set(line.case, c);
+    }
+    for (const [fn, x] of Object.entries(line.totals)) inc(c.totals, fn, x);
+    for (const [fn, x] of Object.entries(line.near)) inc(c.near, fn, x);
+    for (const [fn, x] of Object.entries(line.touch)) inc(c.touch, fn, x);
+    c.lines += line.lines;
+  }
+
+  #addUnknown(file: string, lineNo: number, raw: unknown, error: string, sender?: "packing"): void {
     const caseName = field(raw, "case");
-    const g = this.#group(caseName, field(raw, "fn"), "unknown", "lines", false);
-    const n = raw !== null && typeof raw === "object" ? (raw as Record<string, unknown>)["n"] : undefined;
+    const fn = field(raw, "fn");
+    const g = this.#group(caseName, fn, "unknown", "lines", false);
+    const o = raw !== null && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+    const n = sender === "packing" ? o["times"] : o["n"];
     const weight = typeof n === "number" && Number.isInteger(n) && n > 0 ? n : 1;
     g.total += weight;
+    if (sender === "packing") {
+      // A near line of packing without a rule still counts in the near check of its function.
+      inc(this.#seenOf(caseName).byFn, fn, weight);
+      this.#addPackingLine(caseName, fn, Array.isArray(o["near"]) ? o["near"] : [], weight);
+    }
     const record: UnknownRecord = { file, line: lineNo, error, input: raw };
     if (this.#onUnknown === undefined) this.#unknown.push(record);
     else this.#onUnknown(record);
@@ -522,19 +613,45 @@ export class Tally {
         old.total += g.total;
         old.decided += g.decided;
         old.unseen += g.unseen;
+        old.touch += g.touch;
       }
     };
     const checks: NearCheck[] = [];
-    const check = (caseName: string, f: string, total: number | null, near: number, seen: number, truncated: boolean): number => {
+    const check = (caseName: string, f: string, total: number | null, near: number, seen: number, truncated: boolean, touch?: number): number => {
       const unseen = truncated ? Math.max(0, near - seen) : 0;
-      const holds = (truncated ? seen <= near : seen === near) && (total === null || near <= total);
-      checks.push({ case: caseName, field: f, total, near, seen, unseen, holds });
+      const holds = (truncated ? seen <= near : seen === near) && (total === null || near + (touch ?? 0) <= total);
+      checks.push({ case: caseName, field: f, total, near, ...(touch === undefined ? {} : { touch }), seen, unseen, holds });
       return unseen;
     };
+    // A packing case line gives far = total - near - touch for each function. The touch and the far inputs are decided.
+    for (const [caseName, c] of this.#packing) {
+      const seen = this.#seen.get(caseName) ?? newSeen();
+      for (const fn of new Set([...Object.keys(c.totals), ...Object.keys(c.near), ...Object.keys(c.touch)])) {
+        const total = c.totals[fn] ?? 0;
+        const near = c.near[fn] ?? 0;
+        const touch = c.touch[fn] ?? 0;
+        check(caseName, `near.${fn}`, total, near, seen.byFn[fn] ?? 0, false, touch);
+        const predicate = PACKING_PREDICATES[fn] ?? "unknown";
+        const far = Math.max(0, total - near - touch);
+        for (const [source, x] of [
+          ["far", far],
+          ["touch", touch],
+        ] as const) {
+          if (x === 0) continue;
+          const g = emptyGroup(caseName, fn, predicate, source, false);
+          g.total = x;
+          // A function that the census does not know is unknown, not decided.
+          g.decided = predicate === "unknown" ? 0 : x;
+          if (source === "touch") g.touch = x;
+          add(g);
+        }
+      }
+      check(caseName, "lines", null, c.lines, seen.packingLines, false);
+    }
     const unseenNear = new Map<string, Record<string, number>>();
     const fnFar = new Map<string, Rollup>();
     for (const [caseName, c] of this.#counts) {
-      const seen = this.#seen.get(caseName) ?? { byKind: {}, sharedEnd: 0, byFn: {} };
+      const seen = this.#seen.get(caseName) ?? newSeen();
       const own: Record<string, number> = {};
       unseenNear.set(caseName, own);
       for (const kind of KINDS) {
@@ -583,24 +700,25 @@ export class Tally {
     }
     const all = order(groups);
     const cases = new Map<string, CaseSummary>();
+    const summary = (caseName: string): CaseSummary => ({
+      case: caseName,
+      total: 0,
+      decided: 0,
+      undecided: 0,
+      undecidedFiltered: 0,
+      unseen: 0,
+      touch: 0,
+      floatWrong: 0,
+      floatWrongNearCollinear: 0,
+      unknown: 0,
+      truncated: this.#counts.get(caseName)?.truncated ?? false,
+      unseenNear: unseenNear.get(caseName) ?? {},
+      sharedEnd: shared(),
+    });
     for (const g of all) {
       let c = cases.get(g.case);
       if (c === undefined) {
-        const counts = this.#counts.get(g.case);
-        c = {
-          case: g.case,
-          total: 0,
-          decided: 0,
-          undecided: 0,
-          undecidedFiltered: 0,
-          unseen: 0,
-          floatWrong: 0,
-          floatWrongNearCollinear: 0,
-          unknown: 0,
-          truncated: counts?.truncated ?? false,
-          unseenNear: unseenNear.get(g.case) ?? {},
-          sharedEnd: shared(),
-        };
+        c = summary(g.case);
         cases.set(g.case, c);
       }
       c.total += g.total;
@@ -608,29 +726,13 @@ export class Tally {
       c.undecided += g.undecided;
       c.undecidedFiltered += g.undecidedFiltered;
       c.unseen += g.unseen;
+      c.touch += g.touch;
       c.floatWrong += g.floatWrong;
       c.floatWrongNearCollinear += g.floatWrongNearCollinear;
       if (g.predicate === "unknown") c.unknown += g.total;
       if (g.sharedEnd) addShared(c.sharedEnd, g);
     }
-    for (const [caseName, c] of this.#counts) {
-      if (!cases.has(caseName)) {
-        cases.set(caseName, {
-          case: caseName,
-          total: 0,
-          decided: 0,
-          undecided: 0,
-          undecidedFiltered: 0,
-          unseen: 0,
-          floatWrong: 0,
-          floatWrongNearCollinear: 0,
-          unknown: 0,
-          truncated: c.truncated,
-          unseenNear: unseenNear.get(caseName) ?? {},
-          sharedEnd: shared(),
-        });
-      }
-    }
+    for (const caseName of [...this.#counts.keys(), ...this.#packing.keys()]) if (!cases.has(caseName)) cases.set(caseName, summary(caseName));
     const byPredicate = new Map<string, Rollup>();
     const byFn = new Map<string, Rollup>(fnFar);
     for (const g of all) {
@@ -645,17 +747,22 @@ export class Tally {
       addRollup(f, g);
       byFn.set(g.fn, f);
     }
-    for (const r of byFn.values()) r.total = r.lines + r.far + r.unseen;
+    for (const r of byFn.values()) r.total = r.lines + r.far + r.touch + r.unseen;
     return {
       groups: all,
       cases: order(cases),
       nearCheck: checks.sort((a, b) => (a.case === b.case ? (a.field < b.field ? -1 : 1) : a.case < b.case ? -1 : 1)),
       byPredicate: order(byPredicate),
       byFn: order(byFn),
+      nearReasons: sortKeys(Object.fromEntries([...this.#reasons].map(([fn, r]) => [fn, sortKeys(r)]))),
       records: [...this.#records],
       unknown: [...this.#unknown],
     };
   }
+}
+
+function sortKeys<T>(r: Record<string, T>): Record<string, T> {
+  return Object.fromEntries(Object.entries(r).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 }
 
 function rollup(key: string): Rollup {
@@ -665,6 +772,7 @@ function rollup(key: string): Rollup {
     total: 0,
     lines: 0,
     far: 0,
+    touch: 0,
     unseen: 0,
     undecided: 0,
     undecidedFiltered: 0,
@@ -687,6 +795,7 @@ function addRollup(r: Rollup, g: Group): void {
   r.total += g.total;
   if (g.source === "lines") r.lines += g.total;
   if (g.source === "far") r.far += g.total;
+  if (g.source === "touch") r.touch += g.total;
   r.unseen += g.unseen;
   r.undecided += g.undecided;
   r.undecidedFiltered += g.undecidedFiltered;

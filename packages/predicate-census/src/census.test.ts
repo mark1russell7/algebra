@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { censusOfFiles, classify, parseLine, Tally } from "./index.ts";
+import { censusOfFiles, classify, containerPoint, containerPredicate, edgePair, edgePairPoint, PACKING_UNMODELED, parseLine, Tally } from "./index.ts";
 import type { Census, Group, Predicate } from "./index.ts";
 import { boxPairPoint, PREDICATES, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import type { Point } from "./expressions.ts";
@@ -324,5 +324,121 @@ describe("the census of a large dump", () => {
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("the census of the packing form", () => {
+  const sample = path.join(here, "../corpus/packing/smoke-v1-sample.jsonl");
+  const report = censusOfFiles([sample], here);
+  const nearLines = fs
+    .readFileSync(sample, "utf8")
+    .split(/\r?\n/)
+    .filter((t) => t.trim() !== "")
+    .map((t) => JSON.parse(t) as Record<string, unknown>)
+    .filter((o) => "times" in o);
+  const byFn = (key: string) => report.byFn.find((r) => r.key === key);
+
+  it("gives far = total - near - touch, and counts the touch and the far inputs as decided", () => {
+    // Five cases of the smoke-v1 dump of packing at d718b54: 49229 inputs, 2837 touch inputs and 7 near inputs.
+    expect(report.totals).toMatchObject({ total: 49229, decided: 49229, touch: 2837, undecided: 0, floatWrong: 0, unseen: 0, unknown: 0 });
+    expect([byFn("overlap")?.lines, byFn("overlap")?.touch, byFn("overlap")?.far]).toEqual([5, 2621, 45080]);
+    expect([byFn("container")?.lines, byFn("container")?.touch, byFn("container")?.far]).toEqual([2, 216, 1298]);
+    expect([byFn("samePlacements")?.far, byFn("samePlacements")?.predicates]).toEqual([7, ["samePlacements"]]);
+    expect(report.byPredicate.map((r) => r.key)).toEqual(["boxPair", "container", "samePlacements"]);
+  });
+
+  it("agrees with the near counts and the line counts of each case line", () => {
+    expect(report.nearCheck.length).toBeGreaterThan(0);
+    expect(report.nearCheck.filter((c) => !c.holds)).toEqual([]);
+    const relax = report.nearCheck.filter((c) => c.case.startsWith("relax-rows/"));
+    expect(relax.find((c) => c.field === "near.container")).toMatchObject({ total: 30, near: 2, touch: 22, seen: 2 });
+    expect(relax.find((c) => c.field === "lines")).toMatchObject({ near: 1, seen: 1 });
+  });
+
+  it("counts the weight of each near reason of packing", () => {
+    expect(report.nearReasons).toEqual({ container: { "bottom:zero": 2, "left:zero:touch": 2 }, overlap: { "x:zero": 1, "y:tolerance": 4 } });
+  });
+
+  it("gives the exact answer of the oracle to each near line, and the census float rule gives the answer of packing", () => {
+    expect(nearLines).toHaveLength(6);
+    for (const o of nearLines) {
+      const line = parseLine(o);
+      if (line.form === "edgePair") {
+        const r = classify(edgePair, edgePairPoint(line.line.a, line.line.b, line.line.tolerance));
+        expect([r.exactAnswer, r.floatAnswer, r.undecided]).toEqual([O.edgesOverlap(line.line.a, line.line.b, line.line.tolerance), o["floatAnswer"], false]);
+      } else if (line.form === "container") {
+        const r = classify(containerPredicate(line.line.fixedW, line.line.fixedH), containerPoint(line.line));
+        const { w, h } = line.line;
+        expect([r.exactAnswer, r.floatAnswer, r.undecided]).toEqual([O.outOfContainer({ ...line.line, w: w ?? 0, h: h ?? 0 }), o["floatAnswer"], false]);
+      } else {
+        throw new Error("The sample line has the form " + line.form + ".");
+      }
+    }
+  });
+
+  it("keeps a margin near the tolerance: the rule asks y only when x overlaps, and the exact y margin is below the tolerance", () => {
+    const o = nearLines.find((x) => (x["near"] as string[]).includes("y:tolerance")) as Record<string, unknown>;
+    const [a, b] = [o["a"] as O.Edges, o["b"] as O.Edges];
+    // The boxes of this real line are apart on x, so the rule of packing does not ask the margin of y.
+    expect(classify(edgePair, edgePairPoint(a, b, 0.001)).signs.map((s) => [s.name, s.exactSign])).toEqual([["marginX - tolerance", -1]]);
+    // With an overlap on x, the y margin 627.827 - 627.826 is exact in floats and below the tolerance 0.001.
+    const r = classify(edgePair, edgePairPoint({ ...a, l: 0, r: 1 }, { ...b, l: 0, r: 1 }, 0.001));
+    expect(r.signs.map((s) => [s.name, s.exactSign, s.floatSign])).toEqual([
+      ["marginX - tolerance", 1, 1],
+      ["marginY - tolerance", -1, -1],
+    ]);
+    expect([r.exactAnswer, r.undecided]).toEqual([false, false]);
+  });
+
+  it("finds a float-wrong box pair: the float margin rounds down to the tolerance", () => {
+    // The exact margin is 1 + 2^-60, larger than the tolerance 1. The float margin is 1, so packing says false.
+    const t = new Tally();
+    const a = { l: -(2 ** -60), t: 0, r: 5, b: 5 };
+    const b = { l: -1, t: 0, r: 1, b: 5 };
+    t.add("f", 1, { case: "c", fn: "overlap", a, b, tolerance: 1, near: ["x:tolerance"], floatAnswer: false, times: 3 });
+    t.add("f", 2, { case: "c", totalPairs: 10, totals: { overlap: 10 }, near: { overlap: 3 }, touch: { overlap: 2 }, lines: 1 });
+    const r = t.result();
+    expect(r.records).toHaveLength(1);
+    expect(r.records[0]).toMatchObject({ exactAnswer: true, floatAnswer: false, floatWrong: true, undecided: true, n: 3 });
+    expect(r.cases[0]).toMatchObject({ total: 10, decided: 7, touch: 2, undecided: 3, floatWrong: 3 });
+    expect(classify(edgePair, edgePairPoint(a, b, 1)).floatAnswer).toBe(false);
+  });
+
+  it("reads a strip line, and a range or null as its float answer", () => {
+    const line = { case: "c", fn: "edgeRange", ax: 0, ay: 0, bx: 1, by: 1, y0: 1, y1: 2, near: ["low:touch", "flat"], times: 1 };
+    expect(parseLine({ ...line, floatAnswer: null })).toMatchObject({ form: "strip", line: { floatAnswer: false, n: 1 } });
+    expect(parseLine({ ...line, floatAnswer: [0, 1] })).toMatchObject({ form: "strip", line: { floatAnswer: true } });
+    const t = new Tally();
+    t.add("f", 1, { ...line, floatAnswer: null });
+    expect(t.result().groups.map((g) => [g.predicate, g.total, g.floatWrong])).toEqual([["strip", 1, 0]]);
+  });
+
+  it("keeps xAt, samePlacements and an infinite fixed side as unknown, with the reason, in the near check", () => {
+    const t = new Tally();
+    t.add("f", 1, { case: "c", fn: "xAt", ax: 0, ay: 0, bx: 1, by: 1, y: 1e-12, near: ["end"], floatAnswer: 1e-12, times: 2 });
+    t.add("f", 2, { case: "c", fn: "samePlacements", a: { id: "a", x: 0, y: 0 }, b: { id: "a", x: 1e-12, y: 0 }, near: ["placement"], floatAnswer: false, times: 1 });
+    const box = { box: { l: 0, t: 0, r: 1, b: 1 }, x: 0, y: 0, w: 1, h: null, inset: 0, tolerance: 0.001, fixedW: true };
+    t.add("f", 3, { case: "c", fn: "container", ...box, fixedH: true, near: ["left:zero"], floatAnswer: false, times: 1 });
+    t.add("f", 4, { case: "c", totals: { xAt: 5, samePlacements: 1, container: 1 }, near: { xAt: 2, samePlacements: 1, container: 1 }, touch: {}, lines: 3 });
+    const r = t.result();
+    expect(r.unknown.map((u) => u.error)).toEqual([
+      PACKING_UNMODELED["xAt"],
+      PACKING_UNMODELED["samePlacements"],
+      "A fixed side of the container has an infinite size.",
+    ]);
+    expect(r.nearCheck.every((c) => c.holds)).toBe(true);
+    expect(r.cases[0]).toMatchObject({ total: 7, unknown: 4, decided: 3 });
+    expect(parseLine({ case: "c", fn: "container", ...box, fixedH: false, near: ["left:zero"], floatAnswer: false, times: 1 }).form).toBe("container");
+  });
+
+  it("fails the near check when the weight of the lines is not the near count, or near + touch is larger than total", () => {
+    const t = new Tally();
+    t.add("f", 1, { case: "c", fn: "overlap", a: { l: 0, t: 0, r: 1, b: 1 }, b: { l: 1, t: 0, r: 2, b: 1 }, tolerance: 0.001, near: ["x:zero"], floatAnswer: false, times: 1 });
+    t.add("f", 2, { case: "c", totals: { overlap: 3, container: 1 }, near: { overlap: 2, container: 0 }, touch: { overlap: 0, container: 2 }, lines: 1 });
+    expect(t.result().nearCheck.filter((c) => !c.holds).map((c) => c.field)).toEqual(["near.container", "near.overlap"]);
+  });
+
+  it("reads a highways count line with totalPairs as a count line, not as a packing case line", () => {
+    expect(parseLine({ case: "c", totalPairs: 4, nearPairs: 1 }).form).toBe("count");
   });
 });

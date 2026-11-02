@@ -57,6 +57,27 @@ The far tests are `total - near`. Without a near field, `near` is the weight of 
 
 A truncated case has a count line with `"truncated": true`. Its unseen tests are `near - seen`, where `seen` is the weight of the lines. The report puts these tests in `unseen`, not in `decided`. `nearCheck` compares each near field with the weight of the lines. In a case that is not truncated, the two values must be equal.
 
+## The packing form
+
+The command `predicates` of packing writes this form. The section "A predicate dump" of `docs/BENCH.md` of packing tells it. A near line of packing has the fields `times` and `near`. The census reads `times` as the weight `n`.
+
+| `fn` | Inputs | Predicate |
+| --- | --- | --- |
+| `overlap` | `a`, `b` as `{l, t, r, b}`, `tolerance`, and an optional `gap` | `boxPair`: the margin `min(r) - max(l)` of each axis must be larger than `tolerance`. |
+| `container` | `box` as `{l, t, r, b}`, `x`, `y`, `w`, `h`, `inset`, `tolerance`, `fixedW`, `fixedH` | `container`: the box goes out of a fixed side by more than `tolerance`. |
+| `edgeRange` | `ax`, `ay`, `bx`, `by`, `y0`, `y1` | `strip`: the segment has a part in the open strip from `y0` to `y1`. |
+| `xAt`, `samePlacements` | | No rule. These lines are `unknown`, with the reason of `PACKING_UNMODELED`. |
+
+The census reads each box as packing gives it, because a width `r - l` is a rounded value. The box `a` of a pair with `gap` already has the gap on each side.
+
+Packing computes the margin as a float difference, and then compares it with `tolerance`. The sign of a float difference is exact. Thus the float sign of `fl(margin) - tolerance` is the answer of packing. The exact answer compares the exact margin with the float `tolerance`. The container test is the same: the float sign of `edge - side` has the float sums of the side, in the order of packing.
+
+The rule of `overlap` asks the margin of `y` only when the margin of `x` is larger than `tolerance`, as the `&&` of packing does. The container test asks only the fixed sides. A fixed side with the size `null` is an infinite size, so that line is `unknown`.
+
+After the near lines of a case, one case line gives `totals`, `near`, `touch` and `lines` for each function. A touch input has only values of exactly 0 near. Its float sign is exact, so it has no line. For each function, the far inputs are `total - near - touch`. The census counts the touch inputs and the far inputs as decided and not float-wrong. The report gives the touch inputs in `touch`.
+
+`nearCheck` compares `near` of each function with the weight of its lines, and `lines` with the count of the lines. `nearReasons` gives the weight of the lines of each function and each near reason, for example `x:zero` or `y:tolerance`.
+
 ## The far assumption
 
 The census counts the far tests as decided. It does not see them. The report examines this assumption in `farCheck`. A case passes when the largest bound width of its seen inputs is less than `1e-9`, the filter of the senders.
@@ -75,6 +96,7 @@ With `--out report.json`, the command writes each record as one line of `report.
 
 - `corpus/synthetic`: near-degenerate inputs with known answers. Each line has an `id` and its expected result in `expect`. The tests examine the census on these lines.
 - `corpus/highways` and `corpus/packing`: the real inputs. The sessions of highways and packing send them.
+- `corpus/packing/smoke-v1-sample.jsonl`: five complete cases of the smoke-v1 dump of packing at the commit `d718b54`. The tests examine the counts and the exact answers of these lines.
 
 ## The tests
 

@@ -34,6 +34,7 @@
     "npm",
     "OIDC",
     "SemVer",
-    "Mark"
+    "Mark",
+    "packing"
   ]
 }

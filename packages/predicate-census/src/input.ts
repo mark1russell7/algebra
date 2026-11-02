@@ -158,6 +158,127 @@ export const countLine: z.ZodType<CountLine> = z
     "A count line needs a total or the field truncated.",
   );
 
+/** A box of packing: its left, top, right and bottom edges, as the predicate of packing reads them. */
+export interface EdgeBox {
+  readonly l: number;
+  readonly t: number;
+  readonly r: number;
+  readonly b: number;
+}
+/** The fields of each near line of packing. The census reads the weight `times` of packing as `n`. */
+export interface PackingLineBase extends LineBase {
+  /** The near reasons of packing, for example `x:zero` or `y:tolerance`. */
+  readonly near: readonly string[];
+}
+/** A box pair line of packing: the function `overlap` of `checkHard`. */
+export interface EdgePairLine extends PackingLineBase {
+  readonly a: EdgeBox;
+  readonly b: EdgeBox;
+  readonly tolerance: number;
+  /** The gap of a pair of `pairGaps`. The box `a` of the line already has this gap on each side. */
+  readonly gap?: number | undefined;
+}
+/** A container line of packing: the container test of `checkHard` for one box. */
+export interface ContainerLine extends PackingLineBase {
+  readonly box: EdgeBox;
+  readonly x: number;
+  readonly y: number;
+  /** The width, or `null` for an infinite width. Only a fixed side needs a finite size. */
+  readonly w: number | null;
+  /** The height, or `null` for an infinite height. */
+  readonly h: number | null;
+  readonly inset: number;
+  readonly tolerance: number;
+  readonly fixedW: boolean;
+  readonly fixedH: boolean;
+}
+/** A strip line of packing: `edgeRange` of the segment from `(ax, ay)` to `(bx, by)` and the open strip from `y0` to `y1`. */
+export interface StripLine extends PackingLineBase {
+  readonly ax: number;
+  readonly ay: number;
+  readonly bx: number;
+  readonly by: number;
+  readonly y0: number;
+  readonly y1: number;
+}
+/** The case line of packing. It comes after the near lines of its case. */
+export interface PackingCountLine {
+  readonly case: string;
+  readonly totalPairs?: number | undefined;
+  /** The count of all inputs of each function, the near inputs and the touch inputs too. */
+  readonly totals: Readonly<Record<string, number>>;
+  /** The count of the near inputs of each function. The weight of the near lines of a function is this count. */
+  readonly near: Readonly<Record<string, number>>;
+  /** The count of the inputs of each function with only values of exactly 0 near. These inputs have no line. */
+  readonly touch: Readonly<Record<string, number>>;
+  /** The count of the near lines of the case. */
+  readonly lines: number;
+  readonly [field: string]: unknown;
+}
+
+const edgeBox = z.looseObject({ l: finite, t: finite, r: finite, b: finite });
+const packingBase = {
+  case: z.string(),
+  fn: z.string(),
+  times: z.number().int().positive(),
+  near: z.array(z.string()),
+};
+/** This function moves the weight `times` of a packing line to `n`. The schema of the line gives its type `L`. */
+function weighed<L>(o: { readonly times: number; readonly [field: string]: unknown }): L {
+  const { times, ...rest } = o;
+  return { ...rest, n: times } as L;
+}
+
+/** The schema of a box pair of packing: is the margin `min(right) - max(left)` of each axis larger than `tolerance`. */
+export const edgePairLine: z.ZodType<EdgePairLine> = z
+  .looseObject({ ...packingBase, a: edgeBox, b: edgeBox, tolerance: finite, gap: finite.optional(), floatAnswer: z.boolean().optional() })
+  .transform((o) => weighed<EdgePairLine>(o));
+/** The schema of a container test of packing. A size of `null` is an infinite size of the container. */
+export const containerLine: z.ZodType<ContainerLine> = z
+  .looseObject({
+    ...packingBase,
+    box: edgeBox,
+    x: finite,
+    y: finite,
+    w: finite.nullable(),
+    h: finite.nullable(),
+    inset: finite,
+    tolerance: finite,
+    fixedW: z.boolean(),
+    fixedH: z.boolean(),
+    floatAnswer: z.boolean().optional(),
+  })
+  .transform((o) => weighed<ContainerLine>(o));
+/** The schema of a strip test of packing. The float answer of packing is a range or `null`. The census reads `null` as `false`. */
+export const stripLine: z.ZodType<StripLine> = z
+  .looseObject({
+    ...packingBase,
+    ax: finite,
+    ay: finite,
+    bx: finite,
+    by: finite,
+    y0: finite,
+    y1: finite,
+    floatAnswer: z.union([z.tuple([z.number(), z.number()]), z.null()]).optional(),
+  })
+  .transform((o) => weighed<StripLine>({ ...o, floatAnswer: o.floatAnswer === undefined ? undefined : o.floatAnswer !== null }));
+
+/** The schema of the case line of packing. */
+export const packingCountLine: z.ZodType<PackingCountLine> = z.looseObject({
+  case: z.string(),
+  totalPairs: count.optional(),
+  totals: z.record(z.string(), count),
+  near: z.record(z.string(), count),
+  touch: z.record(z.string(), count),
+  lines: count,
+});
+
+/** The reason of the census for each function of packing without a rule. A near line of such a function is `unknown`. */
+export const PACKING_UNMODELED: Readonly<Record<string, string>> = {
+  xAt: "The function xAt gives a rounded quotient, not a sign. The census has no exact rule for this value.",
+  samePlacements: "The function samePlacements compares the placements after round3. The census has no exact rule for this rounding.",
+};
+
 /** A parsed line, with the form that it has. */
 export type Line =
   | { readonly form: "segmentPair"; readonly line: SegmentPairLine }
@@ -166,16 +287,53 @@ export type Line =
   | { readonly form: "pointSide"; readonly line: PointSideLine }
   | { readonly form: "boxPair"; readonly line: BoxPairLine }
   | { readonly form: "count"; readonly line: CountLine }
-  | { readonly form: "unknown"; readonly line: unknown; readonly error: string };
+  | { readonly form: "edgePair"; readonly line: EdgePairLine }
+  | { readonly form: "container"; readonly line: ContainerLine }
+  | { readonly form: "strip"; readonly line: StripLine }
+  | { readonly form: "packingCount"; readonly line: PackingCountLine }
+  | {
+      readonly form: "unknown";
+      readonly line: unknown;
+      readonly error: string;
+      /** The value is `packing` for a near line of packing. Then the near check counts its weight. */
+      readonly sender?: "packing" | undefined;
+    };
+
+/** This function tells if a raw line is a near line of packing: it has the weight `times` and a list `near`. */
+function isPackingLine(raw: unknown): boolean {
+  if (raw === null || typeof raw !== "object") return false;
+  const o = raw as Record<string, unknown>;
+  return "times" in o && Array.isArray(o["near"]);
+}
+
+/** This function finds the form of a near line of packing. A line of a function without a rule is `unknown`, with its reason. */
+function parsePackingLine(raw: unknown): Line {
+  const fn = (raw as Record<string, unknown>)["fn"];
+  const unmodeled = typeof fn === "string" ? PACKING_UNMODELED[fn] : undefined;
+  if (unmodeled !== undefined) return { form: "unknown", line: raw, error: unmodeled, sender: "packing" };
+  const pair = edgePairLine.safeParse(raw);
+  if (pair.success) return { form: "edgePair", line: pair.data };
+  const strip = stripLine.safeParse(raw);
+  if (strip.success) return { form: "strip", line: strip.data };
+  const box = containerLine.safeParse(raw);
+  if (!box.success) return { form: "unknown", line: raw, error: "The packing line has no known form.", sender: "packing" };
+  const { fixedW, fixedH, w, h } = box.data;
+  if ((fixedW && w === null) || (fixedH && h === null)) {
+    return { form: "unknown", line: raw, error: "A fixed side of the container has an infinite size.", sender: "packing" };
+  }
+  return { form: "container", line: box.data };
+}
 
 /**
  * This function finds the form of one parsed line. The shape of the line selects the form, not the field `fn`. A line
- * that has no known form is `unknown`, and the census keeps it in a separate group.
+ * that has no known form is `unknown`, and the census keeps it in a separate group. A near line of packing has the
+ * fields `times` and `near`. A packing function in `PACKING_UNMODELED` has no rule, so its lines are `unknown`.
  *
  * @param raw - The value of the JSON line.
  * @returns The line with its form.
  */
 export function parseLine(raw: unknown): Line {
+  if (isPackingLine(raw)) return parsePackingLine(raw);
   const pair = segmentPairLine.safeParse(raw);
   if (pair.success) return { form: "segmentPair", line: pair.data };
   const segBox = segmentBoxLine.safeParse(raw);
@@ -186,6 +344,8 @@ export function parseLine(raw: unknown): Line {
   if (side.success) return { form: "pointSide", line: side.data };
   const boxes = boxPairLine.safeParse(raw);
   if (boxes.success) return { form: "boxPair", line: boxes.data };
+  const packingCounts = packingCountLine.safeParse(raw);
+  if (packingCounts.success) return { form: "packingCount", line: packingCounts.data };
   const counts = countLine.safeParse(raw);
   if (counts.success) return { form: "count", line: counts.data };
   return { form: "unknown", line: raw, error: "The line has no known form." };

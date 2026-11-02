@@ -8,10 +8,10 @@
 import { least, minus, most, negate, num, orientForm, plus, signForm, times, v } from "./expressions.ts";
 import type { Point, PointVars, Sign, SignForm } from "./expressions.ts";
 import type { Expression } from "@mark1russell7/expression";
-import type { Box, Rect, Vec } from "./input.ts";
+import type { Box, ContainerLine, EdgeBox, Rect, StripLine, Vec } from "./input.ts";
 
-/** The name of each predicate. */
-export type PredicateName = "segmentPair" | "segmentBox" | "boxPair" | "pointSide";
+/** The name of each predicate. The names `container` and `strip` are predicates of packing. */
+export type PredicateName = "segmentPair" | "segmentBox" | "boxPair" | "pointSide" | "container" | "strip";
 
 /** The answer of a predicate: a truth value, or a sign for `pointSide`. */
 export type Answer = boolean | Sign;
@@ -310,8 +310,100 @@ export const boxPair: Predicate = {
   },
 };
 
-/** The predicates, by name. The segment-box predicate is the one of a line with `box`. */
-export const PREDICATES: Readonly<Record<PredicateName, Predicate>> = { segmentPair, segmentBox, boxPair, pointSide };
+/**
+ * This function gives the margin of two boxes of packing on one axis, minus the tolerance:
+ * `min(a.r, b.r) - max(a.l, b.l) - tolerance` on the axis `x`. The float value has the operations of packing in its order.
+ */
+function edgeMargin(axis: "x" | "y"): Expression {
+  const [lo, hi] = axis === "x" ? ["l", "r"] : ["t", "b"];
+  return minus(minus(least(v(`a${hi}`), v(`b${hi}`)), most(v(`a${lo}`), v(`b${lo}`))), v("tolerance"));
+}
+
+const edgeMarginX = signForm("marginX - tolerance", edgeMargin("x"));
+const edgeMarginY = signForm("marginY - tolerance", edgeMargin("y"));
+
+/**
+ * The overlap of two boxes of packing, as `overlap` of `src/check.ts` of packing at the commit `94bcd79`. The answer is
+ * true when the margin of each axis is larger than the tolerance. The rule asks the sign of `y` only when `x` is true,
+ * as the `&&` of packing does.
+ *
+ * Packing computes the margin as a float difference, and then compares it with the tolerance. The float sign of
+ * `fl(margin) - tolerance` is the result of that comparison, because the sign of a float difference is exact. Thus the
+ * census float answer is the answer of packing. The exact answer compares the exact margin with the tolerance.
+ */
+export const edgePair: Predicate = {
+  name: "boxPair",
+  signs: [edgeMarginX, edgeMarginY],
+  answer: (s) => s(edgeMarginX) === 1 && s(edgeMarginY) === 1,
+};
+
+/** This function gives the sign form of one side of the container test of packing, with the operations of packing in its order. */
+function wallForm(edge: string, at: string, size: string | undefined, low: boolean): SignForm {
+  const start = plus(v(at), v("inset"));
+  if (low) return signForm(`${edge} - (${at} + inset - tolerance)`, minus(v(edge), minus(start, v("tolerance"))));
+  const end = minus(plus(v(at), v(size as string)), v("inset"));
+  return signForm(`${edge} - (${at} + ${size} - inset + tolerance)`, minus(v(edge), plus(end, v("tolerance"))));
+}
+
+const wallLeft = wallForm("l", "x", undefined, true);
+const wallRight = wallForm("r", "x", "w", false);
+const wallTop = wallForm("t", "y", undefined, true);
+const wallBottom = wallForm("b", "y", "h", false);
+const containers = new Map<string, Predicate>();
+
+/**
+ * This function gives the container test of packing for one box, as `checkHard` of `src/check.ts` of packing at the
+ * commit `94bcd79`. The answer is true when the box goes out of a fixed side by more than the tolerance.
+ *
+ * Packing computes each side as a float sum, for example `fl(fl(x + inset) - tolerance)`, and compares the edge with it.
+ * The census float sign of `edge - side` is that comparison. The exact answer compares the edge with the exact side.
+ *
+ * @param fixedW - The value is `true` when the width of the container is fixed. Then the rule asks the left and the right side.
+ * @param fixedH - The value is `true` when the height of the container is fixed. Then the rule asks the top and the bottom side.
+ * @returns The predicate. The function gives the same object for the same arguments.
+ */
+export function containerPredicate(fixedW: boolean, fixedH: boolean): Predicate {
+  const key = `${fixedW},${fixedH}`;
+  let p = containers.get(key);
+  if (p === undefined) {
+    const signs = [...(fixedW ? [wallLeft, wallRight] : []), ...(fixedH ? [wallTop, wallBottom] : [])];
+    p = {
+      name: "container",
+      signs,
+      answer: (s) => {
+        const outX = fixedW && (s(wallLeft) < 0 || s(wallRight) > 0);
+        const outY = fixedH && (s(wallTop) < 0 || s(wallBottom) > 0);
+        return outX || outY;
+      },
+    };
+    containers.set(key, p);
+  }
+  return p;
+}
+
+const stripLow = signForm("max(ay, by) - y0", minus(most(v("ay"), v("by")), v("y0")));
+const stripHigh = signForm("min(ay, by) - y1", minus(least(v("ay"), v("by")), v("y1")));
+
+/**
+ * The strip test of `edgeRange` of `src/space.ts` of packing at the commit `94bcd79`. The answer is true when the segment
+ * has a part in the open strip from `y0` to `y1`. Packing compares the floats with no arithmetic, so its answer is exact.
+ * The census does not examine the range that `xAt` gives.
+ */
+export const strip: Predicate = {
+  name: "strip",
+  signs: [stripLow, stripHigh],
+  answer: (s) => !(s(stripLow) <= 0 || s(stripHigh) >= 0),
+};
+
+/** The predicates, by name. The segment-box predicate is the one of a line with `box`. The container test has two fixed sides. */
+export const PREDICATES: Readonly<Record<PredicateName, Predicate>> = {
+  segmentPair,
+  segmentBox,
+  boxPair,
+  pointSide,
+  container: containerPredicate(true, true),
+  strip,
+};
 
 /** This function gives the variables of a segment pair. */
 export function segmentPairPoint(a: Vec, b: Vec, c: Vec, d: Vec): Point {
@@ -336,4 +428,20 @@ export function pointSidePoint(p: Vec, a: Vec, b: Vec): Point {
 /** This function gives the variables of a box pair. */
 export function boxPairPoint(a: Box, b: Box, eps = 0): Point {
   return { ax: a.x, ay: a.y, aw: a.w, ah: a.h, bx: b.x, by: b.y, bw: b.w, bh: b.h, eps };
+}
+
+/** This function gives the variables of a box pair of packing. */
+export function edgePairPoint(a: EdgeBox, b: EdgeBox, tolerance: number): Point {
+  return { al: a.l, at: a.t, ar: a.r, ab: a.b, bl: b.l, bt: b.t, br: b.r, bb: b.b, tolerance };
+}
+
+/** This function gives the variables of a container test of packing. An infinite size of a side that is not fixed is not a variable. */
+export function containerPoint(line: Pick<ContainerLine, "box" | "x" | "y" | "w" | "h" | "inset" | "tolerance">): Point {
+  const { box, x, y, w, h, inset, tolerance } = line;
+  return { l: box.l, t: box.t, r: box.r, b: box.b, x, y, inset, tolerance, ...(w === null ? {} : { w }), ...(h === null ? {} : { h }) };
+}
+
+/** This function gives the variables of a strip test of packing. */
+export function stripPoint(line: Pick<StripLine, "ax" | "ay" | "bx" | "by" | "y0" | "y1">): Point {
+  return { ax: line.ax, ay: line.ay, bx: line.bx, by: line.by, y0: line.y0, y1: line.y1 };
 }
