@@ -122,7 +122,7 @@ function git(args: readonly string[], cwd: string): string | null {
   }
 }
 
-/** The size of each read of an input file. A dump of several GB never becomes one string. */
+/** The size of each read of an input file. Thus a dump of several GB does not become one string. */
 const CHUNK = 1 << 24;
 
 /**
