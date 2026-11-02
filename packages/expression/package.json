@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@mark1russell7/expression",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@mark1russell7/coeval": "^0.17.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "description": "Expression documents on coeval: the kinds, a summary of each node, a zod schema and a seeded generator."
+}
