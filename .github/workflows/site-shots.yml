@@ -1,0 +1,104 @@
+# Screenshots of the site at 1280 and 390 px, light and dark, with no local browser. The job builds packages/site,
+# starts the preview, and opens each view with the Chrome of the runner. It fails on a page error or on a view that
+# is wider than its window. The artifact site-shots has the images, kept 14 days.
+name: Site shots
+
+on:
+  # Each pull request starts this workflow, so its summary check is always there. The job changes skips the
+  # work when the pull request changes no file of the gate (CI.md of the template, "A gate with paths").
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      match: ${{ steps.changes.outputs.match }}
+    steps:
+      - id: changes
+        uses: mark1russell7/template/.github/actions/changes@f05c6eeb35e33a040bdfdcd7d07a1d2c00640f8d # main
+        with:
+          paths: |
+            packages/site/**
+            .github/workflows/site-shots.yml
+
+  shots:
+    needs: changes
+    if: needs.changes.outputs.match == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @algebra/site run build
+      - name: Prepare the browser driver
+        run: |
+          mkdir -p "$RUNNER_TEMP/shots/out"
+          npm install --prefix "$RUNNER_TEMP/shots" --no-save --no-audit --no-fund playwright-core@1
+          cat > "$RUNNER_TEMP/shots/shots.mjs" <<'EOF'
+          import { chromium } from "playwright-core";
+          const [url, out] = process.argv.slice(2);
+          const browser = await chromium.launch({ channel: "chrome" });
+          const problems = [];
+          for (const width of [1280, 390]) {
+            for (const colorScheme of ["light", "dark"]) {
+              const name = `${width}-${colorScheme}`;
+              const page = await (await browser.newContext({ viewport: { width, height: 900 }, colorScheme })).newPage();
+              page.on("pageerror", (e) => problems.push(`${name}: ${e.message}`));
+              await page.goto(url, { waitUntil: "load" });
+              await page.waitForSelector("#cost-stages li");
+              const wide = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+              if (wide > 0) problems.push(`${name}: the page is ${wide} px wider than the window`);
+              await page.screenshot({ path: `${out}/${name}-page.png`, fullPage: true });
+              await page.locator("#cost").screenshot({ path: `${out}/${name}-cost.png` });
+              await page.close();
+            }
+          }
+          await browser.close();
+          for (const p of problems) console.error(p);
+          process.exit(problems.length > 0 ? 1 : 0);
+          EOF
+      - name: Take the shots
+        run: |
+          pnpm --filter @algebra/site exec vite preview --port 4173 --strictPort &
+          url="http://localhost:4173/"
+          for _ in $(seq 1 30); do curl -sf "$url" > /dev/null && break; sleep 1; done
+          node "$RUNNER_TEMP/shots/shots.mjs" "$url" "$RUNNER_TEMP/shots/out"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: site-shots
+          path: ${{ runner.temp }}/shots/out
+          retention-days: 14
+
+  site-shots-ok:
+    name: Site shots OK
+    if: always()
+    needs: [changes, shots]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - uses: mark1russell7/template/.github/actions/gate-summary@f05c6eeb35e33a040bdfdcd7d07a1d2c00640f8d # main
+        with:
+          needs: ${{ toJSON(needs) }}
