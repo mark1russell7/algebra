@@ -244,8 +244,9 @@ describe("the intervals", () => {
     const [lo, hi] = sqrt2 as [number, number];
     expect(lo * lo <= 2 && hi * hi >= 2).toBe(true);
     expect(interval.root([4, 4], 2)).toEqual([2, 2]);
-    expect(interval.root([27, 27], 3)).toEqual([1, 27]);
-    expect(interval.root([-8, -8], 3)).toEqual([-8, -1]);
+    // A4: a root of index 3 or more is tight, not the old bounds [min(x, 1), max(x, 1)].
+    expect(interval.root([27, 27], 3)).toEqual([3, 3]);
+    expect(interval.root([-8, -8], 3)).toEqual([-2, -2]);
     expect(interval.root([-4, 9], 2)).toEqual([0, 3]);
   });
 

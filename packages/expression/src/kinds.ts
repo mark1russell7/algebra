@@ -1,6 +1,6 @@
 /**
- * The coeval kinds of the expression documents and the machine of the verbs `summary` and `float`. An evaluator of a
- * later item adds its own verb to these kinds. The documents do not change.
+ * The coeval kinds of the expression documents and the machine of the verbs `summary`, `float`, `interval` and `ball`.
+ * An evaluator of a later item adds its own verb to these kinds. The documents do not change.
  *
  * @packageDocumentation
  */
@@ -9,9 +9,13 @@ import type { EvalInput, Kind, Machine, Result, World } from "@mark1russell7/coe
 
 /** The shape of the value of a kind (the field `parts` of a coeval kind). */
 export type Shape = NonNullable<Kind["parts"]>;
+import { ballNode, ballNum, ballVar } from "./ball.ts";
+import type { Ball, BallCell, BallInput } from "./ball.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
 import type { FloatCell, FloatResult } from "./float.ts";
 import type { Interval } from "./interval.ts";
+import { intervalNode, intervalNum, intervalVar } from "./interval-evaluator.ts";
+import type { Enclosure, IntervalCell, IntervalInput } from "./interval-evaluator.ts";
 import type { Document } from "./schema.ts";
 import { combine, numSummary, varSummary } from "./summary.ts";
 import type { KindName, NodeData, Summary } from "./summary.ts";
@@ -20,6 +24,13 @@ import type { KindName, NodeData, Summary } from "./summary.ts";
 export const SUMMARY = "summary";
 /** The verb that compiles a node into float code with a bound of its error (roadmap item A3). */
 export const FLOAT = "float";
+/** The verb that compiles a node into code that gives an outward interval of its value (roadmap item A4). */
+export const INTERVAL = "interval";
+/** The verb that compiles a node into code that gives a midpoint and a radius of its value (roadmap item A4). */
+export const BALL = "ball";
+
+/** The verbs of the compiled evaluators, which take the position of each variable from the context. */
+const COMPILED = [FLOAT, INTERVAL, BALL] as const;
 
 const list: Shape = { shape: "list" };
 const term: Shape = { shape: "term" };
@@ -59,10 +70,10 @@ const evaluatorName = (kind: KindName, verb: string = SUMMARY): string => `expre
 
 function kindOf(name: KindName): Kind {
   return {
-    verbs: { [SUMMARY]: evaluatorName(name), [FLOAT]: evaluatorName(name, FLOAT) },
+    verbs: { [SUMMARY]: evaluatorName(name), ...Object.fromEntries(COMPILED.map((v) => [v, evaluatorName(name, v)])) },
     parts: SHAPES[name],
     pure: true,
-    verbEffects: { [SUMMARY]: [], [FLOAT]: [] },
+    verbEffects: { [SUMMARY]: [], ...Object.fromEntries(COMPILED.map((v) => [v, []])) },
   };
 }
 
@@ -99,34 +110,48 @@ function summaryOfNode(kind: KindName) {
   };
 }
 
-function floatOfNode(kind: KindName) {
+/** The rules of a compiled verb: a literal, a variable at a position, and a node from the cells of its parts. */
+interface CompiledRules<C> {
+  num(value: number): C;
+  variable(index: number): C;
+  node(kind: KindName, parts: readonly C[], data: NodeData): C;
+}
+
+/** This function gives the evaluator of one kind for a compiled verb. */
+function compiledOfNode<C>(kind: KindName, rules: CompiledRules<C>) {
   return (input: EvalInput): Result => {
     if (kind === "num") {
       const v = input.doc.value;
-      return typeof v === "number" && Number.isFinite(v) ? ok(floatNum(v)) : fail("#VALUE!", "num needs a finite number.");
+      return typeof v === "number" && Number.isFinite(v) ? ok(rules.num(v)) : fail("#VALUE!", "num needs a finite number.");
     }
     if (kind === "var") {
       const name = input.doc.value;
       const index = typeof name === "string" ? input.context.names[name] : undefined;
-      return typeof index === "number" ? ok(floatVar(index)) : fail("#NAME?", `The variable ${String(name)} has no position.`);
+      return typeof index === "number" ? ok(rules.variable(index)) : fail("#NAME?", `The variable ${String(name)} has no position.`);
     }
-    const parts: FloatCell[] = [];
+    const parts: C[] = [];
     for (const part of input.parts) {
       const r = part.evaluate();
       if (!r.ok) return r;
-      parts.push(r.value as FloatCell);
+      parts.push(r.value as C);
     }
-    return ok(floatNode(kind, parts, (input.data ?? {}) as NodeData));
+    return ok(rules.node(kind, parts, (input.data ?? {}) as NodeData));
   };
 }
 
-/** The machine of the verbs `summary` and `float` for the expression kinds. */
+const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>> = {
+  [FLOAT]: { num: floatNum, variable: floatVar, node: (k, p, d) => floatNode(k, p as FloatCell[], d) },
+  [INTERVAL]: { num: intervalNum, variable: intervalVar, node: (k, p, d) => intervalNode(k, p as IntervalCell[], d) },
+  [BALL]: { num: ballNum, variable: ballVar, node: (k, p, d) => ballNode(k, p as BallCell[], d) },
+};
+
+/** The machine of the verbs `summary`, `float`, `interval` and `ball` for the expression kinds. */
 export const expressionMachine: Machine = {
   world: expressionWorld,
   evaluators: Object.fromEntries(
     KINDS.flatMap((k) => [
       [evaluatorName(k), summaryOfNode(k)],
-      [evaluatorName(k, FLOAT), floatOfNode(k)],
+      ...COMPILED.map((v) => [evaluatorName(k, v), compiledOfNode(k, RULES[v])]),
     ]),
   ),
 };
@@ -150,7 +175,7 @@ export function summarize(doc: Document, options: SummarizeOptions = {}): Result
   return plan.evaluate(makeContext(options.bounds ?? {})) as Result<Summary>;
 }
 
-/** The options of `compileFloat`. */
+/** The options of `compileFloat`, `compileInterval` and `compileBall`. */
 export interface CompileFloatOptions {
   /** The order of the values of a call. The default is the free variables, sorted. The list must have each free variable. */
   readonly variables?: readonly string[];
@@ -171,6 +196,28 @@ export interface FloatFunction {
 }
 
 /**
+ * This function compiles a document one time with a compiled verb of coeval. It gives the order of the variables and
+ * the cell of the root.
+ */
+function compileWith<C>(verb: string, doc: Document, options: CompileFloatOptions): Result<{ variables: string[]; root: C }> {
+  const summary = summarize(doc);
+  if (!summary.ok) return summary;
+  const variables = options.variables ?? summary.value.free;
+  const missing = summary.value.free.filter((name) => !variables.includes(name));
+  if (missing.length > 0) return fail("#NAME?", `The variables have no position: ${missing.join(", ")}.`);
+  const positions = Object.fromEntries(variables.map((name, i) => [name, i]));
+  const plan = prepare(expressionMachine, doc, { verb, fold: false });
+  const made = plan.evaluate(makeContext(positions));
+  if (!made.ok) return made;
+  return ok({ variables: [...variables], root: made.value as C });
+}
+
+/** This function refuses a call with fewer values than variables. */
+function checkCount(values: ArrayLike<unknown>, count: number): void {
+  if (values.length < count) throw new RangeError(`The call needs ${count} values, not ${values.length}.`);
+}
+
+/**
  * This function compiles a document one time with the verb `float` of coeval. The result is a tree of closures, one
  * closure for each node. Each call gives a value and a bound of its error. A result is not a value alone at any time.
  *
@@ -179,24 +226,90 @@ export interface FloatFunction {
  * @returns The compiled function, or the error of coeval.
  */
 export function compileFloat(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
-  const summary = summarize(doc);
-  if (!summary.ok) return summary;
-  const variables = options.variables ?? summary.value.free;
-  const missing = summary.value.free.filter((name) => !variables.includes(name));
-  if (missing.length > 0) return fail("#NAME?", `The variables have no position: ${missing.join(", ")}.`);
-  const positions = Object.fromEntries(variables.map((name, i) => [name, i]));
-  const plan = prepare(expressionMachine, doc, { verb: FLOAT, fold: false });
-  const made = plan.evaluate(makeContext(positions));
+  const made = compileWith<FloatCell>(FLOAT, doc, options);
   if (!made.ok) return made;
-  const root = made.value as FloatCell;
+  const { variables, root } = made.value;
   const run = root.run;
-  const count = variables.length;
   return ok({
-    variables: [...variables],
+    variables,
     evaluate(values) {
-      if (values.length < count) throw new RangeError(`The call needs ${count} values, not ${values.length}.`);
+      checkCount(values, variables.length);
       const value = run(values);
       return { value, error: root.error };
+    },
+  });
+}
+
+/** A document compiled with the verb `interval`. */
+export interface IntervalFunction {
+  /** The names of the variables, in the order of the values of `evaluate`. */
+  readonly variables: readonly string[];
+  /**
+   * This function gives an interval that contains the exact value at each point of the inputs. It uses only the
+   * closures of the compilation.
+   *
+   * @param values - The value of each variable, a number or an interval, in the order of `variables`.
+   * @returns An interval, `null` when no point gives a real value, or `"no claim"`.
+   */
+  evaluate(values: ArrayLike<IntervalInput>): Enclosure;
+}
+
+/**
+ * This function compiles a document one time with the verb `interval` of coeval. Each operation rounds outward with
+ * the operations of `interval`. A divisor that holds zero gives no claim. An even root of a value that can be
+ * negative and a variable that is not finite do too.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileInterval(doc: Document, options: CompileFloatOptions = {}): Result<IntervalFunction> {
+  const made = compileWith<IntervalCell>(INTERVAL, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = root.run;
+  return ok({
+    variables,
+    evaluate(values) {
+      checkCount(values, variables.length);
+      return run(values);
+    },
+  });
+}
+
+/** A document compiled with the verb `ball`. */
+export interface BallFunction {
+  /** The names of the variables, in the order of the values of `evaluate`. */
+  readonly variables: readonly string[];
+  /**
+   * This function gives a ball that contains the exact value at each point of the input balls. It uses only the
+   * closures of the compilation.
+   *
+   * @param values - The value of each variable, a number or a ball, in the order of `variables`.
+   * @returns The midpoint and the radius. A radius of `Infinity` makes no claim.
+   */
+  evaluate(values: ArrayLike<BallInput>): Ball;
+}
+
+/**
+ * This function compiles a document one time with the verb `ball` of coeval. The midpoint is the float value of the
+ * verb `float`, and the radius rounds upward. A radius of `Infinity` makes no claim.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileBall(doc: Document, options: CompileFloatOptions = {}): Result<BallFunction> {
+  const made = compileWith<BallCell>(BALL, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = root.run;
+  return ok({
+    variables,
+    evaluate(values) {
+      checkCount(values, variables.length);
+      const mid = run(values);
+      return { mid, rad: root.rad };
     },
   });
 }

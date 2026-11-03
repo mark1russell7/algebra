@@ -41,42 +41,52 @@ export function nextDown(x: number): number {
 }
 
 /**
- * This function tells if the float sum of two floats is exact. It uses the error term of `TwoSum` (Knuth).
+ * This function gives the exact error of a float sum. It uses the error term of `TwoSum` (Knuth).
  *
  * @param a - The first value.
  * @param b - The second value.
  * @param s - The float sum `a + b`.
- * @returns `true` when `s` is the exact sum.
+ * @returns The float `e` with `a + b = s + e` exactly, or `NaN` when `s` is not finite and the term is not reliable.
  */
-function sumIsExact(a: number, b: number, s: number): boolean {
-  if (!Number.isFinite(s)) return false;
+export function sumError(a: number, b: number, s: number): number {
+  if (!Number.isFinite(s)) return Number.NaN;
   const bb = s - a;
-  return a - (s - bb) + (b - bb) === 0;
+  return a - (s - bb) + (b - bb);
 }
 
 const SPLIT = 134217729; // 2^27 + 1, the constant of the split of Veltkamp.
 
 /**
- * This function tells if the float product of two floats is exact. It uses the error term of `TwoProduct` (Dekker).
- * Near overflow or underflow the term is not reliable, so the function then gives `false`.
+ * This function gives the exact error of a float product. It uses the error term of `TwoProduct` (Dekker). Near
+ * overflow or underflow the term is not reliable, so the function then gives `NaN`.
  *
  * @param a - The first value.
  * @param b - The second value.
  * @param p - The float product `a * b`.
- * @returns `true` when `p` is the exact product.
+ * @returns The float `e` with `a * b = p + e` exactly, or `NaN` when the term is not reliable.
  */
-function productIsExact(a: number, b: number, p: number): boolean {
-  if (a === 0 || b === 0) return true;
+export function productError(a: number, b: number, p: number): number {
+  if (a === 0 || b === 0) return 0;
   const m = Math.abs(p);
-  if (!(m > 2 ** -900 && m < 2 ** 990) || Math.abs(a) > 2 ** 990 || Math.abs(b) > 2 ** 990) return false;
+  if (!(m > 2 ** -900 && m < 2 ** 990) || Math.abs(a) > 2 ** 990 || Math.abs(b) > 2 ** 990) return Number.NaN;
   const ca = SPLIT * a;
   const ah = ca - (ca - a);
   const al = a - ah;
   const cb = SPLIT * b;
   const bh = cb - (cb - b);
   const bl = b - bh;
-  return al * bl - (p - ah * bh - al * bh - ah * bl) === 0;
+  return al * bl - (p - ah * bh - al * bh - ah * bl);
 }
+
+/**
+ * This function gives a lower bound of `v + e` for a float `v` and its exact error `e`. A float `v` with `e >= 0` is
+ * the bound. Else the bound is one float lower. Round to nearest puts `v + e` within half a step of `v`, so one step
+ * is enough. An error of `NaN` is not known, and it gives the step.
+ */
+const below = (v: number, e: number): number => (e >= 0 ? v : nextDown(v));
+
+/** This function gives an upper bound of `v + e`, with the rule of `below`. */
+const above = (v: number, e: number): number => (e <= 0 ? v : nextUp(v));
 
 /**
  * This function gives the sum of two intervals, rounded outward.
@@ -89,7 +99,7 @@ export function add(x: Interval, y: Interval): Interval {
   if (x === null || y === null) return null;
   const lo = x[0] + y[0];
   const hi = x[1] + y[1];
-  return [sumIsExact(x[0], y[0], lo) ? lo : nextDown(lo), sumIsExact(x[1], y[1], hi) ? hi : nextUp(hi)];
+  return [below(lo, sumError(x[0], y[0], lo)), above(hi, sumError(x[1], y[1], hi))];
 }
 
 /**
@@ -132,22 +142,34 @@ export function mul(x: Interval, y: Interval): Interval {
   if (x === null || y === null) return null;
   let lo = Infinity;
   let hi = -Infinity;
-  let loExact = true;
-  let hiExact = true;
   for (const a of x) {
     for (const b of y) {
       const p = boundProduct(a, b);
-      const exact = productIsExact(a, b, p);
-      if (p < lo || (p === lo && !exact)) [lo, loExact] = [p, exact];
-      if (p > hi || (p === hi && !exact)) [hi, hiExact] = [p, exact];
+      const e = productError(a, b, p);
+      lo = Math.min(lo, below(p, e));
+      hi = Math.max(hi, above(p, e));
     }
   }
-  return [loExact ? lo : nextDown(lo), hiExact ? hi : nextUp(hi)];
+  return [lo, hi];
+}
+
+/**
+ * This function tells if a float quotient is exact: the product `q * b` is exact and is `a`.
+ *
+ * @param a - The dividend.
+ * @param b - The divisor.
+ * @param q - The float quotient `a / b`.
+ * @returns `true` when `q` is the exact quotient.
+ */
+export function quotientIsExact(a: number, b: number, q: number): boolean {
+  const p = q * b;
+  return p === a && productError(q, b, p) === 0;
 }
 
 /**
  * This function gives the quotient of two intervals, rounded outward. A divisor interval that contains zero gives the
- * whole line, and the point zero gives the empty interval.
+ * whole line, and the point zero gives the empty interval. A quotient of two finite bounds moves one step outward on
+ * each side when it is not exact. A quotient with an infinite bound is `0` or infinite, and it is a bound as it is.
  *
  * @param x - The dividend.
  * @param y - The divisor.
@@ -161,12 +183,19 @@ export function div(x: Interval, y: Interval): Interval {
   let hi = -Infinity;
   for (const a of x) {
     for (const b of y) {
-      const q = Number.isFinite(b) ? a / b : Number.isFinite(a) ? 0 : (a > 0) === (b > 0) ? Infinity : -Infinity;
-      lo = Math.min(lo, q);
-      hi = Math.max(hi, q);
+      if (Number.isFinite(a) && Number.isFinite(b)) {
+        const q = a / b;
+        const exact = quotientIsExact(a, b, q);
+        lo = Math.min(lo, exact ? q : nextDown(q));
+        hi = Math.max(hi, exact ? q : nextUp(q));
+      } else {
+        const q = Number.isFinite(b) ? a / b : Number.isFinite(a) ? 0 : (a > 0) === (b > 0) ? Infinity : -Infinity;
+        lo = Math.min(lo, q);
+        hi = Math.max(hi, q);
+      }
     }
   }
-  return [lo === 0 && x[0] === 0 && x[1] === 0 ? 0 : nextDown(lo), hi === 0 && x[0] === 0 && x[1] === 0 ? 0 : nextUp(hi)];
+  return [lo, hi];
 }
 
 /**
@@ -206,13 +235,55 @@ export function pow(x: Interval, n: number): Interval {
 /** This function tells if `r * r` is exactly `a`. */
 function isSquareOf(r: number, a: number): boolean {
   const p = r * r;
-  return p === a && productIsExact(r, r, p);
+  return p === a && productError(r, r, p) === 0;
+}
+
+/** This function gives the smallest power of the interval `[z, z]`, rounded downward. */
+function powLow(z: number, k: number): number {
+  const p = pow([z, z], k);
+  return p === null ? Number.NaN : p[0];
+}
+
+/** This function gives the largest power of the interval `[z, z]`, rounded upward. */
+function powHigh(z: number, k: number): number {
+  const p = pow([z, z], k);
+  return p === null ? Number.NaN : p[1];
+}
+
+const rootOf = (m: number, k: number): number => (k === 3 ? Math.cbrt(m) : Math.pow(m, 1 / k));
+
+/** The most steps of the search of `rootUp` and `rootDown`. After them, each function gives its trivial bound. */
+const STEPS = 64;
+
+/**
+ * This function gives a float `z >= 0` with `z^k >= m`, for `m >= 0`. The check uses the outward powers of `pow`.
+ * Near overflow the check cannot pass, and the function gives `Infinity`.
+ */
+function rootUp(m: number, k: number): number {
+  let z = rootOf(m, k);
+  for (let i = 0; z < Infinity && i < STEPS; i++) {
+    if (powLow(z, k) >= m) return z;
+    z = i < 8 ? nextUp(z) : z * (1 + 2 ** (i - 60));
+  }
+  return Infinity;
+}
+
+/** This function gives a float `z >= 0` with `z^k <= m`, for `m >= 0`. After `STEPS` steps it gives `0`. */
+function rootDown(m: number, k: number): number {
+  let z = rootOf(m, k);
+  if (m === Infinity) return z;
+  for (let i = 0; z > 0 && i < STEPS; i++) {
+    if (powHigh(z, k) <= m) return z;
+    z = i < 8 ? nextDown(z) : z * (1 - 2 ** (i - 60));
+  }
+  return 0;
 }
 
 /**
  * This function gives the root of an interval, rounded outward. The square root uses `Math.sqrt`, which is correctly
- * rounded. A larger index uses the bounds `min(a, 1)` and `max(b, 1)`, because `x ** (1 / k)` lies between `x` and
- * `1` for each `x >= 0`. An odd index takes negative points as `-root(-x)`. An even index ignores negative points.
+ * rounded, and one step on each bound. A larger index starts from `Math.pow` and moves each bound until the outward
+ * power of `pow` shows the side of the bound. The root is monotone, so the bounds of the ends are the bounds. An odd
+ * index takes negative points as `-root(-x)`. An even index ignores negative points.
  *
  * @param x - The radicand.
  * @param k - The index of the root. It must be a whole number of 2 or more.
@@ -231,7 +302,7 @@ export function root(x: Interval, k: number): Interval {
     const hi = Math.sqrt(b);
     return [isSquareOf(lo, a) ? lo : Math.max(0, nextDown(lo)), isSquareOf(hi, b) ? hi : nextUp(hi)];
   }
-  return [a < 0 ? Math.min(a, -1) : Math.min(a, 1), b < 0 ? Math.max(b, -1) : Math.max(b, 1)];
+  return [a < 0 ? -rootUp(-a, k) : rootDown(a, k), b < 0 ? -rootDown(-b, k) : rootUp(b, k)];
 }
 
 /**
