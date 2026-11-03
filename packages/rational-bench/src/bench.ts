@@ -4,6 +4,9 @@
  * records to `records-ab.jsonl` and `records-aa.jsonl`, the facts of each process to `meta.jsonl`, and the report to
  * `report.json` and `report.md`. The workflow `bench.yml` starts it in CI. Do not start a full run on the local machine.
  *
+ * The start of a fresh process for each case and pair is a gap of `@mark1russell7/rigor-bench` 0.1.1: rigor has no
+ * runner of processes yet. This loop stays here until rigor has one. Then use the runner of rigor.
+ *
  * @packageDocumentation
  */
 import { spawnSync } from "node:child_process";

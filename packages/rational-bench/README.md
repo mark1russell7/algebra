@@ -18,11 +18,13 @@ The method is the method of `@mark1russell7/rigor-bench`:
 
 - Each case and each pair has a fresh process (`src/child.ts`).
 - Each arm gets its own instance of the module of the cases, so the arms do not share the type feedback of the engine.
-- The two arms run for one second. Then a batch of calls of arm `a` takes at least the target time, 10 ms by default.
+- `timeRounds` of `@mark1russell7/rigor-bench` times the rounds. It warms the two arms for one second.
+- Then a batch of calls of arm `a` takes at least the target time, 10 ms by default.
 - Each round times one batch of each arm. `firstArm` turns the order each round.
 - The records are `PairedTime` records. `caseRatios`, `aaBand` and `timeVerdict` give the ratios, the band and the verdict.
-- The interval of each case is `medianInterval` of `@mark1russell7/rigor-statistics` over the log ratios of its rounds.
+- `limitVerdict` with the limit 2 gives the outcome of the claim. `caseIntervals` gives the interval of each case.
 - The claim holds when, for each case, the high end of the interval times the high end of the A/A band is at most 2.
+- `src/bench.ts` starts a fresh process for each case. rigor has no runner of processes yet, so this runner stays here.
 
 ## Start it
 

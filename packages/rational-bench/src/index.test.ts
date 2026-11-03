@@ -45,7 +45,7 @@ describe("the report", () => {
     expect(r.within).toBe(true);
     expect(r.largest).toBe("case-3");
     expect(r.verdict.outcome).toBe("faster");
-    expect(r.cases.every((c) => c.low <= c.ratio && c.ratio <= c.high && c.bound >= c.high)).toBe(true);
+    expect(r.cases.every((c) => c.low <= c.ratio && c.ratio <= c.high && c.bound >= c.high && c.outcome === "within")).toBe(true);
     expect(markdown(r)).toContain("**holds**");
   });
 
@@ -53,6 +53,7 @@ describe("the report", () => {
     const ab = records(6, 0.8).map((r) => (r.case === "case-0" ? { ...r, b: r.b * 3 } : r));
     const r = report(ab, records(6, 1));
     expect(r.within).toBe(false);
-    expect(r.cases.find((c) => c.case === "case-0")?.within).toBe(false);
+    expect(r.claim.outcome).toBe("beyond");
+    expect(r.cases.find((c) => c.case === "case-0")?.outcome).toBe("beyond");
   });
 });
