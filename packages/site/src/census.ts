@@ -4,5 +4,5 @@
  *
  * @packageDocumentation
  */
-export { boundSign, dyadic, exactValue, floatValue, orientForm, PREDICATES, pointSidePoint, segmentBoxPoint, segmentPairPoint } from "@mark1russell7/predicate-census";
+export { boundSign, dyadic, exactValue, floatValue, orientForm, PREDICATES, pointSidePoint, signForm, segmentBoxPoint, segmentPairPoint } from "@mark1russell7/predicate-census";
 export type { Box, Dyadic, Point, PointVars, PredicateName, Sign, SignForm, Vec } from "@mark1russell7/predicate-census";

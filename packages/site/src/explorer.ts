@@ -1,22 +1,22 @@
 /**
- * The explorer of the page: three canvases of one grid (float, interval and exact), the controls, the readout of a
- * cell and the scene of the input. A Web Worker fills the grid, so the main thread stays free.
+ * The explorer of the page: four canvases of one grid (float, interval, exact and the stage of A5), the controls, the
+ * readout of a cell and the scene of the input. A Web Worker fills the grid, so the main thread stays free.
  *
  * @packageDocumentation
  */
 import { exactValue, floatValue } from "./census.ts";
-import type { Point, PointVars, SignForm } from "./census.ts";
+import type { Point, PointVars, SignForm, Vec } from "./census.ts";
 import { compileFloat } from "@mark1russell7/expression";
 import type { Document, FloatFunction } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
 import { approx, formatFloat } from "./evaluate.ts";
 import { buildForm, cellDetail, decode, dyadicToRational, exactLine, fillRows, tally, ulp } from "./grid.ts";
-import type { CellDetail, CellSegment, GridJob, View } from "./grid.ts";
+import type { CellDetail, CellSegment, Counts, GridJob, View } from "./grid.ts";
 import type { Preset, Scene, SignChoice } from "./presets.ts";
 import type { BandMessage, JobMessage } from "./grid.worker.ts";
 
-type PanelName = "float" | "interval" | "exact";
-const PANELS: readonly PanelName[] = ["float", "interval", "exact"];
+type PanelName = "float" | "interval" | "exact" | "a5";
+const PANELS: readonly PanelName[] = ["float", "interval", "exact", "a5"];
 
 /** The colors of the grid, read from the CSS tokens of the page. */
 interface Palette {
@@ -27,6 +27,8 @@ interface Palette {
   readonly undecided: [number, number, number];
   readonly hatch: string;
   readonly pending: [number, number, number];
+  /** The color of a cell that goes to the exact stage of A5. */
+  readonly stage: [number, number, number];
   readonly line: string;
   readonly cursor: string;
 }
@@ -49,6 +51,7 @@ function readPalette(root: HTMLElement): Palette {
     undecided: rgb(token("--grid-undecided")),
     hatch: token("--grid-hatch"),
     pending: rgb(token("--grid-pending")),
+    stage: rgb(token("--grid-stage")),
     line: token("--grid-line"),
     cursor: token("--grid-cursor"),
   };
@@ -68,6 +71,15 @@ const signText = (s: -1 | 0 | 1 | null): string => (s === null ? "no sign" : s >
 const signClass = (s: -1 | 0 | 1 | null): string => (s === null ? "undecided" : s > 0 ? "pos" : s < 0 ? "neg" : "zero");
 const full = (x: number): string => (Number.isInteger(x) ? String(x) : x.toPrecision(17));
 const MAX_STEP = 2 ** 40;
+
+/** This function gives the center of the circle through three points, in floats for the drawing, or `null` for a line. */
+function circumcenter(a: Vec, b: Vec, c: Vec): Vec | null {
+  const [bx, by, cx, cy] = [b[0] - a[0], b[1] - a[1], c[0] - a[0], c[1] - a[1]];
+  const d = 2 * (bx * cy - by * cx);
+  if (d === 0) return null;
+  const [b2, c2] = [bx * bx + by * by, cx * cx + cy * cy];
+  return [a[0] + (cy * b2 - by * c2) / d, a[1] + (bx * c2 - cx * b2) / d];
+}
 
 /** The old image of a panel, kept on screen while the worker fills the new grid. */
 interface Ghost {
@@ -94,7 +106,7 @@ export class Explorer {
   private drag: { x: number; y: number; dx: number; dy: number; id: number; moved: boolean } | null = null;
   private readonly worker: Worker | null;
   private readonly canvases: Record<PanelName, HTMLCanvasElement>;
-  private readonly images: Record<PanelName, ImageData | null> = { float: null, interval: null, exact: null };
+  private readonly images: Record<PanelName, ImageData | null> = { float: null, interval: null, exact: null, a5: null };
   private palette: Palette;
   private frame = 0;
 
@@ -156,6 +168,9 @@ export class Explorer {
     this.sign = sign;
     this.form = buildForm(sign.form);
     this.move = sign.move;
+    const a5 = sign.form.kind === "incircle" ? "incircle" : this.form.points ? "orient2d" : null;
+    byId("ex-a5-cap").textContent =
+      a5 === null ? "This sign has no A5 predicate, so the panel stays empty." : `The stage of the A5 ${a5} that decided each cell. Violet cells: the exact stage.`;
     this.renderMove();
     this.view = { ...this.preset.view, n: Number(byId<HTMLSelectElement>("ex-size").value) || this.preset.view.n };
     if (this.preset.view.ox !== 0) this.view = { ...this.view, ox: this.view.n / 2, oy: this.view.n / 2 };
@@ -289,11 +304,13 @@ export class Explorer {
     const f = (this.images.float as ImageData).data;
     const iv = (this.images.interval as ImageData).data;
     const ex = (this.images.exact as ImageData).data;
+    const st = (this.images.a5 as ImageData).data;
     for (let k = j0 * n; k < j1 * n; k++) {
       const s = decode(this.codes[k] as number);
       put(f, k * 4, s.float !== s.exact ? p.wrong : color(s.float));
       put(iv, k * 4, color(s.bound));
       put(ex, k * 4, color(s.exact));
+      put(st, k * 4, s.stage === null ? p.pending : s.a5Wrong ? p.wrong : s.stage === "exact" ? p.stage : color(s.exact));
     }
   }
 
@@ -401,7 +418,18 @@ export class Explorer {
       tile("bad", fmt(c.floatWrong), "float signs that are wrong", pct(c.floatWrong)),
       tile("warn", fmt(c.undecided), "cells where the interval fixes no sign", pct(c.undecided)),
       tile(c.wrongButDecided === 0 ? "good" : "bad", fmt(c.wrongButDecided), "wrong float signs that the interval fixed", c.wrongButDecided === 0 ? "0: the interval flags each wrong cell" : "a defect of the interval"),
+      this.a5Tile(c, fmt, tile),
     ].join("");
+  }
+
+  /** This method gives the tile of A5: the share of the cells that the float filter decides. */
+  private a5Tile(c: Counts, fmt: (x: number) => string, tile: (cls: string, value: string, cap: string, sub?: string) => string): string {
+    const staged = c.filter + c.exactStage;
+    if (staged === 0) return tile("", "none", "cells that the A5 filter decides", "this sign has no A5 predicate");
+    const share = `${((100 * c.filter) / staged).toFixed(1)}%`;
+    const defects = c.a5Wrong + c.wrongButFiltered;
+    const sub = defects === 0 ? `${fmt(c.filter)} filter, ${fmt(c.exactStage)} exact stage` : `${fmt(defects)} defects of A5`;
+    return tile(defects === 0 ? "stage" : "bad", share, "cells that the A5 filter decides", sub);
   }
 
   private compiled = new WeakMap<SignForm, FloatFunction | null>();
@@ -449,6 +477,7 @@ export class Explorer {
         <div><dt>Float value</dt><dd><code>${formatFloat(d.floatValue, 17)}</code></dd><dd><span class="chip ${signClass(d.float)}">${signText(d.float)}</span></dd></div>
         ${a3 === null ? "" : `<div><dt>A3 float bound</dt><dd><code>${formatFloat(a3.value, 4)} ± ${a3.error === Infinity ? "∞" : formatFloat(a3.error, 4)}</code></dd><dd><span class="chip ${signClass(a3.sign)}">${signText(a3.sign)}</span></dd></div>`}
         <div><dt>A1 interval</dt><dd><code>${d.bounds === null ? "empty" : `[${formatFloat(d.bounds[0], 4)}, ${formatFloat(d.bounds[1], 4)}]`}</code></dd><dd><span class="chip ${signClass(d.bound)}">${signText(d.bound)}</span></dd></div>
+        ${d.a5 === null ? "" : `<div><dt>A5 ${this.sign.form.kind === "incircle" ? "incircle" : "orient2d"}</dt><dd><code>${d.a5.stage === "filter" ? "the float filter decides" : "the filter cannot decide: exact stage"}</code></dd><dd><span class="chip ${signClass(d.a5.sign)}">${signText(d.a5.sign)}</span></dd></div>`}
         <div><dt>Exact value</dt><dd><code>${Q.sign(d.exactValue) === 0 ? "0" : `≈ ${approx(d.exactValue, 6)}`}</code></dd><dd><span class="chip ${signClass(d.exact)}">${signText(d.exact)}</span></dd></div>
       </dl>
       <p class="verdict ${wrong ? "bad" : ""}">${verdict}</p>
@@ -460,7 +489,7 @@ export class Explorer {
     const r = p.record;
     const note = byId("ex-note");
     if (!r) {
-      note.innerHTML = `${esc(p.summary)} This picture is in Kettner, Mehlhorn, Pion, Schirra and Yap, <em>Classroom examples of robustness problems in geometric computations</em> (2008).`;
+      note.innerHTML = `${esc(p.summary)} ${p.cite ?? ""}`;
       return;
     }
     const answer = (x: boolean | number): string => (typeof x === "boolean" ? (x ? "true" : "false") : signText(x as -1 | 0 | 1));
@@ -476,6 +505,11 @@ export class Explorer {
     for (const [a, b] of scene.segments) xs.push(a[0], b[0]), ys.push(a[1], b[1]);
     for (const b of scene.boxes) xs.push(b.x, b.x + b.w), ys.push(b.y, b.y + b.h);
     for (const p of scene.points) xs.push(p.at[0]), ys.push(p.at[1]);
+    for (const [a, b, c] of scene.circles ?? []) {
+      const o = circumcenter(a, b, c);
+      const r = o === null ? 0 : Math.hypot(a[0] - o[0], a[1] - o[1]);
+      if (o !== null) xs.push(o[0] - r, o[0] + r), ys.push(o[1] - r, o[1] + r);
+    }
     const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
     const span = Math.max(maxX - minX, maxY - minY, 1e-9);
     const W = 320;
@@ -499,6 +533,10 @@ export class Explorer {
         parts.push(`<circle class="sc-ring" cx="${cx}" cy="${cy}" r="${Math.max(w, h) / 2 + 8}" />`);
         parts.push(`<text class="sc-label" x="${cx + Math.max(w, h) / 2 + 12}" y="${cy + 4}">box</text>`);
       }
+    }
+    for (const [a, b, c] of scene.circles ?? []) {
+      const o = circumcenter(a, b, c);
+      if (o !== null) parts.push(`<circle class="sc-circle" cx="${X(o[0])}" cy="${Y(o[1])}" r="${Math.hypot(a[0] - o[0], a[1] - o[1]) * k}" />`);
     }
     const pts = this.form.points;
     if (pts) {
@@ -540,6 +578,11 @@ export class Explorer {
       const length = Math.hypot((vars[b[0]] as number) - (vars[a[0]] as number), (vars[b[1]] as number) - (vars[a[1]] as number));
       const distance = Math.abs(Q.toNumber(value)) / length;
       note.innerHTML = `At this scale, <strong>${esc(moving)}</strong> is on the line through ${others.map(esc).join(" and ")}. Its exact distance from that line is ${distance === 0 ? "0" : `about <code>${formatFloat(distance, 3)}</code>`}. One ulp of its x is <code>${formatFloat(ulp(x), 3)}</code>. The float value of the sign is <code>${formatFloat(fv, 6)}</code>, and the exact value is <code>${Q.sign(value) === 0 ? "0" : approx(value, 4)}</code>.`;
+      return;
+    }
+    if (this.sign.form.kind === "incircle") {
+      const pos = Q.sign(value) > 0 ? "inside" : Q.sign(value) < 0 ? "outside" : "on";
+      note.innerHTML = `The sign <code>${esc(this.sign.label)}</code> is positive when d is inside the circle through a, b and c. At the input, <strong>d</strong> is exactly ${pos} that circle. One ulp of its x is <code>${formatFloat(ulp(x), 3)}</code>. The float value of the sign is <code>${formatFloat(fv, 6)}</code>, and the exact value is <code>${Q.sign(value) === 0 ? "0" : approx(value, 4)}</code>.`;
       return;
     }
     note.innerHTML = `The sign <code>${esc(this.sign.label)}</code> compares where the segment meets two sides of the box. It is near 0 when the line of the segment goes near a corner. The float value is <code>${formatFloat(fv, 6)}</code>, and the exact value is <code>${Q.sign(value) === 0 ? "0" : approx(value, 4)}</code>.`;

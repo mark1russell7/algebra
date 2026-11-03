@@ -4,7 +4,7 @@ import { startClasses, startRecords } from "./census-view.ts";
 import { Explorer } from "./explorer.ts";
 import { inlineHtml, type PackageInfo, type RoadmapItem, type StatusKind } from "./index.ts";
 import { startPlayground } from "./playground.ts";
-import { CLASSROOM, parseNearMisses, presetOfRecord } from "./presets.ts";
+import { CLASSROOM, INCIRCLE, parseNearMisses, presetOfRecord } from "./presets.ts";
 
 declare const __ROADMAP__: readonly RoadmapItem[];
 declare const __PACKAGES__: readonly PackageInfo[];
@@ -22,9 +22,10 @@ const file = parseNearMisses(nearMissJson);
 const records = file.records.map((r, k) => presetOfRecord(r, k));
 const groups = new Map<string, string>();
 for (const p of CLASSROOM) groups.set(p.id, "Classroom");
+for (const p of INCIRCLE) groups.set(p.id, "In-circle (A5)");
 for (const p of records) groups.set(p.id, `Census records: ${p.record?.set ?? ""}`);
 const explorer = new Explorer(byId("ex"));
-explorer.setPresets([...CLASSROOM, ...records], groups);
+explorer.setPresets([...CLASSROOM, ...INCIRCLE, ...records], groups);
 // A link can name a preset, for example ?preset=record-13.
 const asked = new URLSearchParams(window.location.search).get("preset");
 if (asked) explorer.load(asked);
