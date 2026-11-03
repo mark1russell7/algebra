@@ -45,6 +45,9 @@ const child = path.join(path.dirname(fileURLToPath(import.meta.url)), "child.ts"
 const pairs = [...STAGES, "aa"] as const;
 const records: Record<string, PairedTime[]> = Object.fromEntries(pairs.map((p) => [p, []]));
 const metas: Meta[] = [];
+// The bench appends the records of each process at once, so a run that stops keeps the records before it.
+for (const pair of pairs) fs.writeFileSync(path.join(out, `records-${pair}.jsonl`), "");
+fs.writeFileSync(path.join(out, "meta.jsonl"), "");
 for (const [index, name] of names.entries()) {
   for (const pair of pairs) {
     const result = spawnSync(process.execPath, [child, name, pair, rounds, String(index), ms], { encoding: "utf8", maxBuffer: 1 << 26 });
@@ -53,13 +56,12 @@ for (const [index, name] of names.entries()) {
       const value = JSON.parse(line) as PairedTime | { meta: Meta };
       if ("meta" in value) metas.push(value.meta);
       else records[pair]!.push(value);
+      fs.appendFileSync(path.join(out, "meta" in value ? "meta.jsonl" : `records-${pair}.jsonl`), line + "\n");
     }
     console.error(`${name} ${pair}: done`);
   }
 }
 
-for (const pair of pairs) fs.writeFileSync(path.join(out, `records-${pair}.jsonl`), jsonl(records[pair]!));
-fs.writeFileSync(path.join(out, "meta.jsonl"), jsonl(metas));
 const result = report(records, metas, errors);
 fs.writeFileSync(path.join(out, "model.json"), JSON.stringify(result.model, null, 2) + "\n");
 fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(result, null, 2) + "\n");
