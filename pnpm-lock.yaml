@@ -239,6 +239,9 @@ importers:
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
+      '@mark1russell7/predicates':
+        specifier: workspace:*
+        version: link:../predicates
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -249,6 +252,30 @@ importers:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
+
+  packages/predicates:
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^1.0.2
+        version: 1.1.0
+      '@mark1russell7/expression':
+        specifier: workspace:*
+        version: link:../expression
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      robust-predicates:
+        specifier: ^3.0.3
+        version: 3.0.3
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -1306,6 +1333,9 @@ packages:
     engines: {node: '>= 0.4'}
     hasBin: true
 
+  robust-predicates@3.0.3:
+    resolution: {integrity: sha512-NS3levdsRIUOmiJ8FZWCP7LG3QpJyrs/TE0Zpf1yvZu8cAJJ6QMW92H1c7kWpdIHo8RvmLxN/o2JXTKHp74lUA==}
+
   rolldown-plugin-dts@0.28.8:
     resolution: {integrity: sha512-FVhfqxorCWcc20BVT5eVRfRjzLLl6mgzjcMR4gSBf0K4oQMXT0qoHhhzfXy0L7y83fQy7Ug5ZDNk90xM3/LiCQ==}
     engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
@@ -2218,6 +2248,8 @@ snapshots:
       is-core-module: 2.17.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+
+  robust-predicates@3.0.3: {}
 
   rolldown-plugin-dts@0.28.8(rolldown@1.2.16)(typescript@7.0.2):
     dependencies:

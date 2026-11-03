@@ -4,8 +4,8 @@
  *
  * @packageDocumentation
  */
-export * as dyadic from "./dyadic.ts";
-export type { Dyadic } from "./dyadic.ts";
+export { dyadic } from "@mark1russell7/predicates";
+export type { Dyadic } from "@mark1russell7/predicates";
 export { boundSign, exactValue, floatValue, orient, orientForm, signForm, structuralZero } from "./expressions.ts";
 export type { Point, PointExpr, PointVars, Sign, SignForm } from "./expressions.ts";
 export {
