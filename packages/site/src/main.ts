@@ -1,6 +1,9 @@
 import "./style.css";
+import costReport from "../data/a6-report.json";
 import nearMissJson from "../data/near-misses.json";
 import { startClasses, startRecords } from "./census-view.ts";
+import type { CostReport } from "./cost.ts";
+import { startCost } from "./cost-view.ts";
 import { Explorer } from "./explorer.ts";
 import { inlineHtml, type PackageInfo, type RoadmapItem, type StatusKind } from "./index.ts";
 import { startPlayground } from "./playground.ts";
@@ -31,6 +34,7 @@ const asked = new URLSearchParams(window.location.search).get("preset");
 if (asked) explorer.load(asked);
 
 startPlayground();
+startCost(costReport as unknown as CostReport);
 startClasses();
 startRecords(file, (index) => {
   explorer.load(`record-${index}`);

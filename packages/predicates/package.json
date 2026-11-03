@@ -2,11 +2,60 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/predicates",
   "version": "0.1.0",
-  "private": true,
-  "type": "module",
   "description": "Exact geometric predicates for float inputs: orientation, in-circle and segment intersection. A float filter with a stated bound answers first, and an exact dyadic sign answers the rest.",
+  "keywords": [
+    "geometry",
+    "computational-geometry",
+    "predicates",
+    "orientation",
+    "incircle",
+    "segment-intersection",
+    "exact-arithmetic",
+    "bigint"
+  ],
+  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/predicates#readme",
+  "bugs": {
+    "url": "https://github.com/mark1russell7/algebra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "directory": "packages/predicates"
+  },
+  "license": "MIT",
+  "author": "Mark Russell (https://github.com/mark1russell7)",
+  "type": "module",
+  "sideEffects": false,
   "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./corpus": "./src/corpus.test-helper.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "build",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-helper.ts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
@@ -17,11 +66,8 @@
     "@mark1russell7/rational": "workspace:*",
     "@types/node": "^26.6.5",
     "robust-predicates": "^3.0.3",
+    "tsdown": "^0.23.4",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./corpus": "./src/corpus.test-helper.ts"
   }
 }
