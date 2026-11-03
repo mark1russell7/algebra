@@ -14,7 +14,7 @@ import {
   orient2d,
   orient2dExact,
   orient2dSign,
-  segmentIntersection,
+  classifySegments,
   UNDERFLOW_TERM,
 } from "./index.ts";
 import type { SegmentRelation, Sign } from "./index.ts";
@@ -31,7 +31,7 @@ function rpSegment(ax: number, ay: number, bx: number, by: number, cx: number, c
   const o = (px: number, py: number, qx: number, qy: number, rx: number, ry: number): Sign => sign(-rpOrient2d(px, py, qx, qy, rx, ry));
   const [o1, o2, o3, o4] = [o(ax, ay, bx, by, cx, cy), o(ax, ay, bx, by, dx, dy), o(cx, cy, dx, dy, ax, ay), o(cx, cy, dx, dy, bx, by)];
   if (o1 * o2 > 0 || o3 * o4 > 0) return "disjoint";
-  if (o1 === 0 && o2 === 0 && o3 === 0 && o4 === 0) return segmentIntersection(ax, ay, bx, by, cx, cy, dx, dy).relation;
+  if (o1 === 0 && o2 === 0 && o3 === 0 && o4 === 0) return classifySegments(ax, ay, bx, by, cx, cy, dx, dy).relation;
   return o1 === 0 || o2 === 0 || o3 === 0 || o4 === 0 ? "touch" : "cross";
 }
 
@@ -121,9 +121,9 @@ describe("incircle", () => {
   });
 });
 
-describe("segmentIntersection", () => {
+describe("classifySegments", () => {
   const rel = (...p: Eight): string => {
-    const r = segmentIntersection(...p);
+    const r = classifySegments(...p);
     return `${r.relation}${r.collinear ? " collinear" : ""}`;
   };
 
@@ -138,24 +138,24 @@ describe("segmentIntersection", () => {
     expect(rel(1, 1, 1, 1, 0, 0, 2, 2)).toBe("touch collinear");
     expect(rel(1, 1, 1, 1, 1, 1, 1, 1)).toBe("touch collinear");
     expect(rel(1, 1, 1, 1, 0, 0, 2, 0)).toBe("disjoint");
-    expect(segmentIntersection(0, 0, 2, 2, 0, 2, 2, 0).stage).toBe("filter");
+    expect(classifySegments(0, 0, 2, 2, 0, 2, 2, 0).stage).toBe("filter");
   });
 
   it.each(C.FAMILIES)("gives the relation of the rational oracle on the family %s", (family) => {
     let exact = 0;
     const seen = new Set<string>();
     for (const p of C.points(family, 3, C.segmentInput)) {
-      const r = segmentIntersection(...p);
+      const r = classifySegments(...p);
       const o = C.segmentOracle(...p);
-      expect({ relation: r.relation, collinear: r.collinear }, `segmentIntersection(${p.join(", ")})`).toEqual(o);
+      expect({ relation: r.relation, collinear: r.collinear }, `classifySegments(${p.join(", ")})`).toEqual(o);
       seen.add(r.relation);
       if (r.stage === "exact") exact++;
     }
-    console.log(`segmentIntersection ${family}: ${C.RUNS - exact} of ${C.RUNS} decided by the filter, relations ${[...seen].sort().join(", ")}`);
+    console.log(`classifySegments ${family}: ${C.RUNS - exact} of ${C.RUNS} decided by the filter, relations ${[...seen].sort().join(", ")}`);
   });
 
   it.each(AGREEMENT)("agrees with the same rule on robust-predicates on the family %s", (family) => {
-    for (const p of C.points(family, 3, C.segmentInput)) expect(segmentIntersection(...p).relation, `segment(${p.join(", ")})`).toBe(rpSegment(...p));
+    for (const p of C.points(family, 3, C.segmentInput)) expect(classifySegments(...p).relation, `segment(${p.join(", ")})`).toBe(rpSegment(...p));
   });
 });
 
@@ -174,7 +174,7 @@ describe("the 42 real records of the A13 census", () => {
     for (const r of records) {
       if (r.predicate === "segmentPair") {
         const [a, b, c, d] = [v(r.input["a"]), v(r.input["b"]), v(r.input["c"]), v(r.input["d"])];
-        const s = segmentIntersection(...a, ...b, ...c, ...d);
+        const s = classifySegments(...a, ...b, ...c, ...d);
         // geom.segmentsCross and routes.segmentsCrossInside are proper crossings: a touch is not a crossing.
         expect(s.relation === "cross", `${r.fn} ${JSON.stringify(r.input)}`).toBe(r.exactAnswer);
         expect(s).toEqual({ ...C.segmentOracle(...a, ...b, ...c, ...d), stage: s.stage });
@@ -206,7 +206,7 @@ describe("the share that the filter decides", () => {
   it.each([
     ["orient2d", (rnd: () => number) => orient2d(...C.orientInput("random", rnd)).stage],
     ["incircle", (rnd: () => number) => incircle(...C.incircleInput("random", rnd)).stage],
-    ["segmentIntersection", (rnd: () => number) => segmentIntersection(...C.segmentInput("random", rnd)).stage],
+    ["classifySegments", (rnd: () => number) => classifySegments(...C.segmentInput("random", rnd)).stage],
   ] as const)("is at least 0.999 of %s on 100 000 random points", (name, stage) => {
     const rnd = random(2026);
     let filter = 0;

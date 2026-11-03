@@ -13,7 +13,7 @@ The first users are packing and highways. The census of A13 found no float sign 
 | `orient2dExact(...)` | The sign of the exact stage, with no filter | Exact |
 | `incircle(ax, ay, bx, by, cx, cy, dx, dy)` | The sign of the in-circle test of `d`, and the stage | Exact |
 | `incircleSign(...)`, `incircleExact(...)` | The same sign without the stage, and the exact stage alone | Exact |
-| `segmentIntersection(ax, ay, bx, by, cx, cy, dx, dy)` | The relation of the closed segments `ab` and `cd`, the collinear flag and the stage | Exact |
+| `classifySegments(ax, ay, bx, by, cx, cy, dx, dy)` | The relation of the closed segments `ab` and `cd`, the collinear flag and the stage | Exact |
 | `dyadic` | The dyadic numbers `m * 2^e` over `bigint`: `fromFloat`, `add`, `sub`, `mul`, `sign`, `compare` | Exact |
 
 The inputs must be finite. Each function refuses `NaN` and an infinite value with a `RangeError`.
@@ -60,9 +60,9 @@ The property tests compare each predicate with the exact rationals of `@mark1rus
 On the same corpus without the tiny and huge scales, the signs agree with `robust-predicates`. On the tiny and huge scales, `robust-predicates` gives wrong signs, because its float stage underflows or overflows.
 
 ```ts
-import { orient2d, segmentIntersection } from "@mark1russell7/predicates";
+import { orient2d, classifySegments } from "@mark1russell7/predicates";
 
 orient2d(0, 0, 1, 0, 0, 1);                 // { sign: 1, stage: "filter" }
 orient2d(0, 0, 1, 1, 2, 2);                 // { sign: 0, stage: "exact" }
-segmentIntersection(0, 0, 2, 0, 2, 0, 3, 3); // { relation: "touch", collinear: false, stage: "filter" }
+classifySegments(0, 0, 2, 0, 2, 0, 3, 3); // { relation: "touch", collinear: false, stage: "filter" }
 ```

@@ -17,7 +17,7 @@ import type { Stage } from "./sign.ts";
  */
 export type SegmentRelation = "disjoint" | "cross" | "touch" | "overlap";
 
-/** The result of `segmentIntersection`. */
+/** The result of `classifySegments`. */
 export interface SegmentIntersection {
   readonly relation: SegmentRelation;
   /**
@@ -71,7 +71,7 @@ function collinearRelation(ax: number, ay: number, bx: number, by: number, cx: n
  * @returns The relation, the collinear flag and the stage.
  * @throws RangeError - The function refuses an input that is not finite.
  */
-export function segmentIntersection(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): SegmentIntersection {
+export function classifySegments(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): SegmentIntersection {
   const k1 = orientCode(ax, ay, bx, by, cx, cy);
   const k2 = orientCode(ax, ay, bx, by, dx, dy);
   let exact = k1 > 1 || k2 > 1;
