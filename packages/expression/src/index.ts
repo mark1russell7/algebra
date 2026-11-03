@@ -16,6 +16,7 @@ export {
   compileExact,
   compileFloat,
   compileInterval,
+  compileTape,
   expressionMachine,
   expressionWorld,
   EXACT,
@@ -25,6 +26,7 @@ export {
   SHAPES,
   SUMMARY,
   summarize,
+  TAPE,
 } from "./kinds.ts";
 export type { BallFunction, CompileFloatOptions, ExactFunction, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
 export { floatNode, floatNum, floatRoot, floatVar, rootError, UNIT_ROUNDOFF } from "./float.ts";

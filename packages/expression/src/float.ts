@@ -78,7 +78,7 @@ const divUp = (x: number, y: number): number => x / y + MIN;
  * @param p - The bound of the error that comes from the inputs.
  * @returns The bound of `|v - exact|`.
  */
-function close(v: number, p: number): number {
+export function close(v: number, p: number): number {
   const b = (p + mulUp(U, Math.abs(v)) + NORMAL) * GROW;
   return b <= Infinity ? b : Infinity;
 }
@@ -87,7 +87,7 @@ function close(v: number, p: number): number {
  * This function gives the bound of a rounded product `v = fl(a * b)`. The real product of the exact inputs `A` and `B`
  * differs from `a * b` by at most `|a| eb + |b| ea + ea eb`.
  */
-function mulError(v: number, a: number, ea: number, b: number, eb: number): number {
+export function mulError(v: number, a: number, ea: number, b: number, eb: number): number {
   return close(v, mulUp(Math.abs(a), eb) + mulUp(Math.abs(b), ea) + mulUp(ea, eb));
 }
 
@@ -96,7 +96,7 @@ function mulError(v: number, a: number, ea: number, b: number, eb: number): numb
  * zero, and `|a / b - A / B| <= (|a / b| eb + ea) / (|b| - eb)`. Else the divisor can be zero, and the bound is
  * `Infinity`. The term `|v| + MIN` is an upper bound of `|a / b| / (1 + u)`.
  */
-function divError(v: number, ea: number, b: number, eb: number): number {
+export function divError(v: number, ea: number, b: number, eb: number): number {
   const m = Math.abs(b);
   if (!(eb < m)) return Infinity;
   return close(v, divUp(mulUp(Math.abs(v) + MIN, eb) + ea, m - eb));
@@ -264,16 +264,20 @@ function powCell(base: FloatCell, exp: number): FloatCell {
 }
 
 /**
- * This function compiles a square root. `Math.sqrt` is correctly rounded. When `er <= r`, the exact radicand `R` is
- * not negative, and `|sqrt(r) - sqrt(R)|` is at most `er / sqrt(r)` and at most `sqrt(er)`.
+ * This function gives the bound of a square root. `Math.sqrt` is correctly rounded. When `er <= r`, the exact
+ * radicand `R` is not negative, and `|sqrt(r) - sqrt(R)|` is at most `er / sqrt(r)` and at most `sqrt(er)`.
  */
+export function sqrtError(v: number, r: number, er: number): number {
+  return !(er <= r) ? Infinity : close(v, er === 0 ? 0 : Math.min(divUp(er, v), Math.sqrt(er)));
+}
+
 function sqrtCell(radicand: FloatCell): FloatCell {
   const out = cell();
   out.run = (values) => {
     const r = radicand.run(values);
     const er = radicand.error;
     const v = Math.sqrt(r);
-    out.error = !(er <= r) ? Infinity : close(v, er === 0 ? 0 : Math.min(divUp(er, v), Math.sqrt(er)));
+    out.error = sqrtError(v, r, er);
     return v;
   };
   return out;
@@ -331,7 +335,7 @@ function rootCell(radicand: FloatCell, k: number): FloatCell {
  * the bound `ed` of `sub`, so the exact difference is in `[d - ed, d + ed]`. The bound decides the comparison when
  * that interval is on one side of zero.
  */
-function comparisonError(kind: "lt" | "le" | "eq", a: number, ea: number, b: number, eb: number): number {
+export function comparisonError(kind: "lt" | "le" | "eq", a: number, ea: number, b: number, eb: number): number {
   if (ea === 0 && eb === 0) return 0;
   const d = a - b;
   const ed = close(d, ea + eb);

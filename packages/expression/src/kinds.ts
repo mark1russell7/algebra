@@ -22,6 +22,8 @@ import type { Enclosure, IntervalCell, IntervalInput } from "./interval-evaluato
 import type { Document } from "./schema.ts";
 import { combine, numSummary, varSummary } from "./summary.ts";
 import type { KindName, NodeData, Summary } from "./summary.ts";
+import { tapeNode, tapeNum, tapeOf, tapeVar } from "./tape.ts";
+import type { TapeTree } from "./tape.ts";
 
 /** The verb that gives the summary of a node. */
 export const SUMMARY = "summary";
@@ -33,9 +35,11 @@ export const INTERVAL = "interval";
 export const BALL = "ball";
 /** The verb that compiles a node into code that gives its exact rational value (roadmap item A6). */
 export const EXACT = "exact";
+/** The verb that gives a tree for the flat tape of float instructions, with the rules of `float`. */
+export const TAPE = "tape";
 
 /** The verbs of the compiled evaluators, which take the position of each variable from the context. */
-const COMPILED = [FLOAT, INTERVAL, BALL, EXACT] as const;
+const COMPILED = [FLOAT, INTERVAL, BALL, EXACT, TAPE] as const;
 
 const list: Shape = { shape: "list" };
 const term: Shape = { shape: "term" };
@@ -149,9 +153,10 @@ const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>>
   [INTERVAL]: { num: intervalNum, variable: intervalVar, node: (k, p, d) => intervalNode(k, p as IntervalCell[], d) },
   [BALL]: { num: ballNum, variable: ballVar, node: (k, p, d) => ballNode(k, p as BallCell[], d) },
   [EXACT]: { num: exactNum, variable: exactVar, node: (k, p, d) => exactNode(k, p as ExactCell[], d) },
+  [TAPE]: { num: tapeNum, variable: tapeVar, node: (k, p, d) => tapeNode(k, p as TapeTree[], d) },
 };
 
-/** The machine of the verbs `summary`, `float`, `interval`, `ball` and `exact` for the expression kinds. */
+/** The machine of the verbs `summary`, `float`, `interval`, `ball`, `exact` and `tape` for the expression kinds. */
 export const expressionMachine: Machine = {
   world: expressionWorld,
   evaluators: Object.fromEntries(
@@ -242,6 +247,28 @@ export function compileFloat(doc: Document, options: CompileFloatOptions = {}): 
       checkCount(values, variables.length);
       const value = run(values);
       return { value, error: root.error };
+    },
+  });
+}
+
+/**
+ * This function compiles a document one time into a flat tape of float instructions, with the verb `tape` of coeval.
+ * One loop operates the tape. Each call gives the value and the bound of `compileFloat`, with no closure for a node.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileTape(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
+  const made = compileWith<TapeTree>(TAPE, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = tapeOf(root);
+  return ok({
+    variables,
+    evaluate(values) {
+      checkCount(values, variables.length);
+      return run(values);
     },
   });
 }

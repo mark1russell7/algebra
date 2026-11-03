@@ -34,6 +34,10 @@ const result = summarize(doc, { bounds: { x: [0, 1] } });
 // result.value.bounds contains x + 0.1 for each x in [0, 1].
 ```
 
+## The tape evaluator
+
+`compileTape` gives the value and the bound of `compileFloat`, and it has the same type. It flattens a document into a list of float instructions, and one loop operates the list. It has no closure for a node, no `eval` and no `new Function`. A compiled tape keeps its registers between calls.
+
 ## The float evaluator
 
 The verb `float` compiles a document one time into a tree of closures (roadmap item A3). Each call gives a float value and a bound of its error. The code has no `eval` and no `new Function`.
