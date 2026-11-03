@@ -231,6 +231,34 @@ importers:
         specifier: ^5.0.3
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
 
+  packages/expression-bench:
+    dependencies:
+      '@algebra/expression-corpus':
+        specifier: workspace:*
+        version: link:../expression-corpus
+      '@mark1russell7/expression':
+        specifier: workspace:*
+        version: link:../expression
+      '@mark1russell7/rigor-bench':
+        specifier: ^0.1.2
+        version: 0.1.2
+      '@mark1russell7/rigor-statistics':
+        specifier: ^0.1.2
+        version: 0.1.5
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^1.0.2
+        version: 1.1.0
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
+
   packages/expression-corpus:
     dependencies:
       '@mark1russell7/expression':
@@ -615,6 +643,10 @@ packages:
     resolution: {integrity: sha512-R9pjuWNFqd/LSfOI8uY7w8E2Dri8UQFGLodBuV4d2E0pwzWM5ISVXWVhC7+aYgrR1GXSMzbyo5ZLWvqyQCwdIg==}
     engines: {node: '>=22'}
     hasBin: true
+
+  '@mark1russell7/rigor-bench@0.1.2':
+    resolution: {integrity: sha512-qswAQ4T+bZ+tbSa7CjmADuimCtR0KF6SMDChC/30Xekg/GoLIUGW8pqkG0+FamVhwMjSjQMGEXqUGPaulaxbIA==}
+    engines: {node: '>=22'}
 
   '@mark1russell7/rigor-bench@0.2.2':
     resolution: {integrity: sha512-l5IhEcn9VcUR4oyYOcBw27y1wBA3zOB/CV9DZ6XSn6y1fwMtO4S7zfdzaeIgulsg7fyuuhGPbIqEW9qqo63BXw==}
@@ -1754,6 +1786,10 @@ snapshots:
   '@mark1russell7/conventions@0.18.0': {}
 
   '@mark1russell7/cue@1.1.0': {}
+
+  '@mark1russell7/rigor-bench@0.1.2':
+    dependencies:
+      '@mark1russell7/rigor-statistics': 0.1.5
 
   '@mark1russell7/rigor-bench@0.2.2':
     dependencies:
