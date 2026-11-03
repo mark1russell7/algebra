@@ -5,10 +5,14 @@
  *
  * @packageDocumentation
  */
+import { NO_CLAIM } from "@mark1russell7/expression";
 import type { Expression } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
-import type { Polynomial, Power, Term } from "./polynomial.ts";
+import { divide, radical } from "./gcd.ts";
+import { constantOf } from "./polynomial.ts";
+import type { Limits, Polynomial, Power, Term } from "./polynomial.ts";
+import type { RationalFunction } from "./rational-function.ts";
 
 /** The bits of one limb of a large integer. A limb of this size is an exact float. */
 const LIMB_BITS = 52n;
@@ -65,4 +69,23 @@ export function toDocument(p: Polynomial): Expression {
   const [first, second, ...rest] = p.terms.map(termDocument);
   if (first === undefined) return num(0);
   return second === undefined ? first : { type: "add", value: [first, second, ...rest] };
+}
+
+/**
+ * This function gives a document of a rational function, with the same value and the same points without a value. The
+ * document is the quotient of the two fields. A hole is a zero of the domain that is not a zero of the denominator. The
+ * term `0 / h` of the polynomial `h` of the holes keeps each hole. Equal functions give equal documents.
+ *
+ * @param f - The function.
+ * @param limits - The limits of the operation.
+ * @returns The document, or `"no claim"` past a limit.
+ */
+export function toRationalDocument(f: RationalFunction, limits: Limits): Expression | typeof NO_CLAIM {
+  const value = constantOf(f.denominator) === undefined ? ({ type: "div", value: [toDocument(f.numerator), toDocument(f.denominator)] } as const) : toDocument(f.numerator);
+  const zeros = radical(f.denominator, limits);
+  if (zeros === NO_CLAIM) return NO_CLAIM;
+  const holes = divide(f.domain, zeros, limits);
+  if (holes === NO_CLAIM) return NO_CLAIM;
+  if (holes === undefined) throw new RangeError("Each factor of a denominator is a factor of the domain.");
+  return constantOf(holes) === undefined ? { type: "add", value: [value, { type: "div", value: [num(0), toDocument(holes)] }] } : value;
 }

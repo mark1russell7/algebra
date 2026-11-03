@@ -280,6 +280,50 @@ export function evaluate(p: Polynomial, values: Readonly<Record<string, Rational
   return out;
 }
 
+/** This function gives the names of the variables of a polynomial, in the order of their code units. */
+export function variablesOf(p: Polynomial): readonly string[] {
+  const names = new Set<string>();
+  for (const t of p.terms) for (const q of t.powers) names.add(q.variable);
+  return [...names].sort(compareNames);
+}
+
+/**
+ * This function gives a polynomial as a list of coefficients of powers of one variable. The element at the index `i`
+ * is the coefficient of `name^i`, and no coefficient has the variable. The last element is not zero. The zero
+ * polynomial gives the empty list.
+ *
+ * @param p - The polynomial.
+ * @param name - The name of the variable.
+ * @returns The coefficients, from the power 0.
+ */
+export function coefficientsIn(p: Polynomial, name: string): readonly Polynomial[] {
+  const buckets: Term[][] = [];
+  for (const t of p.terms) {
+    const found = t.powers.find((q) => q.variable === name);
+    // terms with one exponent of the variable keep their order without it, so each bucket stays canonical
+    const bucket = (buckets[found?.exponent ?? 0] ??= []);
+    bucket.push(found === undefined ? t : { coefficient: t.coefficient, powers: t.powers.filter((q) => q !== found) });
+  }
+  return Array.from(buckets, (terms) => (terms === undefined ? ZERO : { terms }));
+}
+
+/**
+ * This function gives the polynomial of a list of coefficients of powers of one variable. It is the inverse of
+ * `coefficientsIn`.
+ *
+ * @param coefficients - The coefficients, from the power 0. No coefficient has the variable.
+ * @param name - The name of the variable.
+ * @returns The polynomial.
+ */
+export function fromCoefficients(coefficients: readonly Polynomial[], name: string): Polynomial {
+  const out: Collected = new Map();
+  coefficients.forEach((c, exponent) => {
+    const factor = exponent === 0 ? [] : [{ variable: name, exponent }];
+    for (const t of c.terms) collect(out, t.coefficient, multiplyMonomials(t.powers, factor));
+  });
+  return canonical(out);
+}
+
 /**
  * This function gives the canonical text of a polynomial, for example `x^2 + 2*x*y - 3/2*y + 1`. Two polynomials have
  * equal keys when, and only when, they are equal. The zero polynomial has the key `0`.
