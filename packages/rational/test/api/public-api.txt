@@ -4,7 +4,7 @@
 # and private members. The command `api-report check` compares this file with the built .d.ts files.
 # To accept a change of the API, start the build, then `api-report update`, and review the diff.
 
-## . (build/index.d.ts): 24 names
+## . (build/index.d.ts): 26 names
 
 ONE: build/index.d.ts#ONE
 type Rational: build/index.d.ts#Rational
@@ -20,12 +20,14 @@ floor: build/index.d.ts#floor
 fromDecimal: build/index.d.ts#fromDecimal
 fromFloat: build/index.d.ts#fromFloat
 fromNumber: build/index.d.ts#fromNumber
+integerRoot: build/index.d.ts#integerRoot
 inverse: build/index.d.ts#inverse
 isInteger: build/index.d.ts#isInteger
 mul: build/index.d.ts#mul
 neg: build/index.d.ts#neg
 pow: build/index.d.ts#pow
 rational: build/index.d.ts#rational
+root: build/index.d.ts#root
 sign: build/index.d.ts#sign
 sub: build/index.d.ts#sub
 toNumber: build/index.d.ts#toNumber
@@ -78,6 +80,9 @@ export declare const fromFloat: (value: number) => Rational;
 ### build/index.d.ts#fromNumber
 export declare const fromNumber: (value: number) => Rational;
 
+### build/index.d.ts#integerRoot
+export declare const integerRoot: (n: bigint, k: number) => bigint;
+
 ### build/index.d.ts#inverse
 export declare const inverse: (a: Rational) => Rational;
 
@@ -95,6 +100,9 @@ export declare const pow: (a: Rational, exponent: number) => Rational;
 
 ### build/index.d.ts#rational
 export declare const rational: (n: bigint, d?: bigint) => Rational;
+
+### build/index.d.ts#root
+export declare const root: (a: Rational, k: number) => Rational | null;
 
 ### build/index.d.ts#sign
 export declare const sign: (a: Rational) => -1 | 0 | 1;

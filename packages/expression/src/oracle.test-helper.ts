@@ -43,21 +43,10 @@ const hull = (xs: readonly Rational[]): Enc => ({ lo: xs.reduce(minR), hi: xs.re
 const containsZero = (e: Enc): boolean => Q.sign(e.lo) <= 0 && Q.sign(e.hi) >= 0;
 
 /** The integer k-th root of n >= 0, rounded down (Newton on bigint). */
-function iroot(n: bigint, k: number): bigint {
-  if (n < 2n) return n;
-  const K = BigInt(k);
-  let x = 1n << BigInt(Math.ceil(n.toString(2).length / k));
-  for (;;) {
-    const y = ((K - 1n) * x + n / x ** (K - 1n)) / K;
-    if (y >= x) return x;
-    x = y;
-  }
-}
-
 /** Rational bounds of the k-th root of r >= 0: lo <= root(r) <= hi, with hi - lo <= 2^-PREC. */
 function rootEnc(r: Rational, k: number): Enc {
   const scale = 1n << BigInt(PREC * k);
-  const m = iroot((r.n * scale) / r.d, k);
+  const m = Q.integerRoot((r.n * scale) / r.d, k);
   const den = 1n << BigInt(PREC);
   const lo = Q.rational(m, den);
   return Q.equals(Q.pow(lo, k), r) ? point(lo) : { lo, hi: Q.rational(m + 1n, den) };

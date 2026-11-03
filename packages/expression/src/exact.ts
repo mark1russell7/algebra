@@ -7,8 +7,8 @@
  *
  * - a rational: a claim. It is the exact value of the expression at the point.
  * - `null`: a claim. The expression has no real value at the point, for example a quotient by zero.
- * - `"no claim"`: the evaluator cannot tell. A root of a radicand other than `0`, `1` or `-1` gives it, because its
- *   value is not always rational. A variable that is not finite gives it too.
+ * - `"no claim"`: the evaluator cannot tell. A root that is not rational gives it, for example the square root of 2.
+ *   A variable that is not finite gives it too.
  * - A node whose numerator or denominator has more than `EXACT_BITS` bits also gives `"no claim"`. Without this limit,
  *   a few nested powers make rationals of millions of bits, and one call takes minutes.
  *
@@ -82,12 +82,13 @@ function runParts(parts: readonly ExactCell[], values: ArrayLike<number>): Ratio
 
 const truth = (t: boolean): Rational => (t ? Q.ONE : Q.ZERO);
 
-/** The rule of a root. Only the radicands `0`, `1` and `-1` give a rational value here. */
+/**
+ * The rule of a root. A root is rational only when the numerator and the denominator of the radicand are both
+ * `k`-th powers. Each other root makes no claim.
+ */
 function rootOf(x: Rational, k: number): ExactResult {
-  const s = Q.sign(x);
-  if (s < 0 && k % 2 === 0) return null;
-  if (s === 0 || Q.equals(Q.abs(x), Q.ONE)) return x;
-  return NO_CLAIM;
+  if (Q.sign(x) < 0 && k % 2 === 0) return null;
+  return Q.root(x, k) ?? NO_CLAIM;
 }
 
 function ruleOf(kind: KindName, data: NodeData): (xs: readonly Rational[]) => ExactResult {

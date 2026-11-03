@@ -19,6 +19,8 @@ export {
   mul,
   neg,
   pow,
+  root,
+  integerRoot,
   rational,
   sign,
   sub,
