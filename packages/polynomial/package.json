@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/polynomial",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The symbolic evaluator of A8: the canonical normal form of a polynomial with exact rational coefficients, from an expression document.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@algebra/expression-corpus": "workspace:*",
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@mark1russell7/coeval": "^0.20.0",
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rational": "workspace:*"
+  }
+}
