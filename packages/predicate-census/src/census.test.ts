@@ -442,3 +442,43 @@ describe("the census of the packing form", () => {
     expect(parseLine({ case: "c", totalPairs: 4, nearPairs: 1 }).form).toBe("count");
   });
 });
+
+describe("the field rule of a dump line (highways #258)", () => {
+  const touch = { a: [10, 42], b: [10, 237], c: [90, 169.842811927414], d: [10, 132.157188072586] };
+  const mid = { p: [2984, 102], a: [2000, 182.71875], b: [3968, 21.28125] };
+  const tally = (...lines: object[]): Census => {
+    const t = new Tally();
+    lines.forEach((l, i) => t.addText("f", i + 1, JSON.stringify(l)));
+    return t.result();
+  };
+
+  it("counts a touch as a crossing when the rule says touch, on a call site without a copy", () => {
+    const r = tally({ case: "c", fn: "other.crossing", n: 1, ...touch, floatAnswer: true, rule: { touch: true, shareTolerance: 1e-9, parallelTolerance: 1e-12 } });
+    expect(r.cases[0]?.floatWrong).toBe(0);
+    expect(r.cases[0]?.unknown).toBe(0);
+  });
+
+  it("gives the default rule to a line without the field and without a copy", () => {
+    const r = tally({ case: "c", fn: "other.crossing", n: 1, ...touch, floatAnswer: true });
+    expect(r.cases[0]?.floatWrong).toBe(1);
+  });
+
+  it("lets the field rule come before the copy of a call site", () => {
+    const r = tally({ case: "c", fn: "mesh.crossing", n: 1, ...touch, floatAnswer: true, rule: { touch: false } });
+    expect(r.cases[0]?.floatWrong).toBe(1);
+  });
+
+  it("gives -1 to a zero side when the rule says zero -1", () => {
+    const r = tally({ case: "c", fn: "other.outOf", n: 1, ...mid, floatAnswer: -1, rule: { zero: -1 } });
+    expect(r.cases[0]?.floatWrong).toBe(0);
+  });
+
+  it("keeps a line with a rule that the census cannot use as unknown, with the reason", () => {
+    const r = tally({ case: "c", fn: "other.outOf", n: 3, ...mid, floatAnswer: 1, rule: { zero: 1 } }, { case: "c", fn: "x", n: 1, ...touch, rule: "closed" });
+    expect(r.cases[0]?.unknown).toBe(4);
+    expect(r.unknown.map((u) => u.error)).toEqual([
+      "The census has no predicate for the rule of the line: the census has no point-side rule with zero 1.",
+      'The census has no predicate for the rule of the line: the rule field is not an object: "closed".',
+    ]);
+  });
+});

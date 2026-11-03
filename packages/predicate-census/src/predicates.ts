@@ -126,6 +126,42 @@ export const CALL_SITE_RULES: Readonly<Record<string, CallSiteRule>> = {
   },
 };
 
+/**
+ * The field `rule` of a dump line of highways (highways #258, `CALL_SITE_RULES` of `packages/core/src/predicate-sink.ts`).
+ * A call site with the default rule of its form has no field. The census does not use the two tolerances.
+ */
+export interface DumpRule {
+  /** For a point-side test: the answer of a zero sign. */
+  readonly zero?: -1 | 0 | 1;
+  /** For a segment pair: the value is `true` when a touch is a crossing. */
+  readonly touch?: boolean;
+  readonly shareTolerance?: number;
+  readonly parallelTolerance?: number;
+}
+
+/**
+ * This function gives the predicate of the field `rule` of a dump line. The predicate is the default of the form
+ * when the field has no change of that form.
+ *
+ * @param form - The form of the line.
+ * @param rule - The field `rule` of the line.
+ * @returns The predicate, or a reason when the census has no predicate for the rule.
+ */
+export function predicateOfRule(form: "segmentPair" | "pointSide", rule: unknown): Predicate | { readonly reason: string } {
+  if (typeof rule !== "object" || rule === null || Array.isArray(rule)) return { reason: `the rule field is not an object: ${JSON.stringify(rule)}` };
+  const r = rule as DumpRule;
+  if (form === "segmentPair") {
+    if (r.zero !== undefined) return { reason: "a segment pair rule has the field zero" };
+    if (r.touch === undefined || r.touch === false) return PREDICATES.segmentPair;
+    if (r.touch === true) return segmentPairClosed;
+    return { reason: `the field touch is not a truth value: ${JSON.stringify(r.touch)}` };
+  }
+  if (r.touch !== undefined) return { reason: "a point-side rule has the field touch" };
+  if (r.zero === undefined || r.zero === 0) return PREDICATES.pointSide;
+  if (r.zero === -1) return pointSideTieLow;
+  return { reason: `the census has no point-side rule with zero ${JSON.stringify(r.zero)}` };
+}
+
 /** The result of the check of one source line of a rule. */
 export interface RuleSourceCheck {
   readonly fn: string;
