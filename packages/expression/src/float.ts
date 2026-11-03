@@ -279,60 +279,37 @@ function sqrtCell(radicand: FloatCell): FloatCell {
   return out;
 }
 
-/** This function gives the smallest power of the interval `[z, z]`, rounded downward. */
-function powLow(z: number, k: number): number {
-  const p = I.pow([z, z], k);
-  return p === null ? Number.NaN : p[0];
-}
-
-/** This function gives the largest power of the interval `[z, z]`, rounded upward. */
-function powHigh(z: number, k: number): number {
-  const p = I.pow([z, z], k);
-  return p === null ? Number.NaN : p[1];
-}
-
-const rootOf = (m: number, k: number): number => (k === 3 ? Math.cbrt(m) : Math.pow(m, 1 / k));
-
-/** The most steps of the search of `rootUp` and `rootDown`. After them, each function gives its trivial bound. */
-const STEPS = 64;
-
 /**
- * This function gives a float `z >= 0` with `z^k >= m`, for `m >= 0`. The check uses the outward powers of `interval`.
- * Near overflow the check cannot pass, and the function gives `Infinity`.
+ * This function gives the float root of index `k` of a value. An odd index takes a negative value as `-root(-r)`.
+ * This value is not correctly rounded. The bound of `rootCell` does not depend on its accuracy.
+ *
+ * @param r - The radicand.
+ * @param k - The index, a whole number of 2 or more.
+ * @returns The float root. An even root of a negative value gives `NaN`.
  */
-function rootUp(m: number, k: number): number {
-  let z = rootOf(m, k);
-  for (let i = 0; z < Infinity && i < STEPS; i++) {
-    if (powLow(z, k) >= m) return z;
-    z = i < 8 ? I.nextUp(z) : z * (1 + 2 ** (i - 60));
-  }
-  return Infinity;
+export function floatRoot(r: number, k: number): number {
+  if (k === 2) return Math.sqrt(r);
+  const f = (m: number): number => (k === 3 ? Math.cbrt(m) : Math.pow(m, 1 / k));
+  return k % 2 === 1 && r < 0 ? -f(-r) : f(r);
 }
-
-/** This function gives a float `z >= 0` with `z^k <= m`, for `m >= 0`. After `STEPS` steps it gives `0`. */
-function rootDown(m: number, k: number): number {
-  let z = rootOf(m, k);
-  if (m === Infinity) return z;
-  for (let i = 0; z > 0 && i < STEPS; i++) {
-    if (powHigh(z, k) <= m) return z;
-    z = i < 8 ? I.nextDown(z) : z * (1 - 2 ** (i - 60));
-  }
-  return 0;
-}
-
-const rootUpSigned = (m: number, k: number): number => (m < 0 ? -rootDown(-m, k) : rootUp(m, k));
-const rootDownSigned = (m: number, k: number): number => (m < 0 ? -rootUp(-m, k) : rootDown(m, k));
 
 /**
  * This function gives the bound of a root of index 3 or more. The exact radicand is in `[r - er, r + er]`, and the
- * root is monotone, so the exact root is in `[rootDown(r - er), rootUp(r + er)]`. The bound is the largest distance
- * from the value to an end of that interval, rounded upward. This bound does not depend on the accuracy of `Math.pow`.
+ * root is monotone, so the outward root `interval.root` of that interval contains the exact root. The bound is the
+ * largest distance from the value to an end of that interval, rounded upward. This bound does not depend on the
+ * accuracy of `Math.pow`. The verb `ball` uses this function for each root.
+ *
+ * @param v - The float root.
+ * @param r - The float radicand.
+ * @param er - The bound of the error of the radicand.
+ * @param k - The index of the root.
+ * @returns The bound of `|v - exact root|`, or `Infinity` when the radicand can be negative for an even index.
  */
-function rootError(v: number, r: number, er: number, k: number): number {
+export function rootError(v: number, r: number, er: number, k: number): number {
   if (!(er < Infinity) || !(v - v === 0)) return Infinity;
   const span = I.add([r, r], [-er, er]) as readonly [number, number];
   if (k % 2 === 0 && span[0] < 0) return Infinity;
-  const d = I.sub([v, v], [rootDownSigned(span[0], k), rootUpSigned(span[1], k)]) as readonly [number, number];
+  const d = I.sub([v, v], I.root(span, k)) as readonly [number, number];
   const e = Math.max(-d[0], d[1]);
   return e <= Infinity ? e : Infinity;
 }
@@ -340,10 +317,9 @@ function rootError(v: number, r: number, er: number, k: number): number {
 function rootCell(radicand: FloatCell, k: number): FloatCell {
   if (k === 2) return sqrtCell(radicand);
   const out = cell();
-  const odd = k % 2 === 1;
   out.run = (values) => {
     const r = radicand.run(values);
-    const v = odd && r < 0 ? -rootOf(-r, k) : rootOf(r, k);
+    const v = floatRoot(r, k);
     out.error = rootError(v, r, radicand.error, k);
     return v;
   };
