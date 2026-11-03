@@ -173,8 +173,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(@swc/core@1.16.21)(dependency-cruiser@18.7.0)
       '@mark1russell7/conventions':
-        specifier: ^0.20.0
-        version: 0.20.0
+        specifier: ^0.21.0
+        version: 0.21.0
       '@mark1russell7/cue':
         specifier: ^1.0.2
         version: 1.1.0
@@ -206,8 +206,8 @@ importers:
   packages/expression:
     dependencies:
       '@mark1russell7/coeval':
-        specifier: ^0.19.0
-        version: 0.19.0
+        specifier: ^0.20.0
+        version: 0.20.0
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -293,8 +293,8 @@ importers:
   packages/predicate-census:
     dependencies:
       '@mark1russell7/coeval':
-        specifier: ^0.19.0
-        version: 0.19.0
+        specifier: ^0.20.0
+        version: 0.20.0
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -410,8 +410,8 @@ importers:
   packages/site:
     dependencies:
       '@mark1russell7/coeval':
-        specifier: ^0.19.0
-        version: 0.19.0
+        specifier: ^0.20.0
+        version: 0.20.0
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -631,11 +631,11 @@ packages:
       dependency-cruiser:
         optional: true
 
-  '@mark1russell7/coeval@0.19.0':
-    resolution: {integrity: sha512-o7hNhqfj5iwTzbPwV8yB/EFCbVlQ2UXtA9TKwDEqOh8jN9/YsfD8Yvx0bO6uwxQlu8anMnXBt8tvCBu+Vn46Zg==}
+  '@mark1russell7/coeval@0.20.0':
+    resolution: {integrity: sha512-e/cm1HeJYylA8h6oFLoxN7WBvUZBa2Aw7nScp8gLVM7BQeFW9Ec4sdrZz0rPQYQ71tFZipUeaiqqxVBwXAtehw==}
 
-  '@mark1russell7/conventions@0.20.0':
-    resolution: {integrity: sha512-iU56fH6fN0ccvbj8c7dRIQJRjydu0K354F0lys3fNIcagkY0ByilEPAxbUssWCnX1yrXzo+46WrcKWR1Tqkpww==}
+  '@mark1russell7/conventions@0.21.0':
+    resolution: {integrity: sha512-mYD55jKunbfbAQXhs5bKD5vXOvWEzL1+jvyMpZCmcidT28m+ddM4iJG42StanDIeQD7ifuRrsN7q3ejnIJe7tg==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -1777,9 +1777,9 @@ snapshots:
       '@swc/core': 1.16.21
       dependency-cruiser: 18.7.0
 
-  '@mark1russell7/coeval@0.19.0': {}
+  '@mark1russell7/coeval@0.20.0': {}
 
-  '@mark1russell7/conventions@0.20.0': {}
+  '@mark1russell7/conventions@0.21.0': {}
 
   '@mark1russell7/cue@1.1.0': {}
 
