@@ -5,7 +5,7 @@
  * @packageDocumentation
  */
 import { compileBall, compileFloat, compileInterval, decideBall, decideInterval, interval as I, NO_CLAIM, summarize } from "@mark1russell7/expression";
-import type { Ball, Document, Enclosure } from "@mark1russell7/expression";
+import type { Ball, Comparison, Document, Enclosure, Expression } from "@mark1russell7/expression";
 import { exactValue } from "./census.ts";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
@@ -114,10 +114,11 @@ export function evaluateAll(doc: Document, values: Readonly<Record<string, numbe
 
 /** This function gives the exact value of a document. A comparison gives 1 for true and 0 for false. */
 function exactOf(doc: Document, values: Readonly<Record<string, number>>): Rational {
-  if (doc.type !== "lt" && doc.type !== "le" && doc.type !== "eq") return dyadicToRational(exactValue(doc, values));
-  const [l, r] = doc.value.map((part) => dyadicToRational(exactValue(part, values))) as [Rational, Rational];
+  if (!COMPARISONS.includes(doc.type)) return dyadicToRational(exactValue(doc as Expression, values));
+  const cmp = doc as Comparison;
+  const [l, r] = cmp.value.map((part) => dyadicToRational(exactValue(part, values))) as [Rational, Rational];
   const c = Q.compare(l, r);
-  const truth = doc.type === "lt" ? c < 0 : doc.type === "le" ? c <= 0 : c === 0;
+  const truth = cmp.type === "lt" ? c < 0 : cmp.type === "le" ? c <= 0 : c === 0;
   return Q.rational(truth ? 1n : 0n);
 }
 
