@@ -64,6 +64,7 @@ jobs:
             if [ "$ok" != 1 ]; then echo "::error::The site has no /$f."; exit 1; fi
             echo "The site has /$f."
           done
-          curl -fsS "${SITE%/}/" | grep -q "One expression, many evaluators" || { echo "::error::The home page has not the text of the site."; exit 1; }
+          # grep -q stops at the first match, and then curl fails on a closed pipe. So grep reads the whole page.
+          curl -fsS "${SITE%/}/" | grep -F "One expression, many evaluators" > /dev/null || { echo "::error::The home page has not the text of the site."; exit 1; }
           curl -fsS "${SITE%/}/data/status.json" | node -e 'JSON.parse(require("node:fs").readFileSync(0, "utf8")); console.log("data/status.json is JSON.")'
           curl -fsS "${SITE%/}/data/releases.json" | node -e 'JSON.parse(require("node:fs").readFileSync(0, "utf8")); console.log("data/releases.json is JSON.")'
