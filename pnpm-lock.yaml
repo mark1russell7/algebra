@@ -168,7 +168,7 @@ importers:
     devDependencies:
       '@mark1russell7/api-report':
         specifier: ^0.2.1
-        version: 0.2.1
+        version: 0.2.2
       '@mark1russell7/boundaries':
         specifier: ^0.2.0
         version: 0.2.0(@swc/core@1.16.21)(dependency-cruiser@18.7.0)
@@ -289,8 +289,8 @@ importers:
         specifier: workspace:*
         version: link:../predicates
       '@mark1russell7/rigor-bench':
-        specifier: ^0.1.1
-        version: 0.1.2
+        specifier: ^0.2.2
+        version: 0.2.2
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -332,8 +332,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-bench':
-        specifier: ^0.1.1
-        version: 0.1.2
+        specifier: ^0.2.2
+        version: 0.2.2
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^1.0.2
@@ -555,8 +555,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@mark1russell7/api-report@0.2.1':
-    resolution: {integrity: sha512-3bP316h+Thc6m4W2yvame5wTvDIMp7JDCM5CQBvDWZtjfsgr02Z7Vii9YjuPvogvkWvA4t09ihhnr73h0IKkRQ==}
+  '@mark1russell7/api-report@0.2.2':
+    resolution: {integrity: sha512-5Res2AutTOsfAnvUy1HeAwI0wHwF96GOyO92a59nhVdE7nRxa4evp1wQSez1KTzRLFkJ2k4hzJhkfCusZ6xnaA==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -585,8 +585,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/rigor-bench@0.1.2':
-    resolution: {integrity: sha512-qswAQ4T+bZ+tbSa7CjmADuimCtR0KF6SMDChC/30Xekg/GoLIUGW8pqkG0+FamVhwMjSjQMGEXqUGPaulaxbIA==}
+  '@mark1russell7/rigor-bench@0.2.2':
+    resolution: {integrity: sha512-l5IhEcn9VcUR4oyYOcBw27y1wBA3zOB/CV9DZ6XSn6y1fwMtO4S7zfdzaeIgulsg7fyuuhGPbIqEW9qqo63BXw==}
     engines: {node: '>=22'}
 
   '@mark1russell7/rigor-generators@0.1.1':
@@ -1711,7 +1711,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@mark1russell7/api-report@0.2.1': {}
+  '@mark1russell7/api-report@0.2.2': {}
 
   '@mark1russell7/boundaries@0.2.0(@swc/core@1.16.21)(dependency-cruiser@18.7.0)':
     optionalDependencies:
@@ -1724,8 +1724,9 @@ snapshots:
 
   '@mark1russell7/cue@1.1.0': {}
 
-  '@mark1russell7/rigor-bench@0.1.2':
+  '@mark1russell7/rigor-bench@0.2.2':
     dependencies:
+      '@mark1russell7/rigor-generators': 0.1.1
       '@mark1russell7/rigor-statistics': 0.1.5
 
   '@mark1russell7/rigor-generators@0.1.1': {}
