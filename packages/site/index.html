@@ -150,6 +150,36 @@
         </div>
       </section>
 
+      <section id="cost" class="wrap block" aria-labelledby="cost-title">
+        <div class="block-head">
+          <h2 id="cost-title">What an answer costs</h2>
+          <p>
+            A6 measured each stage on the 4096 points of the corpus, in CI. The selector reads these numbers in this
+            page and gives the plan with the least expected cost. Change the question, or change the cost of the exact
+            stage, and the selector gives a new plan.
+          </p>
+        </div>
+        <div class="cost">
+          <div class="chips" id="cost-questions" role="group" aria-label="Questions"></div>
+          <label class="cost-slider">
+            <span class="field-label">Cost of the exact stage</span>
+            <input id="cost-factor" type="range" min="-8" max="6" step="1" value="0" />
+            <output id="cost-factor-out" for="cost-factor"></output>
+          </label>
+          <p class="cost-summary" id="cost-summary" aria-live="polite"></p>
+          <ul class="cost-rows" id="cost-stages" aria-label="The stages of the plan"></ul>
+          <h3>The stitched plan against fixed exact, by family</h3>
+          <p class="cost-note">
+            Left of the line, the stitched plan is faster. The verdict comes from the paired times of the run. All cases
+            together: faster, median × 0.277. The plan gives 0 wrong answers.
+          </p>
+          <ul class="cost-rows" id="cost-families" aria-label="The ratio for each family"></ul>
+          <p class="cost-note">
+            <a href="https://github.com/mark1russell7/algebra/tree/main/packages/evaluator-bench/results/2026-11-03">The raw records of run 41716746074</a>
+          </p>
+        </div>
+      </section>
+
       <section id="census" class="wrap block" aria-labelledby="census-title">
         <div class="block-head">
           <h2 id="census-title">The census of A13: real inputs of highways and packing</h2>

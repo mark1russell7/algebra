@@ -471,6 +471,9 @@ importers:
 
   packages/site:
     dependencies:
+      '@algebra/evaluator-select':
+        specifier: workspace:*
+        version: link:../evaluator-select
       '@mark1russell7/coeval':
         specifier: ^0.20.0
         version: 0.20.1
