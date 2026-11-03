@@ -215,6 +215,9 @@ importers:
       '@mark1russell7/cue':
         specifier: ^1.0.2
         version: 1.1.0
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
