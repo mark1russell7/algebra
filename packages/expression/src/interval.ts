@@ -79,14 +79,15 @@ export function productError(a: number, b: number, p: number): number {
 }
 
 /**
- * This function gives a lower bound of `v + e` for a float `v` and its exact error `e`. A float `v` with `e >= 0` is
- * the bound. Else the bound is one float lower. Round to nearest puts `v + e` within half a step of `v`, so one step
- * is enough. An error of `NaN` is not known, and it gives the step.
+ * This function gives a lower bound of `v + e` for a float `v` and its exact error `e`. An exact `v` is the bound.
+ * Else the bound is one float lower. Round to nearest puts `v + e` within half a step of `v`, so one step is enough.
+ * An error of `NaN` is not known, and it gives the step. The sign of `e` is not used, so that each bound of A1 stays
+ * the same.
  */
-const below = (v: number, e: number): number => (e >= 0 ? v : nextDown(v));
+const below = (v: number, e: number): number => (e === 0 ? v : nextDown(v));
 
 /** This function gives an upper bound of `v + e`, with the rule of `below`. */
-const above = (v: number, e: number): number => (e <= 0 ? v : nextUp(v));
+const above = (v: number, e: number): number => (e === 0 ? v : nextUp(v));
 
 /**
  * This function gives the sum of two intervals, rounded outward.

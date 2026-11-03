@@ -90,11 +90,15 @@ function randomFloat(rnd: Random): number {
 
 const q = (x: number): Rational => Q.fromFloat(x);
 
-/** This function tells if `lo` is the largest float at most `r` and `hi` is the smallest float at least `r`. */
-function isTight(lo: number, hi: number, r: Rational): boolean {
-  const low = Q.compare(q(lo), r) <= 0 && Q.compare(q(I.nextUp(lo)), r) > 0;
-  const high = Q.compare(q(hi), r) >= 0 && Q.compare(q(I.nextDown(hi)), r) < 0;
-  return low && high;
+/**
+ * This function tells if `[lo, hi]` contains `r` and each bound is at most one float step outside the rounding of `r`.
+ * A float `r` must give the point.
+ */
+function isOneStep(lo: number, hi: number, r: Rational): boolean {
+  const inside = Q.compare(q(lo), r) <= 0 && Q.compare(r, q(hi)) <= 0;
+  const near = Q.compare(q(I.nextUp(I.nextUp(lo))), r) > 0 && Q.compare(q(I.nextDown(I.nextDown(hi))), r) < 0;
+  const point = !Q.equals(q(lo), r) || lo === hi;
+  return inside && near && point;
 }
 
 /** This function counts the float steps from `lo` up to `hi`, to at most `limit`. */
@@ -105,19 +109,19 @@ function steps(lo: number, hi: number, limit: number): number {
 }
 
 describe("the outward rounding of interval.ts", () => {
-  it("gives the rounding down and the rounding up of a sum and of a product", () => {
+  it("keeps an exact sum or product as a point, and moves an inexact one at most one step outward", () => {
     const rnd = random(31);
     for (let i = 0; i < 4000; i++) {
       const a = randomFloat(rnd);
       const b = randomFloat(rnd);
       const s = I.add([a, a], [b, b]) as readonly [number, number];
-      if (Number.isFinite(s[0]) && Number.isFinite(s[1])) expect(isTight(s[0], s[1], Q.add(q(a), q(b))), `${a} + ${b}`).toBe(true);
+      if (Number.isFinite(s[0]) && Number.isFinite(s[1])) expect(isOneStep(s[0], s[1], Q.add(q(a), q(b))), `${a} + ${b}`).toBe(true);
       const p = I.mul([a, a], [b, b]) as readonly [number, number];
       const exact = Q.mul(q(a), q(b));
       expect(encloses(p[0], p[1], { lo: exact, hi: exact }), `${a} * ${b}`).toBe(true);
-      // Away from underflow and overflow the error term of TwoProduct is exact, so the bounds are tight.
+      // Away from underflow and overflow the error term of TwoProduct is exact, so an exact product stays a point.
       const m = Math.abs(a * b);
-      if (m > 2 ** -900 && m < 2 ** 900) expect(isTight(p[0], p[1], exact), `${a} * ${b}`).toBe(true);
+      if (m > 2 ** -900 && m < 2 ** 900) expect(isOneStep(p[0], p[1], exact), `${a} * ${b}`).toBe(true);
     }
   });
 
@@ -296,7 +300,7 @@ describe("the undecided cases", () => {
     ["no real value wins over no claim", { type: "add", value: [n("x"), zeroDivisor] }, [3, 0, 0], (r) => r === null],
     ["no claim stays no claim times zero", { type: "mul", value: [{ type: "div", value: [c(1), n("y")] }, c(0)] }, [0, [-1, 1], 0], (r) => r === NO_CLAIM],
     ["an unbounded input interval is a claim", { type: "div", value: [c(1), n("x")] }, [[1, Infinity], 0, 0], (r) => r !== null && r !== NO_CLAIM && r[0] === 0 && r[1] === 1],
-    ["0.1 + 0.2 has two bounds one step apart", { type: "add", value: [c(0.1), c(0.2)] }, [0, 0, 0], (r) => r !== null && r !== NO_CLAIM && r[1] === I.nextUp(r[0])],
+    ["0.1 + 0.2 moves one step outward on each side", { type: "add", value: [c(0.1), c(0.2)] }, [0, 0, 0], (r) => r !== null && r !== NO_CLAIM && r[0] === I.nextDown(0.1 + 0.2) && r[1] === I.nextUp(0.1 + 0.2)],
   ])("interval: %s", (_, doc, values, ok) => {
     const r = intervalOf(doc).evaluate(values);
     expect(ok(r), JSON.stringify(r)).toBe(true);

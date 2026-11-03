@@ -75,8 +75,8 @@ if (f.ok) {
 }
 ```
 
-- Each operation is an operation of `interval`. A sum and a product give the rounding down and the rounding up of the exact bound, from the error terms of `TwoSum` and `TwoProduct`.
-- A quotient and a square root move one float step outward on each side, when they are not exact.
+- Each operation is an operation of `interval`. A sum, a product, a quotient and a square root move one float step outward on each side, when they are not exact.
+- The error terms of `TwoSum` and `TwoProduct` tell if a sum or a product is exact.
 - A root of index 3 or more moves each bound until the outward power shows its side.
 - `null` is a claim: no point of the inputs gives a real value, for example a quotient by the point zero.
 - `"no claim"` (`NO_CLAIM`) is the undecided case. A divisor that holds zero gives it. An even root of a value that can be negative and a variable that is not finite give it too.
