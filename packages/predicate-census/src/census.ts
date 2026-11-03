@@ -12,6 +12,7 @@ import type { CountKind, CountLine, FloatAnswer, Line, PackingCountLine, Vec } f
 import {
   boxPairPoint,
   CALL_SITE_RULES,
+  predicateOfRule,
   containerPoint,
   containerPredicate,
   edgePair,
@@ -321,16 +322,30 @@ export interface Census {
   readonly unknown: readonly UnknownRecord[];
 }
 
+/** The rule of a line that the census cannot use. The census counts the line as unknown, with the reason. */
+class UnusableRule extends Error {}
+
+/**
+ * This function gives the predicate of a segment pair or a point-side line. The field `rule` of the line comes first
+ * (highways #258). A line without it gets the copy `CALL_SITE_RULES`, for the dumps before #258, or the default.
+ */
+function ruleOf(form: "segmentPair" | "pointSide", line: { readonly fn: string; readonly [field: string]: unknown }, fallback: Predicate): Predicate {
+  if (line["rule"] === undefined) return CALL_SITE_RULES[line.fn]?.predicate ?? fallback;
+  const p = predicateOfRule(form, line["rule"]);
+  if ("reason" in p) throw new UnusableRule(p.reason);
+  return p;
+}
+
 function point(line: Line): { predicate: Predicate; point: Point } | undefined {
   switch (line.form) {
     case "segmentPair":
-      return { predicate: CALL_SITE_RULES[line.line.fn]?.predicate ?? PREDICATES.segmentPair, point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
+      return { predicate: ruleOf(line.form, line.line, PREDICATES.segmentPair), point: segmentPairPoint(line.line.a, line.line.b, line.line.c, line.line.d) };
     case "segmentBox":
       return { predicate: PREDICATES.segmentBox, point: segmentBoxPoint(line.line.a, line.line.b, line.line.box, line.line.eps) };
     case "segmentRect":
       return { predicate: segmentRect, point: segmentRectPoint(line.line.a, line.line.b, line.line.rect, line.line.eps) };
     case "pointSide":
-      return { predicate: CALL_SITE_RULES[line.line.fn]?.predicate ?? PREDICATES.pointSide, point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
+      return { predicate: ruleOf(line.form, line.line, PREDICATES.pointSide), point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
     case "boxPair":
       return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
     case "edgePair":
@@ -505,7 +520,14 @@ export class Tally {
     if (line.form === "unknown") return this.#addUnknown(file, lineNo, raw, line.error, line.sender);
     if (line.form === "count") return this.#addCount(line.line);
     if (line.form === "packingCount") return this.#addPackingCount(line.line);
-    const { predicate, point: p } = point(line) as { predicate: Predicate; point: Point };
+    let found: { predicate: Predicate; point: Point };
+    try {
+      found = point(line) as { predicate: Predicate; point: Point };
+    } catch (e) {
+      if (e instanceof UnusableRule) return this.#addUnknown(file, lineNo, raw, `The census has no predicate for the rule of the line: ${e.message}.`);
+      throw e;
+    }
+    const { predicate, point: p } = found;
     const { n, floatAnswer, fn } = line.line;
     const isShared = line.form === "segmentPair" && line.line.sharedEnd === true;
     const result = classify(predicate, p, floatAnswer);
