@@ -1,6 +1,7 @@
-# The census of the predicate inputs (roadmap item A13). It downloads the predicate dumps of a highways run,
+# The census of the predicate inputs (roadmap item A13). It downloads the predicate dumps of a highways or packing run,
 # starts packages/predicate-census on each set and keeps each report as an artifact.
 # Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra census.yml -f run=<run id>
+# For packing: -f repo=mark1russell7/packing -f prefix=predicates- -f sets='["pack-select-v2"]'
 name: Census
 
 on:
@@ -15,6 +16,9 @@ on:
       sets:
         description: The sets, as a JSON list
         default: '["exact-v1","exact-v1-bounds","fixtures","fixtures-large","screen-v1","screen-v2","screen-v3"]'
+      prefix:
+        description: The name of each dump artifact is this prefix and the set
+        default: predicate-dump-
 
 permissions:
   contents: read
@@ -40,6 +44,7 @@ jobs:
       SET: ${{ matrix.set }}
       RUN: ${{ inputs.run }}
       REPO: ${{ inputs.repo }}
+      PREFIX: ${{ inputs.prefix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -53,10 +58,12 @@ jobs:
       # The census examines the lines of highways that its rules copy, at the commit of the dump run.
       - name: The commit of the dump run
         id: dump
+        if: inputs.repo == 'mark1russell7/highways'
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "sha=$(gh run view "$RUN" -R "$REPO" --json headSha -q .headSha)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: inputs.repo == 'mark1russell7/highways'
         with:
           repository: ${{ inputs.repo }}
           ref: ${{ steps.dump.outputs.sha }}
@@ -68,15 +75,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p "$RUNNER_TEMP/dump" "$RUNNER_TEMP/in" "$RUNNER_TEMP/out"
-          gh run download "$RUN" -R "$REPO" -n "predicate-dump-$SET" -D "$RUNNER_TEMP/dump"
-          ls -la "$RUNNER_TEMP/dump"
-          for f in "$RUNNER_TEMP"/dump/*.jsonl.gz; do gzip -dc "$f" > "$RUNNER_TEMP/in/$(basename "$f" .gz)"; done
-          wc -l "$RUNNER_TEMP"/in/*.jsonl
+          gh run download "$RUN" -R "$REPO" -n "$PREFIX$SET" -D "$RUNNER_TEMP/dump"
+          ls -laR "$RUNNER_TEMP/dump" | head -n 100
+          # highways gives .jsonl.gz files. packing gives a folder for each entry, with predicates.jsonl and run.json.
+          for f in "$RUNNER_TEMP"/dump/*.jsonl.gz; do if [ -e "$f" ]; then gzip -dc "$f" > "$RUNNER_TEMP/in/$(basename "$f" .gz)"; fi; done
+          (cd "$RUNNER_TEMP/dump" && find . -name '*.jsonl' -exec cp --parents {} "$RUNNER_TEMP/in/" \;)
+          find "$RUNNER_TEMP/in" -name '*.jsonl' -exec wc -l {} + | tail -n 5
           cp "$RUNNER_TEMP"/dump/*.md "$RUNNER_TEMP/out/" || true
       - name: Census
         working-directory: packages/predicate-census
         run: |
-          /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" --highways "$GITHUB_WORKSPACE/highways-tree" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
+          rules=()
+          if [ -d "$GITHUB_WORKSPACE/highways-tree" ]; then rules=(--highways "$GITHUB_WORKSPACE/highways-tree"); fi
+          /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" "${rules[@]}" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
           tail -n 25 "$RUNNER_TEMP/out/time-$SET.txt"
       # The raw records: the records of the census and the input dump, kept 90 days (highways keeps its own 30 days).
       - name: Keep the raw records
@@ -84,6 +95,8 @@ jobs:
         run: |
           gzip -f "$RUNNER_TEMP"/out/*.jsonl || true
           cp "$RUNNER_TEMP"/dump/*.jsonl.gz "$RUNNER_TEMP/out/" || true
+          # packing gives plain .jsonl folders: keep them as one archive, because the census keeps its inputs 90 days.
+          if [ -z "$(find "$RUNNER_TEMP/dump" -name '*.jsonl.gz' -print -quit)" ]; then tar -czf "$RUNNER_TEMP/out/dump-$SET.tar.gz" -C "$RUNNER_TEMP/dump" .; fi
           ls -la "$RUNNER_TEMP/out"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
