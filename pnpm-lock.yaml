@@ -231,6 +231,37 @@ importers:
         specifier: ^5.0.3
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
 
+  packages/expression-corpus:
+    dependencies:
+      '@mark1russell7/expression':
+        specifier: workspace:*
+        version: link:../expression
+      '@mark1russell7/predicates':
+        specifier: workspace:*
+        version: link:../predicates
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
+      '@mark1russell7/rigor-generators':
+        specifier: ^0.1.1
+        version: 0.1.1
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^1.0.2
+        version: 1.1.0
+      '@mark1russell7/rigor-statistics':
+        specifier: ^0.1.2
+        version: 0.1.5
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
+
   packages/predicate-census:
     dependencies:
       '@mark1russell7/coeval':
