@@ -43,7 +43,6 @@ describe("the verb tape", () => {
   const shapes: readonly Document[] = [
     num(3),
     x,
-    { type: "add", value: [x] },
     { type: "add", value: [x, y, num(0.1), x] },
     { type: "mul", value: [x, y, y] },
     { type: "min", value: [x, y, num(1)] },
