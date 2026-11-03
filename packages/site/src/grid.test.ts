@@ -129,7 +129,7 @@ describe("the A5 predicates on the grid", () => {
       const form = buildForm(choice.form);
       const pred = a5Of(choice.form, form);
       expect(pred?.(preset.vars).sign).toBe(cellSigns(form, preset.vars).exact);
-      const [{ counts }] = grids(preset) as [{ counts: ReturnType<typeof tally> }];
+      const counts = (grids(preset)[0] as { counts: ReturnType<typeof tally> }).counts;
       expect(counts.exactStage).toBeGreaterThan(0);
       expect(counts.filter).toBeGreaterThan(0);
     }
