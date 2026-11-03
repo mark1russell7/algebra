@@ -21,7 +21,7 @@
   "dependencies": {
     "@algebra/expression-corpus": "workspace:*",
     "@mark1russell7/expression": "workspace:*",
-    "@mark1russell7/rigor-bench": "^0.1.2",
+    "@mark1russell7/rigor-bench": "^0.2.2",
     "@mark1russell7/rigor-statistics": "^0.1.2"
   }
 }
