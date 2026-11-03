@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/expression-corpus",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The seeded corpus of A12: expression documents with points, well-conditioned and ill-conditioned, small and large, with near-degenerate geometric inputs.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@mark1russell7/rigor-statistics": "^0.1.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/predicates": "workspace:*",
+    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rigor-generators": "^0.1.1"
+  }
+}
