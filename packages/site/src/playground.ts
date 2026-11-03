@@ -5,8 +5,9 @@
  */
 import type { Document } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
-import { approx, evaluateAll, formatFloat, variables } from "./evaluate.ts";
-import type { Evaluation } from "./evaluate.ts";
+import { NO_CLAIM } from "@mark1russell7/expression";
+import { approx, decisions, evaluateAll, formatFloat, variables, widthOf } from "./evaluate.ts";
+import type { Decision, Evaluation } from "./evaluate.ts";
 import { readExpression } from "./syntax.ts";
 
 /** An example of the playground: a text and the values of its variables. */
@@ -38,10 +39,16 @@ export const EXAMPLES: readonly Example[] = [
     note: "The exact value is 0. The float product x * x rounds, so the float value is not 0.",
   },
   {
+    label: "A comparison",
+    text: "(a + b) - a < 1",
+    values: { a: "1e16", b: "1" },
+    note: "The float comparison 0 < 1 is true, but the exact comparison 1 < 1 is false. The A4 interval and the A4 ball do not decide it, so they give no wrong answer.",
+  },
+  {
     label: "A square root",
     text: "root(x, 2) * root(x, 2) - x",
     values: { x: "2" },
-    note: "The float evaluator and the interval know the kind root. The exact evaluator of the census does not, so the page cannot check the bound.",
+    note: "The float, the interval and the ball evaluators know the kind root. The exact evaluator of the census does not, so the page cannot check the bounds.",
   },
 ];
 
@@ -170,6 +177,21 @@ function renderResults(e: Evaluation, note: string): string {
     ? `<p class="ev-value"><code>${esc(Q.toString(e.exact.value).length > 60 ? `${Q.toString(e.exact.value).slice(0, 57)}…` : Q.toString(e.exact.value))}</code></p><p class="small">${Q.sign(e.exact.value) === 0 ? "Exactly 0." : `About <code>${esc(approx(e.exact.value, 8))}</code>.`} A rational over <code>bigint</code>.</p>`
     : `<p class="ev-missing">${esc(e.exact.reason)}</p>`;
   const exactErr = e.exact.ok ? "Error 0. The value is exact." : "";
+  const comparisonNote = e.comparison ? `<p class="small">A comparison gives 1 for true and 0 for false.</p>` : "";
+  const en = e.enclosure.ok ? e.enclosure.value : null;
+  const enBody = !e.enclosure.ok
+    ? `<p class="ev-missing">${esc(e.enclosure.reason)}</p>`
+    : en === null
+      ? `<p class="ev-value"><code>null</code></p><p class="small">A claim: no point of the inputs gives a real value.</p>`
+      : en === NO_CLAIM
+        ? `<p class="ev-value"><code>no claim</code></p><p class="small">The evaluator cannot tell. A divisor that holds 0 gives this result.</p>`
+        : `<p class="ev-value"><code>[${esc(formatFloat(en[0], 17))},<wbr> ${esc(formatFloat(en[1], 17))}]</code></p>${comparisonNote || `<p class="small">Each operation rounds outward by one float step at most.</p>`}`;
+  const enErr = en === null || en === NO_CLAIM ? "" : `Width <code>${esc(formatFloat(widthOf(en), 4))}</code>, rounded up.`;
+  const ba = e.ball.ok ? e.ball.value : null;
+  const baBody = !e.ball.ok
+    ? `<p class="ev-missing">${esc(e.ball.reason)}</p>`
+    : `<p class="ev-value"><code>${esc(formatFloat(e.ball.value.mid, 17))} ± ${esc(e.ball.value.rad === Infinity ? "∞" : formatFloat(e.ball.value.rad, 4))}</code></p>${comparisonNote || `<p class="small">The midpoint is the A3 float value. The radius rounds upward.</p>`}`;
+  const baErr = ba === null ? "" : ba.rad === Infinity ? "The radius is infinite, so it makes no claim." : `Width <code>${esc(formatFloat(2 * ba.rad, 4))}</code>, two times the radius.`;
   const verdict =
     fo !== null && !fo.comparison && e.exact.ok
       ? Math.sign(fo.value) === Q.sign(e.exact.value)
@@ -177,8 +199,36 @@ function renderResults(e: Evaluation, note: string): string {
         : `<p class="pg-verdict bad">The float sign is <strong>wrong</strong>: float ${Math.sign(fo.value) > 0 ? "+" : Math.sign(fo.value) < 0 ? "−" : "0"}, exact ${Q.sign(e.exact.value) > 0 ? "+" : Q.sign(e.exact.value) < 0 ? "−" : "0"}.</p>`
       : "";
   return `${note ? `<p class="pg-note">${esc(note)}</p>` : ""}${verdict}<div class="ev-row">
-    ${card("float", "Float", "A3, <code>compileFloat</code> of <code>expression</code>", float, floatErr)}
-    ${card("interval", "Interval", "<code>@mark1russell7/expression</code>", ivBody, ivErr)}
+    ${card("float", "Float", "A3, <code>compileFloat</code>", float, floatErr)}
+    ${card("enclosure", "Interval", "A4, <code>compileInterval</code>", enBody, enErr)}
+    ${card("ball", "Ball", "A4, <code>compileBall</code>", baBody, baErr)}
+    ${card("interval", "Summary bounds", "A1, <code>summarize</code>", ivBody, ivErr)}
     ${card("exact", "Exact", "the dyadic values of the census", exact, exactErr)}
-  </div>`;
+  </div>${renderDecisions(e)}`;
+}
+
+const DECIDERS: readonly { readonly key: keyof ReturnType<typeof decisions>; readonly label: string }[] = [
+  { key: "float", label: "A3 float" },
+  { key: "enclosure", label: "A4 interval" },
+  { key: "ball", label: "A4 ball" },
+  { key: "interval", label: "A1 bounds" },
+  { key: "exact", label: "Exact" },
+];
+
+function decisionChip(d: Decision | null): string {
+  if (d === null) return `<span class="chip undecided">no result</span>`;
+  if (d === "undecided" || d === "no value") return `<span class="chip undecided">${d}</span>`;
+  if (typeof d === "boolean") return `<span class="chip ${d ? "pos" : "neg"}">${d}</span>`;
+  return `<span class="chip ${d > 0 ? "pos" : d < 0 ? "neg" : "zero"}">${d > 0 ? "+" : d < 0 ? "−" : "0"}</span>`;
+}
+
+/** This function writes the row of the answers: the sign, or the truth value, that each evaluator proves. */
+function renderDecisions(e: Evaluation): string {
+  const d = decisions(e);
+  const exact = d.exact;
+  const wrong = (x: Decision | null): boolean => x !== null && exact !== null && x !== "undecided" && x !== "no value" && x !== exact;
+  const n = DECIDERS.filter((k) => k.key !== "exact" && d[k.key] !== null && d[k.key] !== "undecided" && d[k.key] !== "no value").length;
+  const cells = DECIDERS.map((k) => `<li${wrong(d[k.key]) ? ` class="bad"` : ""}><span>${k.label}</span>${decisionChip(d[k.key])}</li>`).join("");
+  const what = e.comparison ? "the truth value" : "the sign";
+  return `<div class="decide"><h3>Which evaluators prove ${what}</h3><ul>${cells}</ul><p class="small">${n} of 4 evaluators with an error bound prove ${what} here. An undecided evaluator sends the input to the exact evaluator.</p></div>`;
 }
