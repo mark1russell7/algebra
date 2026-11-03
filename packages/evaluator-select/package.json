@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/evaluator-select",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The cost and error model of A6: questions with a tolerance, the stitched evaluator from float to exact, and the selector of the cheapest plan.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@algebra/expression-corpus": "workspace:*",
+    "@mark1russell7/cue": "^1.0.2",
+    "@mark1russell7/predicates": "workspace:*",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rational": "workspace:*"
+  }
+}
