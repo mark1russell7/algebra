@@ -152,21 +152,40 @@
 
       <section id="census" class="wrap block" aria-labelledby="census-title">
         <div class="block-head">
-          <h2 id="census-title">The census of A13: real inputs of highways</h2>
+          <h2 id="census-title">The census of A13: real inputs of highways and packing</h2>
           <p>
             The census sends each real input of the geometric predicates of
-            <a href="https://github.com/mark1russell7/highways">highways</a> through the float signs and the exact signs.
+            <a href="https://github.com/mark1russell7/highways">highways</a> and
+            <a href="https://github.com/mark1russell7/packing">packing</a> through the float signs and the exact signs.
           </p>
-          <p class="provisional" role="note">
-            <strong>Provisional.</strong> The census of 7 highways sets is in progress (the rerun with the call-site
-            rules). The page shows <code>exact-v1</code> now.
+          <p>
+            Three censuses are complete. In each one, exact signs fix no wrong sign that a user sees. The classes and the
+            records below are of <code>exact-v1</code>. The census of the newest highways dump, with the rule of each call
+            site, waits for a CI slot.
           </p>
         </div>
         <div class="totals">
-          <div class="tile big"><span class="num">194&#8239;549&#8239;364</span><span class="cap">predicate tests on <code>exact-v1</code></span></div>
-          <div class="tile big"><span class="num">40</span><span class="cap">boards</span></div>
-          <div class="tile big good"><span class="num">0</span><span class="cap">wrong signs that a user sees and exact signs fix</span></div>
+          <div class="tile big good">
+            <span class="num">194&#8239;549&#8239;364</span>
+            <span class="cap">tests on <code>exact-v1</code> of highways, 40 boards</span>
+            <span class="sub">float-wrong 8 · wrong signs that a user sees 0</span>
+          </div>
+          <div class="tile big good">
+            <span class="num">181.2&#8239;G</span>
+            <span class="cap">tests on 7 sets of highways, with the call-site rules</span>
+            <span class="sub">float-wrong 14&#8239;445&#8239;277 → 35&#8239;666 (−99.75&#8239;%) · wrong signs that a user sees 0</span>
+          </div>
+          <div class="tile big good">
+            <span class="num">28&#8239;364&#8239;460&#8239;708</span>
+            <span class="cap">tests on <code>pack-select-v2</code> of packing</span>
+            <span class="sub">float-wrong 0 · unknown 1&#8239;019, at <code>xAt</code> only</span>
+          </div>
         </div>
+        <p class="small census-open">
+          Two call sites of highways stay open: <code>physics.outOf:195</code> (19&#8239;217 tests, in
+          <code>screen-v3</code>) and <code>geom.ts:121</code> (1&#8239;068 tests). At these sites an exact sign changes a
+          decision of highways. Highways examines them with the A5 predicates.
+        </p>
         <div class="census-grid">
           <div>
             <h3>The cases where the float answer is not the exact answer</h3>
