@@ -1,0 +1,158 @@
+{
+  "cost": {
+    "float": 14.576732381185268,
+    "ball": 27.920677842934328,
+    "interval": 76.94297629533598,
+    "exact": 858.8778230042051
+  },
+  "shares": [
+    {
+      "question": {
+        "kind": "sign"
+      },
+      "stage": "float",
+      "share": 0.5693359375
+    },
+    {
+      "question": {
+        "kind": "sign"
+      },
+      "stage": "ball",
+      "share": 0.622314453125
+    },
+    {
+      "question": {
+        "kind": "sign"
+      },
+      "stage": "interval",
+      "share": 0.71435546875
+    },
+    {
+      "question": {
+        "kind": "sign"
+      },
+      "stage": "exact",
+      "share": 0.974853515625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "absolute": 1e-9
+        }
+      },
+      "stage": "float",
+      "share": 0.609375
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "absolute": 1e-9
+        }
+      },
+      "stage": "ball",
+      "share": 0.6240234375
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "absolute": 1e-9
+        }
+      },
+      "stage": "interval",
+      "share": 0.746337890625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "absolute": 1e-9
+        }
+      },
+      "stage": "exact",
+      "share": 0.974853515625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-12
+        }
+      },
+      "stage": "float",
+      "share": 0.509765625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-12
+        }
+      },
+      "stage": "ball",
+      "share": 0.514892578125
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-12
+        }
+      },
+      "stage": "interval",
+      "share": 0.6484375
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-12
+        }
+      },
+      "stage": "exact",
+      "share": 0.974853515625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 0
+        }
+      },
+      "stage": "float",
+      "share": 0.046875
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 0
+        }
+      },
+      "stage": "ball",
+      "share": 0.082275390625
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 0
+        }
+      },
+      "stage": "interval",
+      "share": 0.2158203125
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 0
+        }
+      },
+      "stage": "exact",
+      "share": 0.974853515625
+    }
+  ]
+}
