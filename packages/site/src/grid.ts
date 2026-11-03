@@ -16,8 +16,8 @@ import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
 
 /**
- * The sign expression of a grid: an orientation of three points, the in-circle sign of four points, or a named sign
- * of a predicate of the census.
+ * The sign expression of a grid. It is an orientation of three points, the in-circle sign of four points, or a
+ * named sign of the census.
  */
 export type FormSpec =
   | { readonly kind: "orient"; readonly name: string; readonly points: readonly [PointVars, PointVars, PointVars] }
@@ -158,7 +158,7 @@ const op = (type: "add" | "sub" | "mul", x: Expression, y: Expression): Expressi
 
 /**
  * This function gives the document of the in-circle determinant of Shewchuk. Its operations are the float operations
- * of `incircle` of A5 in the same order, so the float value of the document is the value that the A5 filter tests.
+ * of `incircle` of A5, in the same order. Thus the A5 filter tests the float value of the document.
  *
  * @returns `alift (bdx cdy - cdx bdy) + blift (cdx ady - adx cdy) + clift (adx bdy - bdx ady)`, with `adx = ax - dx`.
  */
@@ -179,8 +179,8 @@ export type A5Predicate = ((point: Point) => SignResult) | null;
 
 /**
  * This function gives the A5 predicate of a sign. An orientation `orient(p, q, r)` of the census is
- * `(q - p) x (r - p)`. It calls `orient2d(q, r, p)`, which has the same float operations, so the filter tests the
- * float value of the census.
+ * `(q - p) x (r - p)`. The predicate uses `orient2d(q, r, p)`, which has the same float operations. Thus the filter
+ * tests the float value of the census.
  *
  * @param spec - The spec of the sign.
  * @param form - The compiled sign.
