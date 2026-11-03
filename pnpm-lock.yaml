@@ -425,6 +425,9 @@ importers:
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
+      tsdown:
+        specifier: ^0.23.4
+        version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
