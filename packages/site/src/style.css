@@ -703,13 +703,6 @@ button:disabled {
   margin: 0 0 8px;
 }
 
-.provisional {
-  background: var(--warn-bg);
-  border-left: 4px solid var(--warn);
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
 .playground {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
@@ -927,6 +920,15 @@ button:disabled {
 }
 
 /* The census. */
+.census-open {
+  margin: -10px 0 22px;
+  max-width: 72ch;
+}
+
+.tile .sub code {
+  font-size: inherit;
+}
+
 .census-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
