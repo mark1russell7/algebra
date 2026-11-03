@@ -16,6 +16,7 @@ export {
   compileExact,
   compileFloat,
   compileInterval,
+  compileStatic,
   expressionMachine,
   expressionWorld,
   EXACT,
@@ -23,6 +24,8 @@ export {
   INTERVAL,
   KINDS,
   SHAPES,
+  STATIC,
+  staticBound,
   SUMMARY,
   summarize,
 } from "./kinds.ts";
@@ -33,6 +36,9 @@ export type { Enclosure, IntervalCell, IntervalInput, IntervalRun } from "./inte
 export { ballNode, ballNum, ballVar, decideBall } from "./ball.ts";
 export { EXACT_BITS, exactNode, exactNum, exactVar } from "./exact.ts";
 export type { ExactCell, ExactResult, ExactRun } from "./exact.ts";
+export { staticNode, staticNum, staticVar } from "./static-bound.ts";
+export type { StaticBound, StaticCell, StaticRun } from "./static-bound.ts";
+export type { StaticFunction } from "./kinds.ts";
 export type { Ball, BallCell, BallInput, BallRun, Truth } from "./ball.ts";
 export type { FloatCell, FloatResult, FloatRun } from "./float.ts";
 export { DEGENERATE_CONSTANTS, random, randomComparison, randomExpression } from "./generate.ts";

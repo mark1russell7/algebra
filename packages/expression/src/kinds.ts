@@ -16,10 +16,13 @@ import { exactNode, exactNum, exactVar } from "./exact.ts";
 import type { ExactCell, ExactResult } from "./exact.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
 import type { FloatCell, FloatResult } from "./float.ts";
+import { WHOLE } from "./interval.ts";
 import type { Interval } from "./interval.ts";
 import { intervalNode, intervalNum, intervalVar } from "./interval-evaluator.ts";
 import type { Enclosure, IntervalCell, IntervalInput } from "./interval-evaluator.ts";
 import type { Document } from "./schema.ts";
+import { staticNode, staticNum, staticVar } from "./static-bound.ts";
+import type { StaticBound, StaticCell } from "./static-bound.ts";
 import { combine, numSummary, varSummary } from "./summary.ts";
 import type { KindName, NodeData, Summary } from "./summary.ts";
 
@@ -29,6 +32,8 @@ export const SUMMARY = "summary";
 export const FLOAT = "float";
 /** The verb that compiles a node into code that gives an outward interval of its value (roadmap item A4). */
 export const INTERVAL = "interval";
+/** The verb that compiles a node into code that gives one enclosure and one error bound for a box (A3 and A4). */
+export const STATIC = "static";
 /** The verb that compiles a node into code that gives a midpoint and a radius of its value (roadmap item A4). */
 export const BALL = "ball";
 /** The verb that compiles a node into code that gives its exact rational value (roadmap item A6). */
@@ -75,10 +80,10 @@ const evaluatorName = (kind: KindName, verb: string = SUMMARY): string => `expre
 
 function kindOf(name: KindName): Kind {
   return {
-    verbs: { [SUMMARY]: evaluatorName(name), ...Object.fromEntries(COMPILED.map((v) => [v, evaluatorName(name, v)])) },
+    verbs: { [SUMMARY]: evaluatorName(name), ...Object.fromEntries([...COMPILED, STATIC].map((v) => [v, evaluatorName(name, v)])) },
     parts: SHAPES[name],
     pure: true,
-    verbEffects: { [SUMMARY]: [], ...Object.fromEntries(COMPILED.map((v) => [v, []])) },
+    verbEffects: { [SUMMARY]: [], ...Object.fromEntries([...COMPILED, STATIC].map((v) => [v, []])) },
   };
 }
 
@@ -144,6 +149,8 @@ function compiledOfNode<C>(kind: KindName, rules: CompiledRules<C>) {
   };
 }
 
+const STATIC_RULES: CompiledRules<StaticCell> = { num: staticNum, variable: staticVar, node: staticNode };
+
 const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>> = {
   [FLOAT]: { num: floatNum, variable: floatVar, node: (k, p, d) => floatNode(k, p as FloatCell[], d) },
   [INTERVAL]: { num: intervalNum, variable: intervalVar, node: (k, p, d) => intervalNode(k, p as IntervalCell[], d) },
@@ -157,6 +164,7 @@ export const expressionMachine: Machine = {
   evaluators: Object.fromEntries(
     KINDS.flatMap((k) => [
       [evaluatorName(k), summaryOfNode(k)],
+      [evaluatorName(k, STATIC), compiledOfNode(k, STATIC_RULES)],
       ...COMPILED.map((v) => [evaluatorName(k, v), compiledOfNode(k, RULES[v])]),
     ]),
   ),
@@ -281,6 +289,56 @@ export function compileInterval(doc: Document, options: CompileFloatOptions = {}
       return run(values);
     },
   });
+}
+
+/** A document compiled with the verb `static`. */
+export interface StaticFunction {
+  /** The names of the variables, in the order of the values of `evaluate`. */
+  readonly variables: readonly string[];
+  /**
+   * This function gives one enclosure and one error bound for all points of a box. It makes one walk over the closures
+   * of the compilation, and it uses no point.
+   *
+   * @param box - The value of each variable, a number or an interval, in the order of `variables`.
+   * @returns The enclosure of the exact value and the bound of the float error.
+   */
+  evaluate(box: ArrayLike<IntervalInput>): StaticBound;
+}
+
+/**
+ * This function compiles a document one time with the verb `static` of coeval. The summary of a document holds no box,
+ * so each call of the result takes the box from the caller.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileStatic(doc: Document, options: CompileFloatOptions = {}): Result<StaticFunction> {
+  const made = compileWith<StaticCell>(STATIC, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = root.run;
+  return ok({
+    variables,
+    evaluate(box) {
+      checkCount(box, variables.length);
+      return run(box);
+    },
+  });
+}
+
+/**
+ * This function gives the static bound of a document over named bounds, in the shape of the option of `summarize`. A
+ * variable without bounds has the whole line, so its error makes no claim where a finite size is necessary.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The bounds of the variables. An interval that is not valid throws a `RangeError`.
+ * @returns The enclosure of the exact value and the bound of the float error, or the error of coeval.
+ */
+export function staticBound(doc: Document, options: SummarizeOptions = {}): Result<StaticBound> {
+  const made = compileStatic(doc);
+  if (!made.ok) return made;
+  return ok(made.value.evaluate(made.value.variables.map((name) => options.bounds?.[name] ?? WHOLE)));
 }
 
 /** A document compiled with the verb `ball`. */
