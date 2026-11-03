@@ -269,7 +269,7 @@ importers:
     dependencies:
       '@mark1russell7/coeval':
         specifier: ^0.20.0
-        version: 0.20.0
+        version: 0.20.1
       '@mark1russell7/rational':
         specifier: workspace:*
         version: link:../rational
@@ -303,7 +303,7 @@ importers:
         version: link:../expression
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.3
+        version: 0.2.4
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
         version: 0.1.5
@@ -356,7 +356,7 @@ importers:
     dependencies:
       '@mark1russell7/coeval':
         specifier: ^0.20.0
-        version: 0.20.0
+        version: 0.20.1
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -411,7 +411,7 @@ importers:
         version: link:../predicates
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.3
+        version: 0.2.4
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -454,7 +454,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.3
+        version: 0.2.4
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^1.0.2
@@ -473,7 +473,7 @@ importers:
     dependencies:
       '@mark1russell7/coeval':
         specifier: ^0.20.0
-        version: 0.20.0
+        version: 0.20.1
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -696,8 +696,8 @@ packages:
       dependency-cruiser:
         optional: true
 
-  '@mark1russell7/coeval@0.20.0':
-    resolution: {integrity: sha512-e/cm1HeJYylA8h6oFLoxN7WBvUZBa2Aw7nScp8gLVM7BQeFW9Ec4sdrZz0rPQYQ71tFZipUeaiqqxVBwXAtehw==}
+  '@mark1russell7/coeval@0.20.1':
+    resolution: {integrity: sha512-ZiacoiJhenMxbhwz1JqfGHaSQ3fAyYtUT2mF9TWe6VCjWvm7uCzHHq3a8RBVTcUadtGiKL12j5WLxqDIEgO2Bg==}
 
   '@mark1russell7/conventions@0.21.0':
     resolution: {integrity: sha512-mYD55jKunbfbAQXhs5bKD5vXOvWEzL1+jvyMpZCmcidT28m+ddM4iJG42StanDIeQD7ifuRrsN7q3ejnIJe7tg==}
@@ -709,8 +709,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/rigor-bench@0.2.3':
-    resolution: {integrity: sha512-ot+Ehl3dYJ3YXTKmaLGec/uOLoScUTqVGzQ9dZrJ7tlTCUike+PyHPZDsDT8uDQdUVm7A2YqrxUkkoawqWD7ug==}
+  '@mark1russell7/rigor-bench@0.2.4':
+    resolution: {integrity: sha512-tx/N1dz+yjdhVHBwnCXSqsJyWqmLbUOUYAk3bEIiU5ONwp0y0/24N0tYMCuJBLlL8Tbe2PT58mz4nbetyIcIOQ==}
     engines: {node: '>=22'}
 
   '@mark1russell7/rigor-generators@0.1.1':
@@ -1842,13 +1842,13 @@ snapshots:
       '@swc/core': 1.16.21
       dependency-cruiser: 18.7.0
 
-  '@mark1russell7/coeval@0.20.0': {}
+  '@mark1russell7/coeval@0.20.1': {}
 
   '@mark1russell7/conventions@0.21.0': {}
 
   '@mark1russell7/cue@1.1.0': {}
 
-  '@mark1russell7/rigor-bench@0.2.3':
+  '@mark1russell7/rigor-bench@0.2.4':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.1
       '@mark1russell7/rigor-statistics': 0.1.5
