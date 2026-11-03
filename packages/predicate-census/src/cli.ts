@@ -1,6 +1,7 @@
 /**
  * The command line of the census: `node src/cli.ts <file or folder>... [--out <report.json>] [--highways <tree>]`. It
- * reads each `.jsonl` file. With `--highways`, it first examines the lines of highways that `CALL_SITE_RULES` copies.
+ * reads each `.jsonl` file. With `--highways`, it examines the lines of highways that `CALL_SITE_RULES` copies. A copy
+ * that is not current stops the census with exit code 3 only when a line of the dump uses that copy.
  * Without `--out`, it writes the report as JSON to the standard output.
  *
  * With `--out`, it writes each record as one line of `<report>.records.jsonl` and each unknown line to
@@ -31,7 +32,7 @@ if (inputs.length === 0 || [...options.values()].includes(undefined)) {
   process.exit(2);
 }
 
-// The rules of the call sites are copies of lines of highways. With --highways, a copy that is not current stops the census.
+// The rules of the call sites are copies of lines of highways. A line with the field rule (highways #258) does not use them.
 const ruleSources =
   highways === undefined
     ? undefined
@@ -40,11 +41,17 @@ const ruleSources =
         return fs.existsSync(p) ? fs.readFileSync(p, "utf8") : null;
       });
 for (const c of ruleSources ?? []) {
-  if (!c.holds) console.error(`The rule of ${c.fn} copies ${c.file}:${c.line}, but highways no longer has that line.`);
+  if (!c.holds) console.error(`Warning: the rule of ${c.fn} copies ${c.file}:${c.line}, but highways no longer has that line.`);
   else if (c.foundAt !== c.line) console.error(`Warning: the line of the rule of ${c.fn} moved from ${c.file}:${c.line} to line ${c.foundAt}.`);
 }
-if (ruleSources?.some((c) => !c.holds)) process.exit(3);
 const repo = path.dirname(fileURLToPath(import.meta.url));
+
+/** This function stops the census with exit code 3 when a line used a copy of a rule that is not current. */
+function stopOnStaleCopy(copyUses: Readonly<Record<string, number>>): void {
+  const stale = (ruleSources ?? []).filter((c) => !c.holds && (copyUses[c.fn] ?? 0) > 0);
+  for (const c of stale) console.error(`${copyUses[c.fn]} lines of ${c.fn} use the copy of ${c.file}:${c.line}, and highways no longer has that line.`);
+  if (stale.length > 0) process.exit(3);
+}
 
 /** A file that gets one JSON line for each value, with a buffer of writes. */
 class Lines {
@@ -80,7 +87,9 @@ class Lines {
 }
 
 if (out === undefined) {
-  process.stdout.write(JSON.stringify(censusOfFiles(inputs, repo), null, 2) + "\n");
+  const report = censusOfFiles(inputs, repo);
+  process.stdout.write(JSON.stringify(report, null, 2) + "\n");
+  stopOnStaleCopy(report.copyUses);
 } else {
   const stem = out.endsWith(".json") ? out.slice(0, -".json".length) : out;
   const records = new Lines(`${stem}.records.jsonl`);
@@ -96,4 +105,5 @@ if (out === undefined) {
     `${report.files.length} files: total ${t.total}, undecided ${t.undecided} (${t.undecidedFiltered} with the filter), ` +
       `floatWrong ${t.floatWrong}, unseen ${t.unseen}, unknown ${t.unknown}. Report: ${out}, ${records.count} records.`,
   );
+  stopOnStaleCopy(report.copyUses);
 }

@@ -318,6 +318,11 @@ export interface Census {
   readonly byFn: readonly Rollup[];
   /** The weight of the packing lines of each function and each near reason, for example `overlap` and `x:zero`. */
   readonly nearReasons: Readonly<Record<string, Readonly<Record<string, number>>>>;
+  /**
+   * The count of the lines of each function that get the copy `CALL_SITE_RULES`, because they have no field `rule`.
+   * Only the dumps before highways #258 have such lines.
+   */
+  readonly copyUses: Readonly<Record<string, number>>;
   readonly records: readonly InputRecord[];
   readonly unknown: readonly UnknownRecord[];
 }
@@ -444,6 +449,7 @@ export class Tally {
   readonly #packing = new Map<string, PackingCounts>();
   readonly #seen = new Map<string, Seen>();
   readonly #reasons = new Map<string, Record<string, number>>();
+  readonly #copyUses = new Map<string, number>();
   readonly #records: InputRecord[] = [];
   readonly #unknown: UnknownRecord[] = [];
   readonly #onRecord: ((record: InputRecord) => void) | undefined;
@@ -529,6 +535,9 @@ export class Tally {
     }
     const { predicate, point: p } = found;
     const { n, floatAnswer, fn } = line.line;
+    if ((line.form === "segmentPair" || line.form === "pointSide") && line.line["rule"] === undefined && CALL_SITE_RULES[fn] !== undefined) {
+      this.#copyUses.set(fn, (this.#copyUses.get(fn) ?? 0) + 1);
+    }
     const isShared = line.form === "segmentPair" && line.line.sharedEnd === true;
     const result = classify(predicate, p, floatAnswer);
     const g = this.#group(line.line.case, fn, predicate.name, "lines", isShared);
@@ -777,6 +786,7 @@ export class Tally {
       byPredicate: order(byPredicate),
       byFn: order(byFn),
       nearReasons: sortKeys(Object.fromEntries([...this.#reasons].map(([fn, r]) => [fn, sortKeys(r)]))),
+      copyUses: sortKeys(Object.fromEntries(this.#copyUses)),
       records: [...this.#records],
       unknown: [...this.#unknown],
     };
