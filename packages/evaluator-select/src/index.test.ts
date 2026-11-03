@@ -81,7 +81,9 @@ describe("the stitched evaluator", () => {
   it("stops at the first stage that answers, and names it", () => {
     const sum = stitch({ type: "add", value: [v("x"), c(1)] }, { kind: "value", tolerance: { relative: 0 } });
     expect(sum.plan).toEqual(STAGES);
-    expect(sum.answer([2])).toMatchObject({ stage: "float", value: 3, error: 0, met: true, sign: 1 });
+    // the A3 bound of 2 + 1 is above zero, and the ball finds that the sum is exact
+    expect(sum.answer([2])).toMatchObject({ stage: "ball", value: 3, error: 0, met: true, sign: 1 });
+    expect(stitch({ type: "add", value: [v("x"), c(1)] }, { kind: "sign" }).answer([2]).stage).toBe("float");
     // 0.1 + 1 rounds, so only the exact stage answers the tolerance 0
     const exact = sum.answer([0.1]);
     expect(exact).toMatchObject({ stage: "exact", met: true });
