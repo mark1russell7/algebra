@@ -1,0 +1,554 @@
+{
+  "pairs": [
+    {
+      "stage": "float",
+      "outcome": "slower",
+      "reason": "The interval of the candidate median over the A/A median is [1.0005, 6.9528]. The interval is above 1.",
+      "medianRatio": 2.5116431403311505,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "same",
+          "medianRatio": 0.9979839003767634
+        },
+        {
+          "family": "large",
+          "outcome": "slower",
+          "medianRatio": 4.3282509862934795
+        },
+        {
+          "family": "well",
+          "outcome": "same",
+          "medianRatio": 0.9982769700445315
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 99.51048227004776
+        },
+        {
+          "family": "orient-random",
+          "outcome": "same",
+          "medianRatio": 1.0001946044131353
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 15.027622826192127
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.9989946867538564
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 107.26719539246909
+        }
+      ]
+    },
+    {
+      "stage": "ball",
+      "outcome": "cannot decide",
+      "reason": "The interval of the candidate median over the A/A median is [0.6792, 4.1696]. The interval holds 1 and crosses the margin of 0.05.",
+      "medianRatio": 2.420267950515684,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "cannot decide",
+          "medianRatio": 0.9731174043441477
+        },
+        {
+          "family": "large",
+          "outcome": "slower",
+          "medianRatio": 3.3645547164259066
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.4477154161586101
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 29.774002066575903
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.6108968084638573
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 7.402943650207552
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5060987477400142
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 48.90840716864386
+        }
+      ]
+    },
+    {
+      "stage": "interval",
+      "outcome": "cannot decide",
+      "reason": "The interval of the candidate median over the A/A median is [0.2025, 2.7813]. The interval holds 1 and crosses the margin of 0.05.",
+      "medianRatio": 1.6729081354225341,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.720279289938339
+        },
+        {
+          "family": "large",
+          "outcome": "slower",
+          "medianRatio": 2.700175332954867
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.15076112081747614
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 9.422497941082906
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.20168837421654484
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 3.336878373648312
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.1577134094486897
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 15.866464538443452
+        }
+      ]
+    },
+    {
+      "stage": "exact",
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0321, 0.6563]. The interval is below 1.",
+      "medianRatio": 0.2771315317782472,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "cannot decide",
+          "medianRatio": 0.06518008812544042
+        },
+        {
+          "family": "large",
+          "outcome": "cannot decide",
+          "medianRatio": 1.0561245125908474
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.0026761403139871553
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 1.185277452004305
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.014912305863961245
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.3293545375362037
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.01364810722501815
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.7020928166772642
+        }
+      ]
+    }
+  ],
+  "model": {
+    "cost": {
+      "float": 14.576732381185268,
+      "ball": 27.920677842934328,
+      "interval": 76.94297629533598,
+      "exact": 858.8778230042051
+    },
+    "shares": [
+      {
+        "question": {
+          "kind": "sign"
+        },
+        "stage": "float",
+        "share": 0.5693359375
+      },
+      {
+        "question": {
+          "kind": "sign"
+        },
+        "stage": "ball",
+        "share": 0.622314453125
+      },
+      {
+        "question": {
+          "kind": "sign"
+        },
+        "stage": "interval",
+        "share": 0.71435546875
+      },
+      {
+        "question": {
+          "kind": "sign"
+        },
+        "stage": "exact",
+        "share": 0.974853515625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "absolute": 1e-9
+          }
+        },
+        "stage": "float",
+        "share": 0.609375
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "absolute": 1e-9
+          }
+        },
+        "stage": "ball",
+        "share": 0.6240234375
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "absolute": 1e-9
+          }
+        },
+        "stage": "interval",
+        "share": 0.746337890625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "absolute": 1e-9
+          }
+        },
+        "stage": "exact",
+        "share": 0.974853515625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-12
+          }
+        },
+        "stage": "float",
+        "share": 0.509765625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-12
+          }
+        },
+        "stage": "ball",
+        "share": 0.514892578125
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-12
+          }
+        },
+        "stage": "interval",
+        "share": 0.6484375
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-12
+          }
+        },
+        "stage": "exact",
+        "share": 0.974853515625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 0
+          }
+        },
+        "stage": "float",
+        "share": 0.046875
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 0
+          }
+        },
+        "stage": "ball",
+        "share": 0.082275390625
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 0
+          }
+        },
+        "stage": "interval",
+        "share": 0.2158203125
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 0
+          }
+        },
+        "stage": "exact",
+        "share": 0.974853515625
+      }
+    ]
+  },
+  "errors": [
+    {
+      "arm": "float",
+      "question": "sign",
+      "met": 2332,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 7.202811758463337e-15
+    },
+    {
+      "arm": "ball",
+      "question": "sign",
+      "met": 2549,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 2.037557782196622e-15
+    },
+    {
+      "arm": "interval",
+      "question": "sign",
+      "met": 2926,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 8.881784197001254e-16
+    },
+    {
+      "arm": "exact",
+      "question": "sign",
+      "met": 3993,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.4887082032983776e-33
+    },
+    {
+      "arm": "stitched",
+      "question": "sign",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 2.577715860598689e-16
+    },
+    {
+      "arm": "float",
+      "question": "abs 1e-9",
+      "met": 2496,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.2054505389745416e-15
+    },
+    {
+      "arm": "ball",
+      "question": "abs 1e-9",
+      "met": 2556,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 3.157274179334447e-16
+    },
+    {
+      "arm": "interval",
+      "question": "abs 1e-9",
+      "met": 3057,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 3.8857805861880484e-16
+    },
+    {
+      "arm": "exact",
+      "question": "abs 1e-9",
+      "met": 3993,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.4887082032983776e-33
+    },
+    {
+      "arm": "stitched",
+      "question": "abs 1e-9",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 9.40376030810144e-16
+    },
+    {
+      "arm": "float",
+      "question": "rel 1e-12",
+      "met": 2088,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 4.785450556379496e-15
+    },
+    {
+      "arm": "ball",
+      "question": "rel 1e-12",
+      "met": 2109,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 9.45303496876771e-16
+    },
+    {
+      "arm": "interval",
+      "question": "rel 1e-12",
+      "met": 2656,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 5.551115123125784e-16
+    },
+    {
+      "arm": "exact",
+      "question": "rel 1e-12",
+      "met": 3993,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.4887082032983776e-33
+    },
+    {
+      "arm": "stitched",
+      "question": "rel 1e-12",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 3.817970207161082e-21
+    },
+    {
+      "arm": "float",
+      "question": "rel 0",
+      "met": 192,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 0
+    },
+    {
+      "arm": "ball",
+      "question": "rel 0",
+      "met": 337,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 0
+    },
+    {
+      "arm": "interval",
+      "question": "rel 0",
+      "met": 884,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 0
+    },
+    {
+      "arm": "exact",
+      "question": "rel 0",
+      "met": 3993,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.4887082032983776e-33
+    },
+    {
+      "arm": "stitched",
+      "question": "rel 0",
+      "met": 4012,
+      "records": 4096,
+      "wrong": 0,
+      "medianBound": 1.102407915699985e-33
+    }
+  ],
+  "stitchedFailures": 0,
+  "selections": [
+    {
+      "question": "sign",
+      "plan": [
+        "float",
+        "interval",
+        "exact"
+      ],
+      "expectedCost": 293.0470602864325
+    },
+    {
+      "question": "abs 1e-9",
+      "plan": [
+        "float",
+        "interval",
+        "exact"
+      ],
+      "expectedCost": 262.4973427752054
+    },
+    {
+      "question": "rel 1e-12",
+      "plan": [
+        "float",
+        "interval",
+        "exact"
+      ],
+      "expectedCost": 354.246058925885
+    },
+    {
+      "question": "rel 0",
+      "plan": [
+        "interval",
+        "exact"
+      ],
+      "expectedCost": 750.4575191394538
+    }
+  ]
+}
