@@ -1,5 +1,6 @@
 /**
- * The coeval kinds of the expression documents and the machine of the verbs `summary`, `float`, `interval` and `ball`.
+ * The coeval kinds of the expression documents and the machine of the verbs `summary`, `float`, `interval`, `ball` and
+ * `exact`.
  * An evaluator of a later item adds its own verb to these kinds. The documents do not change.
  *
  * @packageDocumentation
@@ -11,6 +12,8 @@ import type { EvalInput, Kind, Machine, Result, World } from "@mark1russell7/coe
 export type Shape = NonNullable<Kind["parts"]>;
 import { ballNode, ballNum, ballVar } from "./ball.ts";
 import type { Ball, BallCell, BallInput } from "./ball.ts";
+import { exactNode, exactNum, exactVar } from "./exact.ts";
+import type { ExactCell, ExactResult } from "./exact.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
 import type { FloatCell, FloatResult } from "./float.ts";
 import type { Interval } from "./interval.ts";
@@ -28,9 +31,11 @@ export const FLOAT = "float";
 export const INTERVAL = "interval";
 /** The verb that compiles a node into code that gives a midpoint and a radius of its value (roadmap item A4). */
 export const BALL = "ball";
+/** The verb that compiles a node into code that gives its exact rational value (roadmap item A6). */
+export const EXACT = "exact";
 
 /** The verbs of the compiled evaluators, which take the position of each variable from the context. */
-const COMPILED = [FLOAT, INTERVAL, BALL] as const;
+const COMPILED = [FLOAT, INTERVAL, BALL, EXACT] as const;
 
 const list: Shape = { shape: "list" };
 const term: Shape = { shape: "term" };
@@ -143,9 +148,10 @@ const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>>
   [FLOAT]: { num: floatNum, variable: floatVar, node: (k, p, d) => floatNode(k, p as FloatCell[], d) },
   [INTERVAL]: { num: intervalNum, variable: intervalVar, node: (k, p, d) => intervalNode(k, p as IntervalCell[], d) },
   [BALL]: { num: ballNum, variable: ballVar, node: (k, p, d) => ballNode(k, p as BallCell[], d) },
+  [EXACT]: { num: exactNum, variable: exactVar, node: (k, p, d) => exactNode(k, p as ExactCell[], d) },
 };
 
-/** The machine of the verbs `summary`, `float`, `interval` and `ball` for the expression kinds. */
+/** The machine of the verbs `summary`, `float`, `interval`, `ball` and `exact` for the expression kinds. */
 export const expressionMachine: Machine = {
   world: expressionWorld,
   evaluators: Object.fromEntries(
@@ -175,7 +181,7 @@ export function summarize(doc: Document, options: SummarizeOptions = {}): Result
   return plan.evaluate(makeContext(options.bounds ?? {})) as Result<Summary>;
 }
 
-/** The options of `compileFloat`, `compileInterval` and `compileBall`. */
+/** The options of `compileFloat`, `compileInterval`, `compileBall` and `compileExact`. */
 export interface CompileFloatOptions {
   /** The order of the values of a call. The default is the free variables, sorted. The list must have each free variable. */
   readonly variables?: readonly string[];
@@ -310,6 +316,41 @@ export function compileBall(doc: Document, options: CompileFloatOptions = {}): R
       checkCount(values, variables.length);
       const mid = run(values);
       return { mid, rad: root.rad };
+    },
+  });
+}
+
+/** A document compiled with the verb `exact`. */
+export interface ExactFunction {
+  /** The names of the variables, in the order of the values of `evaluate`. */
+  readonly variables: readonly string[];
+  /**
+   * This function gives the exact value at one point. It uses only the closures of the compilation.
+   *
+   * @param values - The value of each variable, in the order of `variables`.
+   * @returns A rational with no error, `null` when the point gives no real value, or `"no claim"`.
+   */
+  evaluate(values: ArrayLike<number>): ExactResult;
+}
+
+/**
+ * This function compiles a document one time with the verb `exact` of coeval. Each call gives the exact rational value.
+ * It costs more than the float verbs, because each operation is on `bigint`.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileExact(doc: Document, options: CompileFloatOptions = {}): Result<ExactFunction> {
+  const made = compileWith<ExactCell>(EXACT, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = root.run;
+  return ok({
+    variables,
+    evaluate(values) {
+      checkCount(values, variables.length);
+      return run(values);
     },
   });
 }

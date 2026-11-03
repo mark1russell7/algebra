@@ -105,6 +105,22 @@ if (f.ok) {
 
 The source of `ball.ts` has the proof sketch of each rule. The property tests compare the interval, the ball and the bound of A3 with the exact rationals of `@mark1russell7/rational`. They also print the median width of each one.
 
+## The exact evaluator
+
+The verb `exact` gives the exact value as a rational of `@mark1russell7/rational` (roadmap item A6). Its error is zero. Each operation is on `bigint`, so it costs more than the other verbs.
+
+```ts
+import { compileExact } from "@mark1russell7/expression";
+
+const doc = { type: "add", value: [{ type: "var", value: "x" }, { type: "num", value: 0.1 }] } as const;
+const f = compileExact(doc);
+if (f.ok) f.value.evaluate([0.2]); // the rational of the float 0.2 plus the rational of the float 0.1
+```
+
+- A quotient by zero and a negative power of zero give `null`: the point has no real value.
+- An even root of a negative value gives `null` too.
+- A root of a radicand other than `0`, `1` and `-1` gives `"no claim"`, because its value is not always rational. A variable that is not finite gives `"no claim"` too.
+
 ## The generator
 
 `randomExpression(random(seed))` makes a random expression for a property test. The same seed gives the same expression. Approximately a quarter of the literals are near-degenerate constants, for example `Number.MIN_VALUE` or `0.1`.

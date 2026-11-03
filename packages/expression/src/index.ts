@@ -1,6 +1,6 @@
 /**
- * Expression documents on coeval: the kinds, a summary of each node, the float, interval and ball evaluators, a zod
- * schema and a seeded generator.
+ * Expression documents on coeval: the kinds, a summary of each node, the float, interval, ball and exact evaluators,
+ * a zod schema and a seeded generator.
  *
  * @packageDocumentation
  */
@@ -13,10 +13,12 @@ export type { Binary, Comparison, Document, Expression, Nary, Neg, Num, Pow, Roo
 export {
   BALL,
   compileBall,
+  compileExact,
   compileFloat,
   compileInterval,
   expressionMachine,
   expressionWorld,
+  EXACT,
   FLOAT,
   INTERVAL,
   KINDS,
@@ -24,11 +26,13 @@ export {
   SUMMARY,
   summarize,
 } from "./kinds.ts";
-export type { BallFunction, CompileFloatOptions, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
+export type { BallFunction, CompileFloatOptions, ExactFunction, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
 export { floatNode, floatNum, floatRoot, floatVar, rootError, UNIT_ROUNDOFF } from "./float.ts";
 export { decideInterval, intervalNode, intervalNum, intervalVar, NO_CLAIM } from "./interval-evaluator.ts";
 export type { Enclosure, IntervalCell, IntervalInput, IntervalRun } from "./interval-evaluator.ts";
 export { ballNode, ballNum, ballVar, decideBall } from "./ball.ts";
+export { EXACT_BITS, exactNode, exactNum, exactVar } from "./exact.ts";
+export type { ExactCell, ExactResult, ExactRun } from "./exact.ts";
 export type { Ball, BallCell, BallInput, BallRun, Truth } from "./ball.ts";
 export type { FloatCell, FloatResult, FloatRun } from "./float.ts";
 export { DEGENERATE_CONSTANTS, random, randomComparison, randomExpression } from "./generate.ts";
