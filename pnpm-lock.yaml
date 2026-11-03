@@ -218,6 +218,9 @@ importers:
       '@mark1russell7/rational':
         specifier: workspace:*
         version: link:../rational
+      '@mark1russell7/rigor-statistics':
+        specifier: ^0.1.2
+        version: 0.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -494,6 +497,14 @@ packages:
     resolution: {integrity: sha512-R9pjuWNFqd/LSfOI8uY7w8E2Dri8UQFGLodBuV4d2E0pwzWM5ISVXWVhC7+aYgrR1GXSMzbyo5ZLWvqyQCwdIg==}
     engines: {node: '>=22'}
     hasBin: true
+
+  '@mark1russell7/rigor-generators@0.1.0':
+    resolution: {integrity: sha512-xhXvLzZQlDH6ysAbqEjbha6fs1GbvO9RflSXwYbA3QMryxu4zEikbxahEDQCIxVSis+2pfX/18PHU3+X+jJmPw==}
+    engines: {node: '>=22'}
+
+  '@mark1russell7/rigor-statistics@0.1.2':
+    resolution: {integrity: sha512-7bKs05nViGfA9vH8RoaYI0PUOgsohEt0lxhzEI6cAC/CXaLyCTMIvx0dYZ9T6lq6f429ofa47tGrEEWmRV482Q==}
+    engines: {node: '>=22'}
 
   '@mark1russell7/ste-lint@0.1.1':
     resolution: {integrity: sha512-NXRB3PimE1PfXT+SuGZAEXt35EdWAXQMd4Dyn6Ep+6Yzf7YBvpHN0+xo4vHpYhmg3CHNGuNvCmspLodXi8/JQg==}
@@ -1618,6 +1629,12 @@ snapshots:
   '@mark1russell7/conventions@0.17.0': {}
 
   '@mark1russell7/cue@1.1.0': {}
+
+  '@mark1russell7/rigor-generators@0.1.0': {}
+
+  '@mark1russell7/rigor-statistics@0.1.2':
+    dependencies:
+      '@mark1russell7/rigor-generators': 0.1.0
 
   '@mark1russell7/ste-lint@0.1.1':
     dependencies:

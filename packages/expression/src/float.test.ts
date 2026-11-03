@@ -1,5 +1,6 @@
 import { check, checkWorld } from "@mark1russell7/coeval";
 import * as Q from "@mark1russell7/rational";
+import { median } from "@mark1russell7/rigor-statistics";
 import type { Rational } from "@mark1russell7/rational";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -257,11 +258,6 @@ function compiled(doc: Document): FloatFunction {
 }
 
 const call = (f: FloatFunction, at: Readonly<Record<string, number>>): FloatResult => f.evaluate(VARS.map((v) => at[v] as number));
-
-const median = (xs: readonly number[]): number => {
-  const s = [...xs].sort((a, b) => a - b);
-  return s.length === 0 ? Number.NaN : (s[Math.floor((s.length - 1) / 2)] as number);
-};
 
 const n = (x: string): Expression => ({ type: "var", value: x });
 const c = (v: number): Expression => ({ type: "num", value: v });
