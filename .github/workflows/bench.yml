@@ -18,7 +18,7 @@ permissions:
 
 # One bench at a time, so two benches do not share the runner.
 concurrency:
-  group: bench
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
