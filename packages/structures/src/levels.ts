@@ -109,9 +109,12 @@ export const requiredLaws = (level: Level): readonly LawName[] => [
   ...new Set(levelsBelow(level).flatMap((entry) => LEVELS[entry].laws)),
 ];
 
-/** This function gives the names of the fields that hold the operations of a level, with the levels below it. */
+/** This function gives a level and the levels below it. Each level comes after the levels that it is built on. */
+const lowestFirst = (level: Level): readonly Level[] => [...new Set<Level>([...LEVELS[level].below.flatMap(lowestFirst), level])];
+
+/** This function gives the names of the fields that hold the operations of a level. The lowest level comes first. */
 export const operationFields = (level: Level): readonly string[] => [
-  ...new Set(levelsBelow(level).flatMap((entry) => LEVELS[entry].operations)),
+  ...new Set(lowestFirst(level).flatMap((entry) => LEVELS[entry].operations)),
 ];
 
 /** This function gives the parts of a level. A part of a higher level replaces the part of a lower level. */
