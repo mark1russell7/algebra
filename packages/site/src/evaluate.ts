@@ -1,6 +1,6 @@
 /**
- * The evaluators of the playground. Each one reads the same document. These are the A3 float evaluator, the A4
- * interval and ball evaluators and the A1 interval of the expression package, and the exact value of the census.
+ * The evaluators of the playground. Each one reads the same document. The expression package gives the A3 float
+ * evaluator, the A4 interval and ball evaluators and the A1 interval. The census gives the exact value.
  *
  * @packageDocumentation
  */
