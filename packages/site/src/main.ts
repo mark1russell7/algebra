@@ -1,5 +1,5 @@
 import "./style.css";
-import costReport from "../../evaluator-bench/results/2026-11-03/report.json";
+import costReport from "../data/a6-report.json";
 import nearMissJson from "../data/near-misses.json";
 import { startClasses, startRecords } from "./census-view.ts";
 import type { CostReport } from "./cost.ts";

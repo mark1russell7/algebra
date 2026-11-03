@@ -3,11 +3,16 @@ import { describe, expect, it } from "vitest";
 import { logPlace, planAt, questionName, questionsOf, scaleExact, stageRows } from "./cost.ts";
 import type { CostReport } from "./cost.ts";
 
-const report = JSON.parse(readFileSync(new URL("../../evaluator-bench/results/2026-11-03/report.json", import.meta.url), "utf8")) as CostReport;
+const text = (url: string): string => readFileSync(new URL(url, import.meta.url), "utf8");
+const report = JSON.parse(text("../data/a6-report.json")) as CostReport;
 const questions = questionsOf(report.model);
 const sign = questions.find((q) => q.kind === "sign")!;
 
 describe("the cost section", () => {
+  it("reads a copy of the kept report, with no change", () => {
+    expect(text("../data/a6-report.json")).toBe(text("../../evaluator-bench/results/2026-11-03/report.json"));
+  });
+
   it("gives the plan and the cost of the kept report at factor 1", () => {
     expect(questions.map(questionName)).toEqual(report.selections.map((s) => s.question));
     for (const q of questions) {
