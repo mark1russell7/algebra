@@ -6,6 +6,8 @@
  */
 import { exactValue, floatValue } from "./census.ts";
 import type { Point, PointVars, SignForm } from "./census.ts";
+import { compileFloat } from "@mark1russell7/expression";
+import type { Document, FloatFunction } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
 import { approx, formatFloat } from "./evaluate.ts";
 import { buildForm, cellDetail, decode, dyadicToRational, exactLine, fillRows, tally, ulp } from "./grid.ts";
@@ -345,7 +347,6 @@ export class Explorer {
       (tmp.getContext("2d") as CanvasRenderingContext2D).putImageData(image, 0, 0);
       if (this.ghost) ctx.drawImage(tmp, 0, 0, n, this.rows, 0, 0, n, this.rows);
       else ctx.drawImage(tmp, 0, 0);
-      if (name === "interval") this.drawHatch(ctx, n);
       if (this.line) {
         ctx.strokeStyle = this.palette.line;
         ctx.lineWidth = 1.25 / scale;
@@ -387,48 +388,6 @@ export class Explorer {
     return this.tmp;
   }
 
-  private hatch: { mask: HTMLCanvasElement; pattern: string } | null = null;
-
-  /** This method draws diagonal lines over each cell whose sign the interval does not fix. */
-  private drawHatch(ctx: CanvasRenderingContext2D, n: number): void {
-    const size = n * 2;
-    if (this.hatch === null || this.hatch.mask.width !== size || this.hatch.pattern !== this.palette.hatch) {
-      const mask = document.createElement("canvas");
-      mask.width = size;
-      mask.height = size;
-      this.hatch = { mask, pattern: this.palette.hatch };
-    }
-    const mask = this.hatch.mask;
-    const m = mask.getContext("2d") as CanvasRenderingContext2D;
-    m.globalCompositeOperation = "source-over";
-    m.clearRect(0, 0, size, size);
-    m.fillStyle = "#000";
-    for (let j = 0; j < this.rows; j++) {
-      let run = -1;
-      for (let i = 0; i <= n; i++) {
-        const undecided = i < n && decode(this.codes[j * n + i] as number).bound === null;
-        if (undecided && run < 0) run = i;
-        if (!undecided && run >= 0) {
-          m.fillRect(run * 2, j * 2, (i - run) * 2, 2);
-          run = -1;
-        }
-      }
-    }
-    m.globalCompositeOperation = "source-in";
-    m.strokeStyle = this.palette.hatch;
-    m.lineWidth = 1;
-    m.beginPath();
-    for (let d = -size; d < size; d += 4) {
-      m.moveTo(d, size);
-      m.lineTo(d + size, 0);
-    }
-    m.stroke();
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, this.drag ? this.drag.dx * 2 : 0, this.drag ? this.drag.dy * 2 : 0);
-    ctx.drawImage(mask, 0, 0);
-    ctx.restore();
-  }
-
   private renderTiles(): void {
     const done = this.rows >= this.view.n;
     const part = this.codes.subarray(0, this.rows * this.view.n);
@@ -443,6 +402,21 @@ export class Explorer {
       tile("warn", fmt(c.undecided), "cells where the interval fixes no sign", pct(c.undecided)),
       tile(c.wrongButDecided === 0 ? "good" : "bad", fmt(c.wrongButDecided), "wrong float signs that the interval fixed", c.wrongButDecided === 0 ? "0: the interval flags each wrong cell" : "a defect of the interval"),
     ].join("");
+  }
+
+  private compiled = new WeakMap<SignForm, FloatFunction | null>();
+
+  /** This method gives the A3 float value of the sign at a point, its error bound and the sign that the bound fixes. */
+  private a3(point: Point): { value: number; error: number; sign: -1 | 0 | 1 | null } | null {
+    if (!this.compiled.has(this.form)) {
+      const made = compileFloat(this.form.doc as unknown as Document);
+      this.compiled.set(this.form, made.ok ? made.value : null);
+    }
+    const run = this.compiled.get(this.form);
+    if (!run) return null;
+    const r = run.evaluate(run.variables.map((name) => point[name] ?? Number.NaN));
+    const s = Math.sign(r.value) as -1 | 0 | 1;
+    return { ...r, sign: r.error === 0 || Math.abs(r.value) > r.error ? s : null };
   }
 
   private detail(): CellDetail | null {
@@ -467,15 +441,18 @@ export class Explorer {
         ? "The float sign is right here, but the interval cannot prove it. A filter sends this cell to the exact evaluator."
         : "The float sign is right, and the interval proves it. A filter stops here.";
     const off = (k: number): string => (k > 0 ? `+${k}` : `${k}`);
+    const a3 = this.a3(d.point);
     box.innerHTML = `
       <h3>Cell ${off(d.offset[0])}, ${off(d.offset[1])} ulps from ${esc(label)}${this.pinned ? ` <span class="pin">kept</span>` : ""}</h3>
       <p class="coords"><code>${esc(label)} = (${full(d.point[xName] as number)}, ${full(d.point[yName] as number)})</code></p>
       <dl class="values">
         <div><dt>Float value</dt><dd><code>${formatFloat(d.floatValue, 17)}</code></dd><dd><span class="chip ${signClass(d.float)}">${signText(d.float)}</span></dd></div>
+        ${a3 === null ? "" : `<div><dt>A3 float bound</dt><dd><code>${formatFloat(a3.value, 4)} ± ${a3.error === Infinity ? "∞" : formatFloat(a3.error, 4)}</code></dd><dd><span class="chip ${signClass(a3.sign)}">${signText(a3.sign)}</span></dd></div>`}
         <div><dt>A1 interval</dt><dd><code>${d.bounds === null ? "empty" : `[${formatFloat(d.bounds[0], 4)}, ${formatFloat(d.bounds[1], 4)}]`}</code></dd><dd><span class="chip ${signClass(d.bound)}">${signText(d.bound)}</span></dd></div>
         <div><dt>Exact value</dt><dd><code>${Q.sign(d.exactValue) === 0 ? "0" : `≈ ${approx(d.exactValue, 6)}`}</code></dd><dd><span class="chip ${signClass(d.exact)}">${signText(d.exact)}</span></dd></div>
       </dl>
-      <p class="verdict ${wrong ? "bad" : ""}">${verdict}</p>`;
+      <p class="verdict ${wrong ? "bad" : ""}">${verdict}</p>
+      <p class="keys">Keys on a grid: <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> move the cell, <kbd>Shift</kbd> with an arrow moves the view, <kbd>+</kbd> <kbd>−</kbd> zoom, <kbd>Esc</kbd> goes back to the input.</p>`;
   }
 
   private renderNote(): void {

@@ -1,17 +1,17 @@
 /**
- * The evaluators of the playground. Each one reads the same document. The page shows only the evaluators that exist.
- * These are the float value and the exact value of the census, and the A1 interval of the expression package.
+ * The evaluators of the playground. Each one reads the same document. These are the A3 float evaluator and the A1
+ * interval of the expression package, and the exact value of the census.
  *
  * @packageDocumentation
  */
-import { summarize } from "@mark1russell7/expression";
+import { compileFloat, summarize } from "@mark1russell7/expression";
 import type { Document, Expression } from "@mark1russell7/expression";
-import { exactValue, floatValue } from "./census.ts";
+import { exactValue } from "./census.ts";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
 import { dyadicToRational } from "./grid.ts";
 
-/** The kinds that the float evaluator and the exact evaluator of the census know. */
+/** The kinds that the exact evaluator of the census knows. */
 export const CENSUS_KINDS: readonly string[] = ["num", "var", "add", "sub", "mul", "neg", "min", "max"];
 
 /** The result of one evaluator: a value, or the reason why it gives no value. */
@@ -19,17 +19,29 @@ export type Outcome<T> = { readonly ok: true; readonly value: T } | { readonly o
 
 /** The results of the three evaluators of one document at one point. */
 export interface Evaluation {
-  /** The plain float value. It has no error bound, because A3 is not built. */
-  readonly float: Outcome<number>;
+  /** The float value and the bound of its error, from the A3 evaluator. */
+  readonly float: Outcome<FloatOutcome>;
   /** The A1 interval of the summary, with each variable at a point interval. */
   readonly interval: Outcome<readonly [number, number] | null>;
   /** The exact value, from the dyadic evaluator of the census. */
   readonly exact: Outcome<Rational>;
   /** The distance from the float value to the exact value, when both exist. */
   readonly floatError: Rational | null;
+  /** The value is `true` when the bound of A3 holds for the exact value, and `null` when no check is possible. */
+  readonly boundHolds: boolean | null;
   /** The value is `true` when the interval contains the exact value, and `null` when one of them is missing. */
   readonly contained: boolean | null;
 }
+
+/** The float value of A3 and the bound of its error. `Infinity` makes no claim. */
+export interface FloatOutcome {
+  readonly value: number;
+  readonly error: number;
+  /** The value is `true` for a comparison. Then the error `0` tells that the bound decides the truth value. */
+  readonly comparison: boolean;
+}
+
+const COMPARISONS: readonly string[] = ["lt", "le", "eq"];
 
 /** This function gives the first kind of a document that the census evaluators do not know, or `null`. */
 export function unknownKind(doc: Document): string | null {
@@ -61,7 +73,15 @@ function containsExact(bounds: readonly [number, number] | null, exact: Rational
 export function evaluateAll(doc: Document, values: Readonly<Record<string, number>>): Evaluation {
   const missing = unknownKind(doc);
   const why = (name: string): string => `The ${name} evaluator of the census has no kind ${missing}.`;
-  const float: Outcome<number> = missing === null ? { ok: true, value: floatValue(doc as Expression, values) } : { ok: false, reason: why("float") };
+  const compiled = compileFloat(doc);
+  let float: Outcome<FloatOutcome>;
+  if (compiled.ok) {
+    const run = compiled.value;
+    const r = run.evaluate(run.variables.map((name) => values[name] ?? Number.NaN));
+    float = { ok: true, value: { value: r.value, error: r.error, comparison: COMPARISONS.includes(doc.type) } };
+  } else {
+    float = { ok: false, reason: `The float evaluator failed: ${compiled.error.reason}` };
+  }
   const exact: Outcome<Rational> =
     missing === null ? { ok: true, value: dyadicToRational(exactValue(doc as Expression, values)) } : { ok: false, reason: why("exact") };
   const bounds: Record<string, readonly [number, number]> = {};
@@ -70,9 +90,12 @@ export function evaluateAll(doc: Document, values: Readonly<Record<string, numbe
   const interval: Outcome<readonly [number, number] | null> = s.ok
     ? { ok: true, value: s.value.bounds }
     : { ok: false, reason: `The summary failed: ${JSON.stringify(s).slice(0, 120)}` };
-  const floatError = float.ok && exact.ok && Number.isFinite(float.value) ? Q.abs(Q.sub(Q.fromFloat(float.value), exact.value)) : null;
+  const f = float.ok && !float.value.comparison && Number.isFinite(float.value.value) ? float.value : null;
+  const floatError = f !== null && exact.ok ? Q.abs(Q.sub(Q.fromFloat(f.value), exact.value)) : null;
+  const boundHolds =
+    f === null || floatError === null ? null : f.error === Infinity ? true : Number.isFinite(f.error) ? Q.compare(floatError, Q.fromFloat(f.error)) <= 0 : null;
   const contained = interval.ok && exact.ok ? containsExact(interval.value, exact.value) : null;
-  return { float, interval, exact, floatError, contained };
+  return { float, interval, exact, floatError, boundHolds, contained };
 }
 
 /** This function gives the sign of an exact value. */

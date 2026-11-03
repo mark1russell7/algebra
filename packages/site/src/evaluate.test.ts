@@ -24,7 +24,9 @@ describe("the syntax", () => {
 describe("the evaluators", () => {
   it("shows the cancellation of (a + b) - a", () => {
     const e = evaluateAll(read("(a + b) - a"), { a: 1e16, b: 1 });
-    expect(e.float).toEqual({ ok: true, value: 0 });
+    expect(e.float.ok && e.float.value.value).toBe(0);
+    expect(e.float.ok && e.float.value.error).toBeGreaterThanOrEqual(1);
+    expect(e.boundHolds).toBe(true);
     expect(e.exact.ok && Q.toNumber(e.exact.value)).toBe(1);
     expect(e.interval.ok && e.interval.value).toEqual([-2, 2]);
     expect(e.contained).toBe(true);
@@ -32,15 +34,17 @@ describe("the evaluators", () => {
 
   it("finds a wrong float sign of a difference of squares", () => {
     const e = evaluateAll(read("(x + y) * (x - y) - (x * x - y * y)"), { x: 100000001, y: 100000000 });
-    expect(e.float).toEqual({ ok: true, value: 1 });
+    expect(e.float.ok && e.float.value.value).toBe(1);
+    expect(e.boundHolds).toBe(true);
     expect(e.exact.ok && Q.sign(e.exact.value)).toBe(0);
     expect(e.contained).toBe(true);
   });
 
   it("names a kind that an evaluator does not know", () => {
     const e = evaluateAll(read("root(x, 2) * root(x, 2) - x"), { x: 2 });
-    expect(e.float.ok).toBe(false);
+    expect(e.float.ok && Number.isFinite(e.float.value.error)).toBe(true);
     expect(e.exact.ok).toBe(false);
+    expect(e.boundHolds).toBeNull();
     expect(e.interval.ok).toBe(true);
   });
 

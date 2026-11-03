@@ -23,7 +23,7 @@ export const EXAMPLES: readonly Example[] = [
     label: "(a + b) − a",
     text: "(a + b) - a",
     values: { a: "1e16", b: "1" },
-    note: "The float sum a + b rounds to a, so the float value is 0. The exact value is 1.",
+    note: "The float sum a + b rounds to a, so the float value is 0. The exact value is 1, and the bound of A3 contains it.",
   },
   {
     label: "An orientation of the census",
@@ -41,7 +41,7 @@ export const EXAMPLES: readonly Example[] = [
     label: "A square root",
     text: "root(x, 2) * root(x, 2) - x",
     values: { x: "2" },
-    note: "Only the interval knows the kind root now. The float evaluator with a bound is A3, and it is not built.",
+    note: "The float evaluator and the interval know the kind root. The exact evaluator of the census does not, so the page cannot check the bound.",
   },
 ];
 
@@ -139,13 +139,26 @@ export function startPlayground(): void {
 function renderResults(e: Evaluation, note: string): string {
   const card = (cls: string, title: string, sub: string, body: string, error: string): string =>
     `<article class="ev ${cls}"><header><h3>${title}</h3><p>${sub}</p></header><div class="ev-body">${body}</div><p class="ev-error">${error}</p></article>`;
-  const float = e.float.ok
-    ? `<p class="ev-value"><code>${esc(formatFloat(e.float.value, 17))}</code></p><p class="small">The plain float value of the census evaluator.</p>`
-    : `<p class="ev-missing">${esc(e.float.reason)}</p>`;
+  const fo = e.float.ok ? e.float.value : null;
+  const float = !e.float.ok
+    ? `<p class="ev-missing">${esc(e.float.reason)}</p>`
+    : `<p class="ev-value"><code>${esc(formatFloat(e.float.value.value, 17))}</code></p><p class="small">${
+        e.float.value.comparison
+          ? "A comparison gives 1 for true and 0 for false."
+          : `Error bound <code>± ${esc(e.float.value.error === Infinity ? "∞" : formatFloat(e.float.value.error, 4))}</code>, from a running forward bound.`
+      }</p>`;
   const floatErr =
-    e.floatError === null
-      ? `<span class="badge later">A3, not built</span> The float evaluator with an error bound does not exist yet.`
-      : `<span class="badge later">A3, not built</span> No bound. The true error, from the exact value, is <code>${Q.sign(e.floatError) === 0 ? "0" : approx(e.floatError, 4)}</code>.`;
+    fo === null
+      ? ""
+      : fo.comparison
+        ? fo.error === 0
+          ? "The bound decides the truth value."
+          : "The bound does not decide the truth value."
+        : fo.error === Infinity
+          ? "The bound is infinite, so it makes no claim."
+          : e.boundHolds === null || e.floatError === null
+            ? "No exact value here, so the page cannot check the bound."
+            : `The true error is <code>${Q.sign(e.floatError) === 0 ? "0" : esc(approx(e.floatError, 4))}</code>. ${e.boundHolds ? "The bound contains the exact value." : "The bound does not contain the exact value: a defect."}`;
   const iv = e.interval.ok ? e.interval.value : null;
   const ivBody = !e.interval.ok
     ? `<p class="ev-missing">${esc(e.interval.reason)}</p>`
@@ -158,13 +171,13 @@ function renderResults(e: Evaluation, note: string): string {
     : `<p class="ev-missing">${esc(e.exact.reason)}</p>`;
   const exactErr = e.exact.ok ? "Error 0. The value is exact." : "";
   const verdict =
-    e.float.ok && e.exact.ok
-      ? Math.sign(e.float.value) === Q.sign(e.exact.value)
+    fo !== null && !fo.comparison && e.exact.ok
+      ? Math.sign(fo.value) === Q.sign(e.exact.value)
         ? `<p class="pg-verdict">The float sign is right here.</p>`
-        : `<p class="pg-verdict bad">The float sign is <strong>wrong</strong>: float ${Math.sign(e.float.value) > 0 ? "+" : Math.sign(e.float.value) < 0 ? "−" : "0"}, exact ${Q.sign(e.exact.value) > 0 ? "+" : Q.sign(e.exact.value) < 0 ? "−" : "0"}.</p>`
+        : `<p class="pg-verdict bad">The float sign is <strong>wrong</strong>: float ${Math.sign(fo.value) > 0 ? "+" : Math.sign(fo.value) < 0 ? "−" : "0"}, exact ${Q.sign(e.exact.value) > 0 ? "+" : Q.sign(e.exact.value) < 0 ? "−" : "0"}.</p>`
       : "";
   return `${note ? `<p class="pg-note">${esc(note)}</p>` : ""}${verdict}<div class="ev-row">
-    ${card("float", "Float", "fast, and its error bound is A3", float, floatErr)}
+    ${card("float", "Float", "A3, <code>compileFloat</code> of <code>expression</code>", float, floatErr)}
     ${card("interval", "Interval", "<code>@mark1russell7/expression</code>", ivBody, ivErr)}
     ${card("exact", "Exact", "the dyadic values of the census", exact, exactErr)}
   </div>`;
