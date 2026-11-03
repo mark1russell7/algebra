@@ -37,4 +37,22 @@ node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-select.y
 
 The artifact `a6-bench` has `records-<pair>.jsonl` for each pair, `errors.jsonl`, `model.json`, `meta.jsonl`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
 
+## The kept run
+
+The folder `results/2026-11-03/` keeps the first complete run, 41716746074, because the artifact ends after 90 days. It has each file of the artifact, and `errors.jsonl` is compressed with gzip. The file `model.json` is the measured cost model. `@algebra/evaluator-select` has no default model, so each caller gives this file to `select`.
+
+| Stage | Cost (ns for one node and one point) |
+| --- | --- |
+| `float` | 14.58 |
+| `ball` | 27.92 |
+| `interval` | 76.94 |
+| `exact` | 858.9 |
+
+- The stitched plan is faster than the fixed `exact` stage for all the cases, with a median ratio of 0.277.
+- That result does not hold for each family. The family `ill` is slower, with a ratio of 1.185, and the families `small` and `large` cannot decide.
+- The stitched plan is not faster than `float`, `ball` or `interval`, but these stages answer fewer points.
+- The stitched plan gives no wrong answer. At the sign question, it answers 4096 of 4096 points, and `exact` answers 3993.
+- At the tolerance `rel 0`, the stitched plan leaves 84 points without an answer. The stage `exact` makes no claim for these points.
+- The selector gives `float`, `interval`, `exact` for three questions, and `interval`, `exact` for `rel 0`. It does not select `ball`.
+
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 2 --ms 1 --cases well/s1,small/s2`.
