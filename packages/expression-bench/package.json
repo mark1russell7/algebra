@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/expression-bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The bench of the time claim of A3 on the corpus of A12: compileFloat of @mark1russell7/expression against a written JavaScript function, with the paired times of rigor-bench.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "bench": "node src/bench.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@algebra/expression-corpus": "workspace:*",
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rigor-bench": "^0.1.2",
+    "@mark1russell7/rigor-statistics": "^0.1.2"
+  }
+}
