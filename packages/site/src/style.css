@@ -1159,6 +1159,14 @@ button:disabled {
   list-style: none;
 }
 
+/* A long status wraps in its badge, so a narrow screen does not scroll to the side. */
+.item summary .badge {
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 .item summary::-webkit-details-marker {
   display: none;
 }
