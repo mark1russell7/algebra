@@ -468,6 +468,18 @@ describe("the field rule of a dump line (highways #258)", () => {
     expect(r.cases[0]?.floatWrong).toBe(1);
   });
 
+  it("counts the lines that use a copy of CALL_SITE_RULES, and no line with the field rule", () => {
+    const r = tally(
+      { case: "c", fn: "mesh.crossing", n: 1, ...touch, floatAnswer: true },
+      { case: "c", fn: "mesh.crossing", n: 5, ...touch, floatAnswer: true },
+      { case: "c", fn: "mesh.crossing", n: 1, ...touch, floatAnswer: true, rule: { touch: true } },
+      { case: "c", fn: "physics.outOf", n: 1, ...mid, floatAnswer: -1, rule: { zero: -1 } },
+      { case: "c", fn: "other.crossing", n: 1, ...touch, floatAnswer: true },
+    );
+    expect(r.copyUses).toEqual({ "mesh.crossing": 2 });
+    expect(tally({ case: "c", fn: "other.crossing", n: 1, ...touch, floatAnswer: true }).copyUses).toEqual({});
+  });
+
   it("gives -1 to a zero side when the rule says zero -1", () => {
     const r = tally({ case: "c", fn: "other.outOf", n: 1, ...mid, floatAnswer: -1, rule: { zero: -1 } });
     expect(r.cases[0]?.floatWrong).toBe(0);
