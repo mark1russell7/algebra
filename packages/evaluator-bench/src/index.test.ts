@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import { type CostModel, select, type Selection } from "@algebra/evaluator-select";
 import { corpusCase } from "@algebra/expression-corpus";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
@@ -42,5 +44,16 @@ describe("the report", () => {
     expect(r.stitchedFailures).toBe(0);
     expect(r.selections.length).toBe(QUESTIONS.length);
     expect(markdown(r)).toContain("| exact | faster |");
+  });
+});
+
+describe("the kept results", () => {
+  const kept = (file: string): unknown => JSON.parse(fs.readFileSync(new URL(`../results/2026-11-03/${file}`, import.meta.url), "utf8"));
+
+  it("give the plans of the report from the kept cost model", () => {
+    const model = kept("model.json") as CostModel;
+    const { selections } = kept("report.json") as { selections: readonly (Selection & { question: string })[] };
+    expect(selections.map(({ question: _, ...selection }) => selection)).toEqual(QUESTIONS.map((q) => select(q, model)));
+    expect(model.cost.float).toBeLessThan(model.cost.exact);
   });
 });
