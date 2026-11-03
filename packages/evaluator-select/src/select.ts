@@ -9,11 +9,11 @@ import type { Stage } from "./claim.ts";
 import { checkTolerance } from "./question.ts";
 import type { Question, Tolerance } from "./question.ts";
 
-/** The share of the calls of a stage that answer one question, as the bench measured it. */
+/** The share of the points that a stage answers for one question, as the bench measured it. */
 export interface ShareRow {
   readonly question: Question;
   readonly stage: Stage;
-  /** The answered calls over all the calls, from 0 to 1. */
+  /** The answered points over all the points, from 0 to 1. */
   readonly share: number;
 }
 
@@ -36,7 +36,7 @@ const sameType = (a: Tolerance, b: Tolerance): boolean => "absolute" in a === "a
 
 /**
  * This function gives the shares of the model for a question. A value question uses the rows of the same type of
- * tolerance with the largest bound that is not more than its bound. A stricter tolerance answers fewer calls, so these
+ * tolerance with the largest bound that is not more than its bound. A stricter tolerance answers fewer points, so these
  * shares are not more than the real shares.
  */
 function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, number>> | undefined {
@@ -55,8 +55,8 @@ function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, n
 }
 
 /**
- * This function gives the expected cost of a plan. The model takes the answered calls of a stage as a part of the
- * answered calls of each later stage. Thus a call gets to a stage with the chance `1 - s`, where `s` is the largest
+ * This function gives the expected cost of a plan. The model takes the answered points of a stage as a part of the
+ * answered points of each later stage. Thus a point gets to a stage with the chance `1 - s`, where `s` is the largest
  * share of the stages before it.
  *
  * @param plan - The stages, in the order of the tries.

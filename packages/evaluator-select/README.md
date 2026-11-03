@@ -33,10 +33,10 @@ The stage `exact` answers each value question of a document without roots. A roo
 
 ## The selector
 
-`select(question, model)` gives the plan with the least expected cost for a question. The cost model has the cost of each stage and the share of the calls that each stage answers. The model takes the answered calls of a stage as a part of the answered calls of each later stage. The stage `exact` is always last.
+`select(question, model)` gives the plan with the least expected cost for a question. The cost model has the cost of each stage and the share of the points that each stage answers. The model takes the answered points of a stage as a part of the answered points of each later stage. The stage `exact` is always last.
 
 This package has no default cost model. The cost model comes from the records of the bench of A6, on the corpus of A12.
 
 ## The tests
 
-The property tests examine each answer of the stitched evaluator at each point of the default corpus of `@algebra/expression-corpus`, for four questions: the sign, the absolute tolerance `1e-9`, and the relative tolerances `1e-12` and `0`. Each answer contains the exact value of `compileExact` and meets its question. The stitched sign of the geometric families is the sign of `orient2d` and `incircle` of `@mark1russell7/predicates`.
+The property tests examine each answer of the stitched evaluator at each point of the default corpus of `@algebra/expression-corpus`. The four questions are the sign, the absolute tolerance `1e-9`, and the relative tolerances `1e-12` and `0`. Each answer contains the exact value of `compileExact` and meets its question. The stitched sign of the geometric families is the sign of `orient2d` and `incircle` of `@mark1russell7/predicates`.
