@@ -290,7 +290,7 @@ importers:
         version: link:../predicates
       '@mark1russell7/rigor-bench':
         specifier: ^0.1.1
-        version: 0.1.1
+        version: 0.1.2
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
