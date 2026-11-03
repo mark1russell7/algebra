@@ -27,6 +27,7 @@
   --grid-pending: #eceef2;
   --grid-line: #d6007a;
   --grid-cursor: #000000;
+  --grid-stage: #7b3fd0;
   --radius: 12px;
   --mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -61,6 +62,7 @@
     --grid-pending: #1a1f29;
     --grid-line: #ff5fb0;
     --grid-cursor: #ffffff;
+    --grid-stage: #b48cff;
   }
 }
 
@@ -332,8 +334,8 @@ button:disabled {
 
 .panels {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .panel {
@@ -424,6 +426,10 @@ button:disabled {
   border: 1px dashed var(--grid-hatch);
 }
 
+.sw.stage {
+  background: var(--grid-stage);
+}
+
 .sw.line {
   height: 0;
   border: 0;
@@ -434,7 +440,7 @@ button:disabled {
 .tiles,
 .totals {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -482,6 +488,10 @@ button:disabled {
 
 .tile.good {
   border-left-color: var(--good);
+}
+
+.tile.stage {
+  border-left-color: var(--grid-stage);
 }
 
 .detail-row {
@@ -635,6 +645,13 @@ button:disabled {
   stroke-width: 1;
   stroke-dasharray: 4 3;
   opacity: 0.8;
+}
+
+.sc-circle {
+  fill: none;
+  stroke: var(--grid-line);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
 }
 
 .sc-seg.s1 {
@@ -1179,7 +1196,8 @@ button:disabled {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .tiles {
+  .tiles,
+  .panels {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

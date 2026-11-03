@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { buildForm, cellOffset, cellPoint, cellSigns, decode, encode, exactLine, fillRows, floatSign, tally, ulp } from "./grid.ts";
+import { a5Of, buildForm, cellOffset, cellPoint, cellSigns, decode, encode, exactLine, fillRows, floatSign, tally, ulp } from "./grid.ts";
 import type { CellSigns, GridJob } from "./grid.ts";
-import { CLASSROOM } from "./presets.ts";
+import { CLASSROOM, INCIRCLE, parseNearMisses, presetOfRecord } from "./presets.ts";
 import type { Preset, SignChoice } from "./presets.ts";
 
 const classroom = CLASSROOM[0] as Preset;
@@ -44,8 +45,14 @@ describe("the sign compare", () => {
     for (const float of signs) {
       for (const exact of signs) {
         for (const bound of [...signs, null]) {
-          const cell: CellSigns = { float, exact, bound };
-          expect(decode(encode(cell))).toEqual(cell);
+          for (const stage of ["filter", "exact", null] as const) {
+            for (const a5Wrong of [false, true]) {
+              const cell: CellSigns = { float, exact, bound, stage, a5Wrong };
+              const code = encode(cell);
+              expect(code).toBeLessThan(256);
+              expect(decode(code)).toEqual(cell);
+            }
+          }
         }
       }
     }
@@ -77,5 +84,62 @@ describe("the sign compare", () => {
   it("puts the exact zero line of the classroom on the diagonal", () => {
     const j = job(256);
     expect(exactLine(j, buildForm(j.form))).toEqual({ x0: 0, y0: 256, x1: 256, y1: 0 });
+  });
+});
+
+describe("the A5 predicates on the grid", () => {
+  const json: unknown = JSON.parse(readFileSync(new URL("../data/near-misses.json", import.meta.url), "utf8"));
+  const records = parseNearMisses(json).records.map((r, k) => presetOfRecord(r, k));
+
+  /** This function fills a grid of 32 x 32 cells at 1 ulp about the input of each sign of a preset. */
+  function grids(preset: Preset) {
+    return preset.signs.map((choice) => {
+      const j: GridJob = { vars: preset.vars, form: choice.form, move: choice.move, view: { ox: 0, oy: 0, step: 1, n: 32 } };
+      const codes = new Uint8Array(32 * 32);
+      fillRows(j, buildForm(j.form), 0, 32, codes);
+      return { choice, counts: tally(codes) };
+    });
+  }
+
+  it("gives the exact sign, and its filter decides no float-wrong cell", () => {
+    let staged = 0;
+    for (const preset of [...CLASSROOM, ...INCIRCLE, ...records]) {
+      for (const { choice, counts } of grids(preset)) {
+        const form = buildForm(choice.form);
+        if (a5Of(choice.form, form) === null) continue;
+        expect(counts.filter + counts.exactStage, `${preset.id} ${choice.label}`).toBe(counts.cells);
+        expect(counts.a5Wrong, `${preset.id} ${choice.label}`).toBe(0);
+        expect(counts.wrongButFiltered, `${preset.id} ${choice.label}`).toBe(0);
+        staged++;
+      }
+    }
+    expect(staged).toBeGreaterThan(30);
+  });
+
+  it("has no A5 predicate for a sign of the segment-box test", () => {
+    const box = records.find((p) => p.record?.predicate === "segmentBox");
+    if (!box) throw new Error("No record of the segment-box test.");
+    const choice = box.signs[0] as SignChoice;
+    expect(a5Of(choice.form, buildForm(choice.form))).toBeNull();
+  });
+
+  it("sends the cells near the circle to the exact stage of incircle", () => {
+    for (const preset of INCIRCLE) {
+      const choice = preset.signs[0] as SignChoice;
+      const form = buildForm(choice.form);
+      const pred = a5Of(choice.form, form);
+      expect(pred?.(preset.vars).sign).toBe(cellSigns(form, preset.vars).exact);
+      const [{ counts }] = grids(preset) as [{ counts: ReturnType<typeof tally> }];
+      expect(counts.exactStage).toBeGreaterThan(0);
+      expect(counts.filter).toBeGreaterThan(0);
+    }
+  });
+
+  it("puts the four integer points on one circle", () => {
+    const preset = INCIRCLE[0] as Preset;
+    const choice = preset.signs[0] as SignChoice;
+    const signs = cellSigns(buildForm(choice.form), preset.vars, a5Of(choice.form, buildForm(choice.form)));
+    expect(signs.exact).toBe(0);
+    expect(signs.a5Wrong).toBe(false);
   });
 });

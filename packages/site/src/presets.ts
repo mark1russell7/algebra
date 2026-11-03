@@ -1,5 +1,6 @@
 /**
- * The presets of the explorer: three classroom inputs, and the real float-wrong records of the A13 census.
+ * The presets of the explorer: the classroom input, two in-circle inputs, and the real float-wrong records of the A13
+ * census.
  *
  * @packageDocumentation
  */
@@ -42,11 +43,13 @@ export interface ScenePoint {
   readonly at: Vec;
 }
 
-/** The geometry of an input at its own scale: its segments, its boxes and its points. */
+/** The geometry of an input at its own scale: its segments, its boxes, its points and its circles. */
 export interface Scene {
   readonly segments: readonly (readonly [Vec, Vec])[];
   readonly boxes: readonly Box[];
   readonly points: readonly ScenePoint[];
+  /** The circles through three points, for an in-circle sign. */
+  readonly circles?: readonly (readonly [Vec, Vec, Vec])[];
 }
 
 /** A point that the reader can move: its label and its two variables. */
@@ -75,6 +78,8 @@ export interface Preset {
   readonly view: View;
   readonly scene: Scene;
   readonly record?: NearMiss;
+  /** The source of an input that is not a record, for the note of the page. */
+  readonly cite?: string;
 }
 
 const xy = (name: string): PointVars => [`${name}x`, `${name}y`];
@@ -106,8 +111,67 @@ function classroom(id: string, title: string, summary: string, p: Vec, q: Vec, r
         { name: "r", at: r },
       ],
     },
+    cite: "This picture is in Kettner, Mehlhorn, Pion, Schirra and Yap, <em>Classroom examples of robustness problems in geometric computations</em> (2008).",
   };
 }
+
+function incircleChoice(): SignChoice {
+  const names = ["a", "b", "c", "d"] as const;
+  return {
+    label: "incircle(a,b,c,d)",
+    form: { kind: "incircle", name: "incircle(a,b,c,d)", points: [xy("a"), xy("b"), xy("c"), xy("d")] },
+    move: xy("d"),
+    movable: names.map((name) => ({ label: name, vars: xy(name) })),
+  };
+}
+
+function circlePreset(id: string, title: string, summary: string, a: Vec, b: Vec, c: Vec, d: Vec): Preset {
+  return {
+    id,
+    title,
+    summary,
+    vars: { ax: a[0], ay: a[1], bx: b[0], by: b[1], cx: c[0], cy: c[1], dx: d[0], dy: d[1] },
+    signs: [incircleChoice()],
+    view: { ox: 0, oy: 0, step: 1, n: 256 },
+    scene: {
+      segments: [],
+      boxes: [],
+      points: [
+        { name: "a", at: a },
+        { name: "b", at: b },
+        { name: "c", at: c },
+        { name: "d", at: d },
+      ],
+      circles: [[a, b, c]],
+    },
+    cite: "The A5 in-circle test decides the sign of each cell: its float filter first, then the exact stage.",
+  };
+}
+
+/**
+ * The in-circle inputs. The point d moves by ulps. The first input has four points with integer coordinates on one
+ * circle. In the second input, d is the float nearest to a point of the unit circle.
+ */
+export const INCIRCLE: readonly Preset[] = [
+  circlePreset(
+    "incircle-integers",
+    "Four integer points on one circle",
+    "The points a = (15, 10), b = (13, 14), c = (6, 13) and d = (14, 7) are on the circle of radius 5 about (10, 10).",
+    [15, 10],
+    [13, 14],
+    [6, 13],
+    [14, 7],
+  ),
+  circlePreset(
+    "incircle-unit",
+    "A rounded point of the unit circle",
+    "The points a = (1, 0), b = (0, 1) and c = (−1, 0) are on the unit circle. The point d is the float pair nearest to (√½, √½).",
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [Math.SQRT1_2, Math.SQRT1_2],
+  ),
+];
 
 /** The classroom input (a) of Kettner, Mehlhorn, Pion, Schirra and Yap (2008). The point p moves by ulps. */
 export const CLASSROOM: readonly Preset[] = [

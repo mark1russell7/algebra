@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>algebra: one expression, many evaluators</title>
-    <meta name="description" content="A live explorer of the float orientation test: float signs, A1 intervals and exact signs on a grid of ulp steps, with the real float-wrong inputs of the A13 census." />
+    <meta name="description" content="A live explorer of the float orientation and in-circle tests: float signs, A1 intervals, exact signs and the stages of the A5 predicates on a grid of ulp steps, with the real float-wrong inputs of the A13 census." />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23202a44'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='18' font-style='italic' text-anchor='middle' fill='%23fcfcfb'%3Ex%3C/text%3E%3C/svg%3E" />
   </head>
@@ -33,7 +33,8 @@
           <p class="lead">
             Below, the orientation test <code>orient(p,q,r)</code> runs live in your browser. Each cell moves one point by a
             whole number of ulps. The float sign is wrong in the dark cells. The interval of the bounds marks the cells
-            where it cannot fix the sign. The exact sign is always right.
+            where it cannot fix the sign. The exact sign is always right. The fourth grid shows the A5 predicate:
+            its float filter decides most cells, and the violet cells go to the exact stage.
           </p>
         </div>
 
@@ -93,6 +94,10 @@
               <figcaption><strong>Exact</strong><span>The exact sign, from the exact value over <code>bigint</code>.</span></figcaption>
               <div class="canvas-box"><canvas tabindex="0" aria-label="The exact signs of the grid. Use the arrow keys to move the cursor."></canvas></div>
             </figure>
+            <figure class="panel" data-panel="a5">
+              <figcaption><strong>A5 predicate</strong><span id="ex-a5-cap">The stage of the A5 predicate that decided each cell.</span></figcaption>
+              <div class="canvas-box"><canvas tabindex="0" aria-label="The stage of the A5 predicate at each cell. Use the arrow keys to move the cursor."></canvas></div>
+            </figure>
           </div>
 
           <div class="legend" aria-label="The colors of the grid">
@@ -101,6 +106,7 @@
             <span><i class="sw zero"></i>zero</span>
             <span><i class="sw wrong"></i>float sign is wrong</span>
             <span><i class="sw undecided"></i>interval fixes no sign</span>
+            <span><i class="sw stage"></i>A5 exact stage</span>
             <span><i class="sw line"></i>exact zero line</span>
             <span class="hint">Drag to move. Wheel or <kbd>+</kbd> <kbd>&minus;</kbd> to zoom. Click a cell to keep its numbers.</span>
           </div>
