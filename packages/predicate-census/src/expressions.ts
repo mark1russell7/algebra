@@ -7,8 +7,8 @@
 import { makeContext, prepare } from "@mark1russell7/coeval";
 import { expressionMachine, SUMMARY } from "@mark1russell7/expression";
 import type { Expression, Summary } from "@mark1russell7/expression";
-import * as D from "./dyadic.ts";
-import type { Dyadic } from "./dyadic.ts";
+import { dyadic as D } from "@mark1russell7/predicates";
+import type { Dyadic } from "@mark1russell7/predicates";
 
 /** This function gives a variable. */
 export const v = (name: string): Expression => ({ type: "var", value: name });

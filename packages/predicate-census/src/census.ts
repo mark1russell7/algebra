@@ -3,8 +3,8 @@
  *
  * @packageDocumentation
  */
-import * as D from "./dyadic.ts";
-import type { Dyadic } from "./dyadic.ts";
+import { dyadic as D } from "@mark1russell7/predicates";
+import type { Dyadic } from "@mark1russell7/predicates";
 import { boundSign, exactValue, floatValue, structuralZero } from "./expressions.ts";
 import type { Point, Sign, SignForm } from "./expressions.ts";
 import { COUNT_FIELDS, parseLine, SHARED_END_FIELD } from "./input.ts";
