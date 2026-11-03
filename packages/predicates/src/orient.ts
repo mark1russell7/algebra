@@ -2,12 +2,14 @@
  * The orientation of three points: the sign of `(a - c) x (b - c)`. The sign is positive when `a`, `b` and `c` turn
  * counterclockwise in axes with `y` up, as in the code of Shewchuk.
  *
- * The float filter answers first. When it cannot decide, the exact stage gives the sign over dyadic numbers.
+ * The float filter answers first. When it cannot decide, an adaptive stage over float expansions gives the exact sign.
+ * Inputs out of the range of that stage get the exact sign over dyadic numbers.
  *
  * @packageDocumentation
  */
 import * as D from "./dyadic.ts";
-import { codeResult, codeSign, EXACT, requireFinite, UNDERFLOW_TERM, UNIT_ROUNDOFF } from "./sign.ts";
+import { crossExpansion, estimate, expansionSign, inExpansionRange, RESULT_BOUND, sumExpansions, twoDiffTail } from "./expansion.ts";
+import { codeResult, codeSign, EXACT, requireFinite, UNIT_ROUNDOFF } from "./sign.ts";
 import type { Sign, SignCode, SignResult } from "./sign.ts";
 
 const U = UNIT_ROUNDOFF;
@@ -32,32 +34,115 @@ const U = UNIT_ROUNDOFF;
 export const ORIENT_BOUND: number = (3 + 32 * U) * U;
 
 /**
- * This function is the orientation filter and the exact stage, as a code. The filter decides when
- * `|det| > ORIENT_BOUND * |left + right| + UNDERFLOW_TERM`.
+ * The relative bound of stage B of the adaptive stage: `(2 + 64u) u`.
  *
- * @returns The code of the sign and of its stage.
+ * Proof. The float differences are `A = acx`, `B = bcy`, `C = acy` and `D = bcx`. Their exact tails are `a`, `b`, `c`
+ * and `d`, each at most `u` times its difference. Let `P = |AB| + |CD|`. The exact value is
+ * `T = (A + a)(B + b) - (C + c)(D + d)`, and stage B has the exact expansion of `V = AB - CD`. So `|T - V| <= (2 + u) u P`.
+ *
+ * The float `sum = |fl(AB)| + |fl(CD)|` is at least `P / (1 + u)^2`. The TSDoc of `estimate` gives
+ * `|V| >= |est| / (1 + 17u)`. So `|est| > fl(ORIENT_STAGE_B sum)` gives `|V| > (2 + 64u) u P (1 - 21u)`, which is above
+ * `(2 + u) u P`. Then `T` has the sign of `V`. Shewchuk (1997, section 6) has `(2 + 12u) u`, from a tighter estimate.
  */
-export function orientCode(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): SignCode {
+export const ORIENT_STAGE_B: number = (2 + 64 * U) * U;
+
+/**
+ * The bound of stage C of the adaptive stage, relative to `sum`: `64 u^2`. The result term is `RESULT_BOUND`.
+ *
+ * Proof. With the names of `ORIENT_STAGE_B`, let `S = Ab + Ba - Cd - Dc` and let `s` be its float value. Stage C has
+ * `r = fl(est + s)`. The sum of the absolute terms of `S` is at most `2u P`, and `|ab - cd| <= u^2 P`. The value `s` has
+ * at most 3 operations on a term, so `|S - s| <= (6 + 7u) u^2 P` and `|s| <= (2 + 7u) u P`. Then
+ *
+ * `|T - r| <= u^2 P + (6 + 7u) u^2 P + 18u |est| + u |r|`, with `|est| <= (1 + u) |r| + |s|`.
+ *
+ * This gives `|T - r| <= (43 + O(u)) u^2 P + (19 + 18u) u |r|`. The rounded bound `64 u^2 sum + 20u |r|` is larger. When
+ * `|r|` is above it, `T` has the sign of `r`. Shewchuk has `(9 + 64u) u^2`, from a tighter estimate.
+ */
+export const ORIENT_STAGE_C: number = 64 * U * U;
+
+const STAGE = new Float64Array(4);
+const CROSS = new Float64Array(4);
+const LEFT = new Float64Array(8);
+const MIDDLE = new Float64Array(12);
+const FULL = new Float64Array(16);
+
+/** This function gives the float value of the first-order term `S` of `ORIENT_STAGE_C`. It has 3 operations on a term. */
+export function orientFirstOrder(acx: number, bcx: number, acy: number, bcy: number, acxTail: number, bcxTail: number, acyTail: number, bcyTail: number): number {
+  return acx * bcyTail + bcy * acxTail - (acy * bcxTail + bcx * acyTail);
+}
+
+/**
+ * This function gives the exact orientation sign by the adaptive stage: each step costs more than the last one, and
+ * most inputs stop early. Each input must pass `inExpansionRange`.
+ *
+ * Stage B takes the float differences as exact. When all tails are 0, its expansion is the exact value. Stage C adds the
+ * first-order terms of the tails. Stage D adds all terms, so its expansion is the exact value. The TSDoc of
+ * `ORIENT_STAGE_B` and of `ORIENT_STAGE_C` has the bounds, and each answer is the exact sign.
+ *
+ * @returns The sign of `(ax - cx)(by - cy) - (ay - cy)(bx - cx)`.
+ */
+export function orientAdaptive(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign {
   const acx = ax - cx;
   const bcx = bx - cx;
   const acy = ay - cy;
   const bcy = by - cy;
-  const left = acx * bcy;
-  const right = acy * bcx;
-  const det = left - right;
-  const bound = ORIENT_BOUND * Math.abs(left + right) + UNDERFLOW_TERM;
-  if (det > bound) return 1;
-  if (-det > bound) return -1;
-  return orientSlow(ax, ay, bx, by, cx, cy, acx, bcx, acy, bcy);
+  const stage = crossExpansion(acx, bcy, acy, bcx, STAGE);
+  const est = estimate(stage, STAGE);
+  const sum = Math.abs(acx * bcy) + Math.abs(acy * bcx);
+  const boundB = ORIENT_STAGE_B * sum;
+  if (est > boundB) return 1;
+  if (-est > boundB) return -1;
+
+  const acxTail = twoDiffTail(ax, cx, acx);
+  const bcxTail = twoDiffTail(bx, cx, bcx);
+  const acyTail = twoDiffTail(ay, cy, acy);
+  const bcyTail = twoDiffTail(by, cy, bcy);
+  if (acxTail === 0 && bcxTail === 0 && acyTail === 0 && bcyTail === 0) return expansionSign(stage, STAGE);
+
+  const r = est + orientFirstOrder(acx, bcx, acy, bcy, acxTail, bcxTail, acyTail, bcyTail);
+  const boundC = ORIENT_STAGE_C * sum + RESULT_BOUND * Math.abs(r);
+  if (r > boundC) return 1;
+  if (-r > boundC) return -1;
+
+  // Stage D: the exact value is V + (A b - C d) + (a B - c D) + (a b - c d).
+  const m = crossExpansion(acx, bcyTail, acy, bcxTail, CROSS);
+  const left = sumExpansions(stage, STAGE, m, CROSS, LEFT);
+  const n = crossExpansion(acxTail, bcy, acyTail, bcx, CROSS);
+  const middle = sumExpansions(left, LEFT, n, CROSS, MIDDLE);
+  const o = crossExpansion(acxTail, bcyTail, acyTail, bcxTail, CROSS);
+  return expansionSign(sumExpansions(middle, MIDDLE, o, CROSS, FULL), FULL);
 }
 
-/** This function is the path of a sign that the bound does not decide. It is not inline, so the hot path stays small. */
-function orientSlow(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, acx: number, bcx: number, acy: number, bcy: number): SignCode {
-  requireFinite([ax, ay, bx, by, cx, cy]);
+/**
+ * This function is the orientation filter, as a code. The filter decides when
+ * `|det| > ORIENT_BOUND * |left + right| + UNDERFLOW_TERM`.
+ *
+ * The two numbers in the bound are the values of `ORIENT_BOUND` and `UNDERFLOW_TERM` as literals. The engine folds a
+ * literal, so the hot path has no load of a module cell. Change them together with the two constants.
+ *
+ * @returns The code of the sign and of its stage.
+ */
+export function orientCode(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): SignCode {
+  const left = (ax - cx) * (by - cy);
+  const right = (ay - cy) * (bx - cx);
+  const det = left - right;
+  const bound = ((3 + 32 * 2 ** -53) * 2 ** -53) * Math.abs(left + right) + 2 ** -1069;
+  if (det > bound) return 1;
+  if (-det > bound) return -1;
+  return orientSlow(ax, ay, bx, by, cx, cy);
+}
+
+/** This function is the path of a sign that the bound does not decide. It is not in `orientCode`, so `orientCode` stays small. */
+function orientSlow(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): SignCode {
+  // A finite float times 0 is 0. An infinite float or NaN times 0 is NaN. So this test needs no array.
+  if (ax * 0 + ay * 0 + bx * 0 + by * 0 + cx * 0 + cy * 0 !== 0) requireFinite([ax, ay, bx, by, cx, cy]);
   // A difference of two finite floats is exactly 0 only when the floats are equal. Then each term has an exact 0 factor.
-  if ((acx === 0 || bcy === 0) && (acy === 0 || bcx === 0)) return 0;
+  if ((ax === cx || by === cy) && (ay === cy || bx === cx)) return 0;
   // The points a and b are equal.
   if (ax === bx && ay === by) return 0;
+  if (inExpansionRange(ax) && inExpansionRange(ay) && inExpansionRange(bx) && inExpansionRange(by) && inExpansionRange(cx) && inExpansionRange(cy)) {
+    return orientAdaptive(ax, ay, bx, by, cx, cy) + EXACT;
+  }
   return orient2dExact(ax, ay, bx, by, cx, cy) + EXACT;
 }
 

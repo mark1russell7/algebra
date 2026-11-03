@@ -1,6 +1,6 @@
 # @mark1russell7/predicates
 
-This package holds the exact geometric predicates of algebra (roadmap item A5). Each predicate takes float inputs and gives the exact sign. A float filter with a stated error bound answers first. The exact sign over dyadic numbers answers the rest. Each result names the stage that decided it.
+This package holds the exact geometric predicates of algebra (roadmap item A5). Each predicate takes float inputs and gives the exact sign. A float filter with a stated error bound answers first. An adaptive stage over float expansions answers most of the rest. The exact sign over dyadic numbers answers the last inputs. Each result names the stage that decided it.
 
 The first users are packing and highways. The census of A13 found no float sign that a user sees and that exact signs fix. The float-wrong inputs of the census were ties at a tolerance and touches. Thus this package gives correct ties and touches, with a cheap common case.
 
@@ -45,6 +45,21 @@ The flag `collinear` is `true` when the four points are on one line. Then the or
 The value `u` is `2^-53`, and `UNDERFLOW_TERM` is `2^-1069`. The bounds are the bounds of Shewchuk (1997) with a larger second term. The term for underflow is new: Shewchuk assumes that no operation underflows. The TSDoc of each bound has the proof sketch.
 
 The filter of `orient2d` also decides an exact 0. When a factor of each product is a difference of two equal floats, the sign is 0. Two equal points `a` and `b` also give 0.
+
+## The adaptive stage
+
+An input that the filter does not decide goes to the adaptive stage, from the method of Shewchuk (1997). Each step costs more than the last step. The stage has its own arithmetic in `src/expansion.ts`, and its answers are exact. A result of this stage has the stage `exact`.
+
+| Predicate | Stage B | Stage C | Last stage |
+| --- | --- | --- | --- |
+| `orient2d` | The exact expansion of the float differences, with `ORIENT_STAGE_B = (2 + 64u) u` | The first-order terms of the tails, with `ORIENT_STAGE_C = 64u^2` and `RESULT_BOUND = 20u` | The full expansion, with no bound |
+| `incircle` | The exact expansion of the float differences, with `INCIRCLE_STAGE_B = (4 + 128u) u` | The first-order terms of the tails, with `INCIRCLE_STAGE_C = 128u^2` and `RESULT_BOUND = 20u` | The exact sign over dyadic numbers |
+
+When all tails are 0, the expansion of stage B is the exact value. These bounds are larger than the bounds of Shewchuk because their proof uses a simpler estimate. The TSDoc of each bound has the proof.
+
+The stage accepts only inputs that are 0 or that have a magnitude from `2^-150` to `2^150`. So no operation underflows with an error or overflows. Other inputs get the exact sign over dyadic numbers.
+
+The file `src/adaptive.test.ts` compares the stage with the exact stage on near-degenerate inputs and on ties. It also compares each measured error with its bound.
 
 ## The tests
 
