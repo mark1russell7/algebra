@@ -151,6 +151,51 @@ export const pow = (a: Rational, exponent: number): Rational => {
   return exponent < 0 ? inverse(raised) : raised;
 };
 
+/**
+ * This function gives the floor of the `k`-th root of `n`: the largest integer `r` with `r^k <= n`. The result is
+ * exact. The search starts above the root, from the bit length of `n`, and the Newton steps go down to the root.
+ *
+ * @param n - A value that is not less than `0n`.
+ * @param k - An integer index of 1 or more.
+ * @throws RangeError when `n` is less than `0n`, or when `k` is not an integer of 1 or more.
+ */
+export const integerRoot = (n: bigint, k: number): bigint => {
+  if (!Number.isInteger(k) || k < 1) throw new RangeError(`not an index of a root: ${k}`);
+  if (n < 0n) throw new RangeError("integerRoot needs a value of 0 or more");
+  if (n < 2n || k === 1) return n;
+  const K = BigInt(k);
+  // 2^ceil(bits / k) is more than the root, and from above each Newton step goes down and stays above the root
+  let x = 1n << BigInt(Math.ceil(hexBits(n) / k));
+  for (;;) {
+    const y = ((K - 1n) * x + n / x ** (K - 1n)) / K;
+    if (y >= x) return x;
+    x = y;
+  }
+};
+
+/**
+ * This function gives the `k`-th root of `a` when it is a rational, and `null` when it is not. The root of a rational
+ * in lowest terms is rational only when its numerator and its denominator are both `k`-th powers of integers. An odd
+ * index gives the negative root of a negative value. The result is exact.
+ *
+ * @param a - The value.
+ * @param k - An integer index of 1 or more.
+ * @throws RangeError when `k` is not an integer of 1 or more, or when `k` is even and `a` is less than 0.
+ */
+export const root = (a: Rational, k: number): Rational | null => {
+  if (!Number.isInteger(k) || k < 1) throw new RangeError(`not an index of a root: ${k}`);
+  const negative = a.n < 0n;
+  if (negative && k % 2 === 0) throw new RangeError("an even root of a negative value is not real");
+  const K = BigInt(k);
+  const n = negative ? -a.n : a.n;
+  const rn = integerRoot(n, k);
+  if (rn ** K !== n) return null;
+  const rd = integerRoot(a.d, k);
+  if (rd ** K !== a.d) return null;
+  // the roots of two coprime integers are coprime, so the result needs no gcd
+  return make(negative ? -rn : rn, rd);
+};
+
 /** This function gives -1, 0 or 1 for `a < b`, `a = b` or `a > b`. The result is exact. */
 export const compare = (a: Rational, b: Rational): -1 | 0 | 1 => {
   const left = a.n * b.d;

@@ -42,6 +42,11 @@ describe("the verb exact", () => {
     expect(made(compileExact(root(2, 2))).evaluate([])).toBe(NO_CLAIM);
     expect(made(compileExact(root(-1, 3))).evaluate([])).toEqual(Q.rational(-1n));
     expect(made(compileExact(root(-4, 2))).evaluate([])).toBeNull();
+    // a root of a perfect power is a claim: 27/8 and -8 are cubes
+    expect(made(compileExact(root(27 / 8, 3))).evaluate([])).toEqual(Q.rational(3n, 2n));
+    expect(made(compileExact(root(-8, 3))).evaluate([])).toEqual(Q.rational(-2n));
+    expect(made(compileExact(root(0.25, 2))).evaluate([])).toEqual(Q.rational(1n, 2n));
+    expect(made(compileExact(root(0.1, 2))).evaluate([])).toBe(NO_CLAIM);
     const lt = made(compileExact({ type: "lt", value: [x, { type: "num", value: 0.1 }] }));
     expect(lt.evaluate([0.1])).toEqual(Q.ZERO);
     expect(lt.evaluate([0.05])).toEqual(Q.ONE);
@@ -72,7 +77,8 @@ describe("the verb exact", () => {
           if (want === "large" || want === "unknown") continue;
           compared++;
           if (got === null) expect(want, where).toBe("none");
-          else if (got !== NO_CLAIM) expect(want !== "none" && Q.equals(want.lo, got) && Q.equals(want.hi, got), where).toBe(true);
+          // the oracle encloses each root that is not a short dyadic, so a claim must be in the enclosure
+          else if (got !== NO_CLAIM) expect(want !== "none" && Q.compare(want.lo, got) <= 0 && Q.compare(got, want.hi) <= 0, where).toBe(true);
           if (got === NO_CLAIM && !hasRoot(doc)) {
             // a part of more than EXACT_BITS bits: the oracle keeps up to 6000 bits
             large++;

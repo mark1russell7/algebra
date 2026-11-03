@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/rational",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Exact rationals over bigint, always in lowest terms, with a correctly rounded toNumber.",
   "keywords": [
     "rational",

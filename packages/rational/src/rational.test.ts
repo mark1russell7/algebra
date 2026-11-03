@@ -18,14 +18,16 @@ import {
   isInteger,
   mul,
   neg,
+  integerRoot,
   pow,
   rational,
+  root,
   sign,
   sub,
   toNumber,
   toString,
 } from "./index.ts";
-import { nextDown, nextUp, random, randomDouble, randomRational } from "./random.test-helper.ts";
+import { nextDown, nextUp, random, randomBits, randomDouble, randomRational } from "./random.test-helper.ts";
 
 /** The count of random cases of each property. CI sets it. The default is 1000. */
 const RUNS = Number(process.env["PROPERTY_RUNS"] ?? 1000);
@@ -289,5 +291,50 @@ describe("the other operations", () => {
 
   it("names cmp as compare", () => {
     expect(cmp).toBe(compare);
+  });
+});
+
+describe("the roots", () => {
+  it("gives the floor of the k-th root of a bigint", () => {
+    const rnd = random(21);
+    for (let i = 0; i < RUNS; i++) {
+      const n = randomBits(rnd, 1 + Math.floor(rnd() * 300));
+      const k = 1 + Math.floor(rnd() * 7);
+      const K = BigInt(k);
+      const r = integerRoot(n, k);
+      expect(r ** K <= n, `root ${r} of ${n}, k ${k}`).toBe(true);
+      expect((r + 1n) ** K > n, `root ${r} of ${n}, k ${k}`).toBe(true);
+    }
+    expect(integerRoot(0n, 3)).toBe(0n);
+    expect(integerRoot(1n, 5)).toBe(1n);
+    expect(integerRoot(2n ** 600n - 1n, 2)).toBe(2n ** 300n - 1n);
+  });
+
+  it("gives back each rational from its k-th power", () => {
+    const rnd = random(22);
+    for (let i = 0; i < RUNS; i++) {
+      const q = randomRational(rnd);
+      const k = 1 + Math.floor(rnd() * 7);
+      const r = root(pow(q, k), k);
+      expect(r, `root of ${toString(q)}^${k}`).not.toBeNull();
+      expectLowest(r as Rational);
+      expectSame(r as Rational, k % 2 === 0 ? abs(q) : q);
+    }
+  });
+
+  it("gives null for a root that is not rational", () => {
+    expect(root(rational(2n), 2)).toBeNull();
+    expect(root(rational(9n, 2n), 2)).toBeNull();
+    expect(root(rational(-16n), 3)).toBeNull();
+    expectSame(root(rational(27n, 8n), 3) as Rational, rational(3n, 2n));
+    expectSame(root(rational(-8n), 3) as Rational, rational(-2n));
+    expectSame(root(ZERO, 4) as Rational, ZERO);
+  });
+
+  it("refuses an even root of a negative value and a bad index", () => {
+    expect(() => root(rational(-4n), 2)).toThrow(RangeError);
+    expect(() => root(ONE, 0)).toThrow(RangeError);
+    expect(() => root(ONE, 1.5)).toThrow(RangeError);
+    expect(() => integerRoot(-1n, 3)).toThrow(RangeError);
   });
 });
