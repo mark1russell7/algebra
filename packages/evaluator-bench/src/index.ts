@@ -7,4 +7,4 @@
  */
 export { answerOf, ARMS, type ArmName, corpusCaseOf, familyOf, planOf, QUESTIONS, questionName, questionOf, runOf } from "./arms.ts";
 export { contains, type ErrorRecord, errorRecords, shares, stitchedFails } from "./errors.ts";
-export { type ArmErrors, markdown, type Meta, type PairVerdict, type Report, report } from "./report.ts";
+export { type ArmErrors, costOf, markdown, type Meta, type PairVerdict, type Report, report } from "./report.ts";

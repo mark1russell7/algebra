@@ -55,5 +55,6 @@ describe("the kept results", () => {
     const { selections } = kept("report.json") as { selections: readonly (Selection & { question: string })[] };
     expect(selections.map(({ question: _, ...selection }) => selection)).toEqual(QUESTIONS.map((q) => select(q, model)));
     expect(model.cost.float).toBeLessThan(model.cost.exact);
+    expect(model.cost.bigfloat).toBeUndefined();
   });
 });

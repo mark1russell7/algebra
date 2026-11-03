@@ -1,16 +1,18 @@
 /**
  * The stitched evaluator: it tries the stages of a plan in order, and stops at the first stage that answers the
  * question. The default plan is float, ball, interval and exact. Thus the exact stage operates only where each float
- * filter before it fails.
+ * filter before it fails. A plan that names the stage `bigfloat` states a limit of the precision.
  *
  * @packageDocumentation
  */
-import { compileBall, compileExact, compileFloat, compileInterval } from "@mark1russell7/expression";
+import { compileBall, compileBigfloat, compileExact, compileFloat, compileInterval } from "@mark1russell7/expression";
 import type { CompileFloatOptions, Document } from "@mark1russell7/expression";
 import { ballClaim, exactClaim, floatClaim, intervalClaim, NOTHING, STAGES } from "./claim.ts";
 import type { Claim, Stage } from "./claim.ts";
 import { checkTolerance, meets, signOf } from "./question.ts";
 import type { Question } from "./question.ts";
+import { precisions, raise } from "./raise.ts";
+import type { PrecisionLimit } from "./raise.ts";
 
 /** The answer of a stitched evaluator at one point. */
 export interface Answer extends Claim {
@@ -44,6 +46,8 @@ export interface Stitched {
 export interface StitchOptions extends CompileFloatOptions {
   /** The stages, in the order of the tries. The default is `STAGES`. */
   readonly plan?: readonly Stage[];
+  /** The precisions of the stage `bigfloat`. A plan with that stage needs this option. */
+  readonly precision?: PrecisionLimit;
 }
 
 type Run = (values: ArrayLike<number>) => Claim;
@@ -55,7 +59,7 @@ function made<T>(stage: Stage, r: { ok: true; value: T } | { ok: false; error: {
 }
 
 /** This function compiles the document for one stage. */
-function compileStage(stage: Stage, doc: Document, options: CompileFloatOptions): { variables: readonly string[]; run: Run } {
+function compileStage(stage: Stage, doc: Document, question: Question, options: StitchOptions): { variables: readonly string[]; run: Run } {
   switch (stage) {
     case "float": {
       const f = made(stage, compileFloat(doc, options));
@@ -73,6 +77,12 @@ function compileStage(stage: Stage, doc: Document, options: CompileFloatOptions)
       const f = made(stage, compileExact(doc, options));
       return { variables: f.variables, run: (v) => exactClaim(f.evaluate(v)) };
     }
+    case "bigfloat": {
+      if (options.precision === undefined) throw new RangeError("A plan with the stage bigfloat states the limit of its precision.");
+      const ladder = precisions(options.precision);
+      const f = made(stage, compileBigfloat(doc, options));
+      return { variables: f.variables, run: (v) => raise(f, v, question, ladder) };
+    }
   }
 }
 
@@ -81,15 +91,16 @@ function compileStage(stage: Stage, doc: Document, options: CompileFloatOptions)
  *
  * @param doc - The document.
  * @param question - The question of each call.
- * @param options - The plan and the order of the variables.
+ * @param options - The plan, the limit of the precision and the order of the variables.
  * @returns The stitched evaluator.
- * @throws Error when a stage does not compile the document, and RangeError for an empty plan or a bad tolerance.
+ * @throws Error when a stage does not compile the document.
+ * @throws RangeError for an empty plan, a bad tolerance or a plan with the stage `bigfloat` and no limit.
  */
 export function stitch(doc: Document, question: Question, options: StitchOptions = {}): Stitched {
   const plan = options.plan ?? STAGES;
   if (plan.length === 0) throw new RangeError("A plan needs one stage or more.");
   if (question.kind === "value") checkTolerance(question.tolerance);
-  const stages = plan.map((stage) => ({ stage, ...compileStage(stage, doc, options) }));
+  const stages = plan.map((stage) => ({ stage, ...compileStage(stage, doc, question, options) }));
   const variables = stages[0]!.variables;
   return {
     variables,
