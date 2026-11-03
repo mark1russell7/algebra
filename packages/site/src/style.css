@@ -1300,3 +1300,139 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+
+.cost {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.cost-slider {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 4.5em;
+  gap: 12px;
+  align-items: center;
+}
+
+.cost-slider output {
+  font-family: var(--mono);
+  text-align: right;
+}
+
+.cost-slider input {
+  width: 100%;
+  min-height: 24px;
+  accent-color: var(--accent);
+}
+
+.cost-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  margin: 0;
+  color: var(--muted);
+}
+
+.cost-plan {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.cost-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.cost h3 {
+  margin: 10px 0 0;
+}
+
+.cost-rows {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cost-rows li {
+  display: grid;
+  grid-template-columns: minmax(0, 13em) minmax(60px, 1fr) 6.5em minmax(0, 17em);
+  gap: 4px 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+#cost-stages li:not(.in-plan) .cost-bar {
+  opacity: 0.35;
+}
+
+#cost-stages li:not(.in-plan) .cost-name,
+.cost-verdict {
+  color: var(--muted);
+}
+
+.cost-value {
+  font-family: var(--mono);
+  text-align: right;
+}
+
+.cost-track {
+  position: relative;
+  display: block;
+  height: 12px;
+  background: var(--sunk);
+  border-radius: 4px;
+}
+
+.cost-bar,
+.cost-ratio {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent);
+}
+
+.cost-bar {
+  left: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.cost-ratio {
+  border-radius: 4px;
+}
+
+.cost-one {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .cost-rows li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .cost-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .cost-verdict {
+    grid-column: 1 / -1;
+  }
+
+  .cost-slider {
+    grid-template-columns: minmax(0, 1fr) 4.5em;
+  }
+
+  .cost-slider .field-label {
+    grid-column: 1 / -1;
+  }
+}

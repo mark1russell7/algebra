@@ -166,6 +166,26 @@ if (f.ok) f.value.evaluate([0.2]); // the rational of the float 0.2 plus the rat
 - An even root of a negative value gives `null` too.
 - A root of a radicand other than `0`, `1` and `-1` gives `"no claim"`, because its value is not always rational. A variable that is not finite gives `"no claim"` too.
 
+## The arbitrary precision evaluator
+
+The verb `bigfloat` gives an interval with `BigFloat` ends of `@algebra/bigfloat` (roadmap item A7). Each call selects its precision in bits, so a caller can repeat a call at a higher precision with no new compilation.
+
+```ts
+import { compileBigfloat } from "@mark1russell7/expression";
+
+const doc = { type: "root", value: { radicand: { type: "num", value: 2 }, index: 2 } } as const;
+const f = compileBigfloat(doc);
+if (f.ok) f.value.evaluate([], 256); // { low, high, error }: the error is the width, 2^-255
+```
+
+- Each operation rounds correctly. The low end rounds down and the high end rounds up.
+- The field `error` is the width `high - low`, rounded up. It bounds the distance from each value of the interval to the exact value.
+- An exact operation gives a point, so a document of exact operations has the error zero.
+- `null` and `"no claim"` have the rules of the verb `interval`. An exponent past `MAX_EXPONENT` of `@algebra/bigfloat` gives `"no claim"` too.
+- A comparison gives the point 1, the point 0, or `[0, 1]` when the intervals do not decide it. `decideBigfloat` gives the truth value.
+
+At 53 bits or more, each end is at or inside the end of the verb `interval`. The property test examines this at 256 bits on the corpus.
+
 ## The generator
 
 `randomExpression(random(seed))` makes a random expression for a property test. The same seed gives the same expression. Approximately a quarter of the literals are near-degenerate constants, for example `Number.MIN_VALUE` or `0.1`.
