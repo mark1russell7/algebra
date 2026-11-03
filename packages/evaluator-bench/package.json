@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/evaluator-bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The bench of A6: the cost and the error of each evaluator and of the stitched plan on the corpus of A12, with the paired times of rigor-bench.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "bench": "node src/bench.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@algebra/evaluator-select": "workspace:*",
+    "@algebra/expression-corpus": "workspace:*",
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rigor-bench": "^0.2.3",
+    "@mark1russell7/rigor-statistics": "^0.1.5"
+  }
+}
