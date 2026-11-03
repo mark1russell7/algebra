@@ -19,5 +19,9 @@
     "robust-predicates": "^3.0.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./corpus": "./src/corpus.test-helper.ts"
   }
 }
