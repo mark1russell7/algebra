@@ -6,4 +6,4 @@
  * @packageDocumentation
  */
 export { type Case, type Rational, type Rationals, casesFor } from "./cases.ts";
-export { type CaseResult, type Report, type ReportOptions, markdown, report } from "./report.ts";
+export { type Report, type ReportOptions, markdown, report } from "./report.ts";
