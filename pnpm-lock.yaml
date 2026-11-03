@@ -203,6 +203,28 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/bigfloat:
+    dependencies:
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^1.0.2
+        version: 1.1.0
+      '@mark1russell7/rigor-generators':
+        specifier: ^0.1.1
+        version: 0.1.1
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
+
   packages/evaluator-bench:
     dependencies:
       '@algebra/evaluator-select':
@@ -267,6 +289,9 @@ importers:
 
   packages/expression:
     dependencies:
+      '@algebra/bigfloat':
+        specifier: workspace:*
+        version: link:../bigfloat
       '@mark1russell7/coeval':
         specifier: ^0.20.0
         version: 0.20.1
@@ -425,6 +450,9 @@ importers:
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
+      tsdown:
+        specifier: ^0.23.4
+        version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -499,6 +527,9 @@ importers:
 
   packages/site:
     dependencies:
+      '@algebra/evaluator-select':
+        specifier: workspace:*
+        version: link:../evaluator-select
       '@mark1russell7/coeval':
         specifier: ^0.20.0
         version: 0.20.1

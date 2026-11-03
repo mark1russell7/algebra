@@ -1,0 +1,94 @@
+# The public API of @mark1russell7/predicates
+#
+# The names of each entry of the exports field, and the declaration of each name, without comments
+# and private members. The command `api-report check` compares this file with the built .d.ts files.
+# To accept a change of the API, start the build, then `api-report update`, and review the diff.
+
+## . (build/index.d.ts): 18 names
+
+type Dyadic: build/index.d.ts#Dyadic
+INCIRCLE_BOUND: build/index.d.ts#INCIRCLE_BOUND
+ORIENT_BOUND: build/index.d.ts#ORIENT_BOUND
+type SegmentIntersection: build/index.d.ts#SegmentIntersection
+type SegmentRelation: build/index.d.ts#SegmentRelation
+type Sign: build/index.d.ts#Sign
+type SignResult: build/index.d.ts#SignResult
+type Stage: build/index.d.ts#Stage
+UNDERFLOW_TERM: build/index.d.ts#UNDERFLOW_TERM
+UNIT_ROUNDOFF: build/index.d.ts#UNIT_ROUNDOFF
+classifySegments: build/index.d.ts#classifySegments
+dyadic: build/index.d.ts#dyadic_d_exports
+incircle: build/index.d.ts#incircle
+incircleExact: build/index.d.ts#incircleExact
+incircleSign: build/index.d.ts#incircleSign
+orient2d: build/index.d.ts#orient2d
+orient2dExact: build/index.d.ts#orient2dExact
+orient2dSign: build/index.d.ts#orient2dSign
+
+## Declarations
+
+### build/index.d.ts#Dyadic
+interface Dyadic {
+  readonly m: bigint;
+  readonly e: number;
+}
+
+### build/index.d.ts#INCIRCLE_BOUND
+export declare const INCIRCLE_BOUND: number;
+
+### build/index.d.ts#ORIENT_BOUND
+export declare const ORIENT_BOUND: number;
+
+### build/index.d.ts#SegmentIntersection
+interface SegmentIntersection {
+  readonly relation: SegmentRelation;
+  readonly collinear: boolean;
+  readonly stage: Stage;
+}
+
+### build/index.d.ts#SegmentRelation
+type SegmentRelation = "disjoint" | "cross" | "touch" | "overlap";
+
+### build/index.d.ts#Sign
+type Sign = -1 | 0 | 1;
+
+### build/index.d.ts#SignResult
+interface SignResult {
+  readonly sign: Sign;
+  readonly stage: Stage;
+}
+
+### build/index.d.ts#Stage
+type Stage = "filter" | "exact";
+
+### build/index.d.ts#UNDERFLOW_TERM
+export declare const UNDERFLOW_TERM: number;
+
+### build/index.d.ts#UNIT_ROUNDOFF
+export declare const UNIT_ROUNDOFF: number;
+
+### build/index.d.ts#classifySegments
+export declare function classifySegments(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): SegmentIntersection;
+
+### build/index.d.ts#dyadic_d_exports
+declare namespace dyadic_d_exports {
+  export { Dyadic, add, compare, compareBound, fromFloat, mul, neg, sign, sub };
+}
+
+### build/index.d.ts#incircle
+export declare function incircle(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): SignResult;
+
+### build/index.d.ts#incircleExact
+export declare function incircleExact(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): Sign;
+
+### build/index.d.ts#incircleSign
+export declare function incircleSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): Sign;
+
+### build/index.d.ts#orient2d
+export declare function orient2d(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): SignResult;
+
+### build/index.d.ts#orient2dExact
+export declare function orient2dExact(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign;
+
+### build/index.d.ts#orient2dSign
+export declare function orient2dSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign;

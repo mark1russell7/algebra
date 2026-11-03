@@ -1,6 +1,6 @@
 /**
- * The coeval kinds of the expression documents and the machine of the verbs `summary`, `float`, `interval`, `ball` and
- * `exact`.
+ * The coeval kinds of the expression documents and the machine of the verbs `summary`, `float`, `interval`, `ball`,
+ * `exact` and `bigfloat`.
  * An evaluator of a later item adds its own verb to these kinds. The documents do not change.
  *
  * @packageDocumentation
@@ -10,14 +10,18 @@ import type { EvalInput, Kind, Machine, Result, World } from "@mark1russell7/coe
 
 /** The shape of the value of a kind (the field `parts` of a coeval kind). */
 export type Shape = NonNullable<Kind["parts"]>;
+import * as B from "@algebra/bigfloat";
+import type { BigFloat } from "@algebra/bigfloat";
 import { ballNode, ballNum, ballVar } from "./ball.ts";
 import type { Ball, BallCell, BallInput } from "./ball.ts";
+import { bigfloatNode, bigfloatNum, bigfloatVar } from "./bigfloat-evaluator.ts";
+import type { BigEnclosure, BigfloatCell, BigInterval } from "./bigfloat-evaluator.ts";
 import { exactNode, exactNum, exactVar } from "./exact.ts";
 import type { ExactCell, ExactResult } from "./exact.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
 import type { FloatCell, FloatResult } from "./float.ts";
 import type { Interval } from "./interval.ts";
-import { intervalNode, intervalNum, intervalVar } from "./interval-evaluator.ts";
+import { intervalNode, intervalNum, intervalVar, NO_CLAIM } from "./interval-evaluator.ts";
 import type { Enclosure, IntervalCell, IntervalInput } from "./interval-evaluator.ts";
 import type { Document } from "./schema.ts";
 import { combine, numSummary, varSummary } from "./summary.ts";
@@ -37,9 +41,11 @@ export const BALL = "ball";
 export const EXACT = "exact";
 /** The verb that gives a tree for the flat tape of float instructions, with the rules of `float`. */
 export const TAPE = "tape";
+/** The verb that compiles a node into code that gives an outward `BigFloat` interval at a precision (roadmap item A7). */
+export const BIGFLOAT = "bigfloat";
 
 /** The verbs of the compiled evaluators, which take the position of each variable from the context. */
-const COMPILED = [FLOAT, INTERVAL, BALL, EXACT, TAPE] as const;
+const COMPILED = [FLOAT, INTERVAL, BALL, EXACT, TAPE, BIGFLOAT] as const;
 
 const list: Shape = { shape: "list" };
 const term: Shape = { shape: "term" };
@@ -154,9 +160,10 @@ const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>>
   [BALL]: { num: ballNum, variable: ballVar, node: (k, p, d) => ballNode(k, p as BallCell[], d) },
   [EXACT]: { num: exactNum, variable: exactVar, node: (k, p, d) => exactNode(k, p as ExactCell[], d) },
   [TAPE]: { num: tapeNum, variable: tapeVar, node: (k, p, d) => tapeNode(k, p as TapeTree[], d) },
+  [BIGFLOAT]: { num: bigfloatNum, variable: bigfloatVar, node: (k, p, d) => bigfloatNode(k, p as BigfloatCell[], d) },
 };
 
-/** The machine of the verbs `summary`, `float`, `interval`, `ball`, `exact` and `tape` for the expression kinds. */
+/** The machine of the verbs `summary`, `float`, `interval`, `ball`, `exact`, `tape` and `bigfloat` for the expression kinds. */
 export const expressionMachine: Machine = {
   world: expressionWorld,
   evaluators: Object.fromEntries(
@@ -186,7 +193,7 @@ export function summarize(doc: Document, options: SummarizeOptions = {}): Result
   return plan.evaluate(makeContext(options.bounds ?? {})) as Result<Summary>;
 }
 
-/** The options of `compileFloat`, `compileInterval`, `compileBall` and `compileExact`. */
+/** The options of `compileFloat`, `compileInterval`, `compileBall`, `compileExact` and `compileBigfloat`. */
 export interface CompileFloatOptions {
   /** The order of the values of a call. The default is the free variables, sorted. The list must have each free variable. */
   readonly variables?: readonly string[];
@@ -378,6 +385,57 @@ export function compileExact(doc: Document, options: CompileFloatOptions = {}): 
     evaluate(values) {
       checkCount(values, variables.length);
       return run(values);
+    },
+  });
+}
+
+/** A claim of the verb `bigfloat`: an interval that contains the exact value, and the bound of its error. */
+export interface BigfloatClaim extends BigInterval {
+  /** The width `high - low`, rounded up: the bound of `|v - exact|` for each `v` in the interval. */
+  readonly error: BigFloat;
+}
+
+/** The result of a call of the verb `bigfloat`: a claim, `null` for no real value, or `"no claim"`. */
+export type BigfloatResult = BigfloatClaim | Exclude<BigEnclosure, BigInterval>;
+
+/** A document compiled with the verb `bigfloat`. */
+export interface BigfloatFunction {
+  /** The names of the variables, in the order of the values of `evaluate`. */
+  readonly variables: readonly string[];
+  /**
+   * This function gives an interval that contains the exact value at one point, and the bound of its error. It uses only
+   * the closures of the compilation.
+   *
+   * @param values - The value of each variable, in the order of `variables`.
+   * @param precision - The precision of each operation in bits, a whole number of 1 or more.
+   * @returns A claim, `null` when the point gives no real value, or `"no claim"`.
+   * @throws RangeError when the precision is not a whole number of 1 or more.
+   */
+  evaluate(values: ArrayLike<number>, precision: number): BigfloatResult;
+}
+
+/**
+ * This function compiles a document one time with the verb `bigfloat` of coeval. Each call selects its precision, so a
+ * caller can repeat a call at a higher precision with no new compilation. Each operation rounds correctly and outward.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileBigfloat(doc: Document, options: CompileFloatOptions = {}): Result<BigfloatFunction> {
+  const made = compileWith<BigfloatCell>(BIGFLOAT, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = root.run;
+  return ok({
+    variables,
+    evaluate(values, precision) {
+      checkCount(values, variables.length);
+      // this call refuses a bad precision also for a document that has no operation
+      B.zero(precision);
+      const r = run(values, precision);
+      if (r === null || r === NO_CLAIM) return r;
+      return { low: r.low, high: r.high, error: B.sub(r.high, r.low, { precision, rounding: "up" }) };
     },
   });
 }

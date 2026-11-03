@@ -4,6 +4,8 @@ This package holds the exact geometric predicates of algebra (roadmap item A5). 
 
 The first users are packing and highways. The census of A13 found no float sign that a user sees and that exact signs fix. The float-wrong inputs of the census were ties at a tolerance and touches. Thus this package gives correct ties and touches, with a cheap common case.
 
+The package has no runtime dependencies. The entry `@mark1russell7/predicates/corpus` is for the tests and the benches of this workspace. It is not in the npm package.
+
 ## The functions
 
 | Function | Result | Error |
