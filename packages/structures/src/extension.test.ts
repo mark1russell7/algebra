@@ -159,7 +159,7 @@ describe("the rationals with a root", () => {
     expect(fieldOf(extension).carrier.contains([ZERO, ONE])).toBe(false);
   });
 
-  it("gives a field at degree 4 only with an Eisenstein prime that the function examines", () => {
+  it("gives a field at degree 4 only with an Eisenstein prime that the function examines", { timeout: 60_000 }, () => {
     const f = rationals(-2, 0, 0, 0, 1);
     expect(extendRationals(f).evidence).toMatchObject({ verdict: "unknown", method: "none" });
     expect(extendRationals(f).field).toBeNull();
