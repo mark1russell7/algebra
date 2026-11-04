@@ -37,7 +37,7 @@ export { decideInterval, intervalNode, intervalNum, intervalVar, NO_CLAIM } from
 export type { Enclosure, IntervalCell, IntervalInput, IntervalRun } from "./interval-evaluator.ts";
 export { ballNode, ballNum, ballVar, decideBall } from "./ball.ts";
 export { bigfloatNode, bigfloatNum, bigfloatVar, decideBigfloat } from "./bigfloat-evaluator.ts";
-export type { BigEnclosure, BigfloatCell, BigfloatRun, BigInterval } from "./bigfloat-evaluator.ts";
+export type { BigEnclosure, BigfloatCell, BigfloatRun, BigInput, BigInterval } from "./bigfloat-evaluator.ts";
 export { EXACT_BITS, exactNode, exactNum, exactVar } from "./exact.ts";
 export type { ExactCell, ExactResult, ExactRun } from "./exact.ts";
 export { staticNode, staticNum, staticVar } from "./static-bound.ts";

@@ -225,6 +225,46 @@ importers:
         specifier: ^5.0.3
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
 
+  packages/bigfloat-bench:
+    dependencies:
+      '@algebra/bigfloat':
+        specifier: workspace:*
+        version: link:../bigfloat
+      '@algebra/evaluator-bench':
+        specifier: workspace:*
+        version: link:../evaluator-bench
+      '@algebra/evaluator-select':
+        specifier: workspace:*
+        version: link:../evaluator-select
+      '@algebra/expression-corpus':
+        specifier: workspace:*
+        version: link:../expression-corpus
+      '@mark1russell7/expression':
+        specifier: workspace:*
+        version: link:../expression
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
+      '@mark1russell7/rigor-bench':
+        specifier: ^0.2.3
+        version: 0.2.4
+      '@mark1russell7/rigor-statistics':
+        specifier: ^0.1.5
+        version: 0.1.5
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^1.0.2
+        version: 1.1.0
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15))
+
   packages/evaluator-bench:
     dependencies:
       '@algebra/evaluator-select':
@@ -261,6 +301,9 @@ importers:
 
   packages/evaluator-select:
     dependencies:
+      '@algebra/bigfloat':
+        specifier: workspace:*
+        version: link:../bigfloat
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression

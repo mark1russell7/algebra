@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/bigfloat-bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "bench": "node src/bench.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "description": "The bench of A7: the cost of the verb bigfloat at each precision and of the stage of the selector against the verbs exact and interval on the corpus of A12.",
+  "dependencies": {
+    "@algebra/bigfloat": "workspace:*",
+    "@algebra/evaluator-bench": "workspace:*",
+    "@algebra/evaluator-select": "workspace:*",
+    "@algebra/expression-corpus": "workspace:*",
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rigor-bench": "^0.2.3",
+    "@mark1russell7/rigor-statistics": "^0.1.5"
+  }
+}

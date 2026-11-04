@@ -15,7 +15,7 @@ import type { BigFloat } from "@algebra/bigfloat";
 import { ballNode, ballNum, ballVar } from "./ball.ts";
 import type { Ball, BallCell, BallInput } from "./ball.ts";
 import { bigfloatNode, bigfloatNum, bigfloatVar } from "./bigfloat-evaluator.ts";
-import type { BigEnclosure, BigfloatCell, BigInterval } from "./bigfloat-evaluator.ts";
+import type { BigEnclosure, BigfloatCell, BigInput, BigInterval } from "./bigfloat-evaluator.ts";
 import { exactNode, exactNum, exactVar } from "./exact.ts";
 import type { ExactCell, ExactResult } from "./exact.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
@@ -437,12 +437,13 @@ export interface BigfloatFunction {
    * This function gives an interval that contains the exact value at one point, and the bound of its error. It uses only
    * the closures of the compilation.
    *
-   * @param values - The value of each variable, in the order of `variables`.
+   * @param values - The value of each variable, in the order of `variables`. A value is a double, a `BigFloat` or a
+   * `Rational`.
    * @param precision - The precision of each operation in bits, a whole number of 1 or more.
    * @returns A claim, `null` when the point gives no real value, or `"no claim"`.
    * @throws RangeError when the precision is not a whole number of 1 or more.
    */
-  evaluate(values: ArrayLike<number>, precision: number): BigfloatResult;
+  evaluate(values: ArrayLike<BigInput>, precision: number): BigfloatResult;
 }
 
 /**

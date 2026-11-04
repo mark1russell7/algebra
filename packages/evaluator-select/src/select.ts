@@ -1,11 +1,12 @@
 /**
  * The selector: from a cost model, it gives the plan of the stitched evaluator with the least expected cost for a
- * question. This package has no default cost model. The model comes from the records of the bench of A6.
+ * question. This package has no default cost model. The model comes from the records of the bench of A6. The stage
+ * `bigfloat` joins a plan only when the model has its measured cost.
  *
  * @packageDocumentation
  */
 import { STAGES } from "./claim.ts";
-import type { Stage } from "./claim.ts";
+import type { DefaultStage, Stage } from "./claim.ts";
 import { checkTolerance } from "./question.ts";
 import type { Question, Tolerance } from "./question.ts";
 
@@ -17,10 +18,16 @@ export interface ShareRow {
   readonly share: number;
 }
 
+/**
+ * The cost of one call of each stage, for one node and one point. The unit is the unit of the bench. The cost of the
+ * stage `bigfloat` is present only after a bench measures it, and it holds only for the limit of that bench.
+ */
+export type StageCost = Readonly<Record<DefaultStage, number>> & { readonly bigfloat?: number };
+
 /** A cost model from the records of a bench. */
 export interface CostModel {
-  /** The cost of one call of each stage, for one node and one point. The unit is the unit of the bench. */
-  readonly cost: Readonly<Record<Stage, number>>;
+  /** The cost of each stage. */
+  readonly cost: StageCost;
   /** The share of each stage for each question of the bench. */
   readonly shares: readonly ShareRow[];
 }
@@ -54,6 +61,9 @@ function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, n
   return Object.fromEntries(rows.map((r) => [r.stage, r.share]));
 }
 
+/** This function tells if the model has a measured cost of the stage `bigfloat`. JSON writes a failed measure as `null`. */
+const measured = (cost: StageCost): boolean => Number.isFinite(cost.bigfloat);
+
 /**
  * This function gives the expected cost of a plan. The model takes the answered points of a stage as a part of the
  * answered points of each later stage. Thus a point gets to a stage with the chance `1 - s`, where `s` is the largest
@@ -63,12 +73,14 @@ function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, n
  * @param cost - The cost of one call of each stage.
  * @param shares - The share of each stage. A stage without a share has the share 0.
  * @returns The expected cost of one call of the plan.
+ * @throws RangeError when the plan has the stage `bigfloat` and the model has no measured cost of it.
  */
-export function planCost(plan: readonly Stage[], cost: Readonly<Record<Stage, number>>, shares: Partial<Record<Stage, number>>): number {
+export function planCost(plan: readonly Stage[], cost: StageCost, shares: Partial<Record<Stage, number>>): number {
+  if (plan.includes("bigfloat") && !measured(cost)) throw new RangeError("The stage bigfloat needs a measured cost. A bench must measure it first.");
   let total = 0;
   let answered = 0;
   for (const stage of plan) {
-    total += (1 - answered) * cost[stage];
+    total += (1 - answered) * (cost[stage] as number);
     answered = Math.max(answered, shares[stage] ?? 0);
   }
   return total;
@@ -76,9 +88,9 @@ export function planCost(plan: readonly Stage[], cost: Readonly<Record<Stage, nu
 
 /**
  * This function selects the plan of the least expected cost for a question. Each plan is a set of the stages
- * `float`, `ball` and `interval` in the order of their cost, and then `exact`. The stage `exact` is always last,
- * because only it answers each value question of a root-free document. Without shares for the question, the plan has
- * each stage in the order of cost.
+ * `float`, `ball` and `interval` in the order of their cost, and then `exact`. A model with a measured cost of the
+ * stage `bigfloat` adds that stage to the set. The stage `exact` is always last, because only it answers each value
+ * question of a root-free document. Without shares for the question, the plan has each stage in the order of cost.
  *
  * @param question - The question, with its tolerance.
  * @param model - The cost model.
@@ -86,7 +98,8 @@ export function planCost(plan: readonly Stage[], cost: Readonly<Record<Stage, nu
  */
 export function select(question: Question, model: CostModel): Selection {
   if (question.kind === "value") checkTolerance(question.tolerance);
-  const filters = STAGES.filter((s) => s !== "exact").sort((a, b) => model.cost[a] - model.cost[b]);
+  const stages: readonly Stage[] = measured(model.cost) ? [...STAGES, "bigfloat"] : STAGES;
+  const filters = stages.filter((s) => s !== "exact").sort((a, b) => (model.cost[a] as number) - (model.cost[b] as number));
   const shares = sharesOf(question, model);
   if (shares === undefined) {
     const plan: Stage[] = [...filters, "exact"];
