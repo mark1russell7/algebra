@@ -109,6 +109,51 @@ if (f.ok) {
 
 The source of `ball.ts` has the proof sketch of each rule. The property tests compare the interval, the ball and the bound of A3 with the exact rationals of `@mark1russell7/rational`. They also print the median width of each one.
 
+## The static bound
+
+The verb `static` gives one enclosure and one error bound for all points of a box. It closes the static items of A3 and A4. A call makes one walk over the tree and uses no point. The summary of a document holds no box, so the caller gives it.
+
+```ts
+import { compileStatic, staticBound } from "@mark1russell7/expression";
+
+const doc = { type: "add", value: [{ type: "var", value: "x" }, { type: "num", value: 0.1 }] } as const;
+const r = staticBound(doc, { bounds: { x: [0, 1] } });
+if (r.ok) {
+  const { enclosure, error } = r.value;
+  // enclosure contains x + 0.1 at each point of the box.
+  // |value of compileFloat - (x + 0.1)| <= error at each point of the box.
+}
+const f = compileStatic(doc); // The same bound for a new box: f.value.evaluate([[0, 1]]).
+```
+
+- `enclosure` is the result of the verb `interval` for the box. A value of `null` or `"no claim"` has the same meaning.
+- A divisor that holds zero gives `"no claim"`. An even root of a value that can be negative gives it too.
+- The point zero as a divisor gives `null`. An even root of a negative interval gives `null` too. Each of these is a true claim.
+- `error` bounds the error of the float program of `compileFloat`. The rule of each node is the rule of the verb `float`, with the size of the enclosure in place of the float value.
+- A float divisor or radicand that can leave its domain gives the error `Infinity`. A float program that can overflow gives it too.
+- A root of index 3 or more gives a true enclosure and the error `Infinity`. `Math.pow` has no stated accuracy, and the walk has no float root to read.
+- A comparison has the error `0` when the float truth value is the exact truth value at each point. Else its error is `1`.
+- A variable without bounds in `staticBound` has the whole line.
+
+The bound is correct but wide when the box loses a dependency. The box has one interval for each variable, and the walk does not see that two parts are the same variable. On `[1, 2]`, `x - x` has the real error 0 and the running bound `2.2e-308`, but the static bound is `1.1e-16` and the enclosure is `[-1, 1]`.
+
+The test of the corpus prints the table below. "Worst" is the static bound over the largest running bound of the points of the box. "Each" is the median over each point. "Enclosure" is the width of the enclosure over the range of the float values at the points.
+
+| Family | Box of the points: worst | Box of the points: each | Box of the points: enclosure | Narrow box: worst | Narrow box: enclosure |
+| --- | --- | --- | --- | --- | --- |
+| `small` | 1.00 | 2.10 | 1.00 | 1.00 | 1.00 |
+| `large` | no finite bound | no finite bound | no finite bound | no finite bound | no finite bound |
+| `well` | 1.00 | 75.3 | 1.00 | 1.00 | 1.00 |
+| `ill` | 1.01 | 1.03 | 1.67e14 | 1.00 | 3.75e10 |
+| `orient-random` | 2.57 | 20.3 | 3.37 | 1.00 | 1.84 |
+| `orient-near` | 2.55 | 32.3 | 3.30 | 1.00 | 1.88 |
+| `incircle-random` | 10.3 | 298 | 86.5 | 1.00 | 10.3 |
+| `incircle-near` | 11.6 | 460 | 81.7 | 1.00 | 9.16 |
+
+Each value is a median over the cases of the family. A narrow box has a radius of `2^-20` of each value. A box of one point has a median ratio of 1.0000000000000002 on the generator. The family `ill` shows dependency: its expanded form cancels, so the enclosure is much wider than the range.
+
+No case of `large` has a finite bound, and most cases of `small` have none. A root of index 3 or more, a pole or a wide enclosure gives this result. The test does not count each cause.
+
 ## The exact evaluator
 
 The verb `exact` gives the exact value as a rational of `@mark1russell7/rational` (roadmap item A6). Its error is zero. Each operation is on `bigint`, so it costs more than the other verbs.

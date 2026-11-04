@@ -60,10 +60,10 @@ export interface FloatResult {
  * The product of two nonnegative floats, rounded and then made larger by the smallest float. The result is at least
  * `x * y / (1 + u)^2`, also when the product underflows.
  */
-const mulUp = (x: number, y: number): number => x * y + MIN;
+export const mulUp = (x: number, y: number): number => x * y + MIN;
 
 /** The quotient of two nonnegative floats, with the same rule as `mulUp`. */
-const divUp = (x: number, y: number): number => x / y + MIN;
+export const divUp = (x: number, y: number): number => x / y + MIN;
 
 /**
  * This function closes the bound of one rounded operation. The propagated term `p` is a float sum of nonnegative terms.

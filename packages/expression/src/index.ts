@@ -18,6 +18,7 @@ export {
   compileExact,
   compileFloat,
   compileInterval,
+  compileStatic,
   compileTape,
   expressionMachine,
   expressionWorld,
@@ -26,6 +27,8 @@ export {
   INTERVAL,
   KINDS,
   SHAPES,
+  STATIC,
+  staticBound,
   SUMMARY,
   summarize,
   TAPE,
@@ -39,6 +42,9 @@ export { bigfloatNode, bigfloatNum, bigfloatVar, decideBigfloat } from "./bigflo
 export type { BigEnclosure, BigfloatCell, BigfloatRun, BigInterval } from "./bigfloat-evaluator.ts";
 export { EXACT_BITS, exactNode, exactNum, exactVar } from "./exact.ts";
 export type { ExactCell, ExactResult, ExactRun } from "./exact.ts";
+export { staticNode, staticNum, staticVar } from "./static-bound.ts";
+export type { StaticBound, StaticCell, StaticRun } from "./static-bound.ts";
+export type { StaticFunction } from "./kinds.ts";
 export type { Ball, BallCell, BallInput, BallRun, Truth } from "./ball.ts";
 export type { FloatCell, FloatResult, FloatRun } from "./float.ts";
 export { DEGENERATE_CONSTANTS, random, randomComparison, randomExpression } from "./generate.ts";
