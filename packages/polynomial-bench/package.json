@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@algebra/polynomial-bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The bench of A8: the cost of a normal form against the verb exact, the cost of a solution and the share of the cases with a claim, with the paired times of rigor-bench.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "bench": "node src/bench.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^1.0.2",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@algebra/expression-corpus": "workspace:*",
+    "@algebra/polynomial": "workspace:*",
+    "@mark1russell7/expression": "workspace:*",
+    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rigor-bench": "^0.2.3",
+    "@mark1russell7/rigor-generators": "^0.1.1",
+    "@mark1russell7/rigor-statistics": "^0.1.5"
+  }
+}

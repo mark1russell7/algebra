@@ -21,7 +21,7 @@
  */
 import { fail, makeContext, ok, prepare } from "@mark1russell7/coeval";
 import type { EvalInput, Kind, Machine, Result } from "@mark1russell7/coeval";
-import { expressionMachine, expressionWorld, KINDS, NO_CLAIM } from "@mark1russell7/expression";
+import { expressionMachine, KINDS, NO_CLAIM } from "@mark1russell7/expression";
 import type { Document, Expression, KindName, NodeData } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
@@ -138,44 +138,64 @@ function ruleOf(kind: KindName, parts: readonly Polynomial[], data: NodeData, li
   }
 }
 
-/** This function gives the evaluator of one kind for the verb `polynomial`. */
-function nodeEvaluator(kind: KindName, limits: Limits) {
+/**
+ * The rules of a verb with the three results of this module: a value, `null` for no real value, or `"no claim"`. A node
+ * with a part without a real value has no real value, also when another part makes no claim. A node with a part that
+ * makes no claim makes no claim.
+ */
+export interface VerbRules<T> {
+  readonly constant: (value: Rational) => T;
+  readonly variable: (name: string) => T;
+  readonly node: (kind: KindName, parts: readonly T[], data: NodeData) => T | null | typeof NO_CLAIM;
+}
+
+/** This function gives the evaluator of one kind for a verb. */
+function nodeEvaluator<T>(kind: KindName, rules: VerbRules<T>) {
   return (input: EvalInput): Result => {
     if (kind === "num") {
       const v = input.doc.value;
-      return typeof v === "number" && Number.isFinite(v) ? ok(constant(Q.fromFloat(v))) : fail("#VALUE!", "num needs a finite number.");
+      return typeof v === "number" && Number.isFinite(v) ? ok(rules.constant(Q.fromFloat(v))) : fail("#VALUE!", "num needs a finite number.");
     }
     if (kind === "var") {
       const name = input.doc.value;
-      return typeof name === "string" ? ok(variable(name)) : fail("#VALUE!", "var needs a name.");
+      return typeof name === "string" ? ok(rules.variable(name)) : fail("#VALUE!", "var needs a name.");
     }
-    const parts: Polynomial[] = [];
+    const parts: T[] = [];
     let open = false;
     let none = false;
     for (const part of input.parts) {
       const r = part.evaluate();
       if (!r.ok) return r;
-      const value = r.value as PolynomialResult;
+      const value = r.value as T | null | typeof NO_CLAIM;
       if (value === null) none = true;
       else if (value === NO_CLAIM) open = true;
       else parts.push(value);
     }
     if (none) return ok(null);
     if (open) return ok(NO_CLAIM);
-    const result = ruleOf(kind, parts, (input.data ?? {}) as NodeData, limits);
-    return ok(result === null || result === NO_CLAIM ? result : within(result, limits));
+    return ok(rules.node(kind, parts, (input.data ?? {}) as NodeData));
   };
 }
 
-const evaluatorName = (kind: KindName): string => `expression.${POLYNOMIAL}.${kind}`;
-
-/** This function adds the verb `polynomial` to one kind. */
-function kindOf(name: KindName): Kind {
-  const kind = expressionWorld.kinds[name] as Kind;
+/**
+ * This function adds a verb to the expression kinds of a machine. The documents do not change, and each other verb
+ * stays.
+ *
+ * @param machine - The machine.
+ * @param verb - The name of the verb.
+ * @param rules - The rules of the verb.
+ * @returns The machine with the verb.
+ */
+export function addVerb<T>(machine: Machine, verb: string, rules: VerbRules<T>): Machine {
+  const nameOf = (kind: KindName): string => `expression.${verb}.${kind}`;
+  const kindOf = (name: KindName): Kind => {
+    const kind = machine.world.kinds[name] as Kind;
+    return { ...kind, verbs: { ...kind.verbs, [verb]: nameOf(name) }, verbEffects: { ...kind.verbEffects, [verb]: [] } };
+  };
   return {
-    ...kind,
-    verbs: { ...kind.verbs, [POLYNOMIAL]: evaluatorName(name) },
-    verbEffects: { ...kind.verbEffects, [POLYNOMIAL]: [] },
+    ...machine,
+    world: { ...machine.world, kinds: Object.fromEntries(KINDS.map((k) => [k, kindOf(k)])) },
+    evaluators: { ...machine.evaluators, ...Object.fromEntries(KINDS.map((k) => [nameOf(k), nodeEvaluator(k, rules)])) },
   };
 }
 
@@ -187,11 +207,14 @@ function kindOf(name: KindName): Kind {
  * @returns The machine.
  */
 export function polynomialMachine(limits: Limits = LIMITS): Machine {
-  return {
-    ...expressionMachine,
-    world: { ...expressionWorld, kinds: Object.fromEntries(KINDS.map((k) => [k, kindOf(k)])) },
-    evaluators: { ...expressionMachine.evaluators, ...Object.fromEntries(KINDS.map((k) => [evaluatorName(k), nodeEvaluator(k, limits)])) },
-  };
+  return addVerb<Polynomial>(expressionMachine, POLYNOMIAL, {
+    constant,
+    variable,
+    node: (kind, parts, data) => {
+      const result = ruleOf(kind, parts, data, limits);
+      return result === null || result === NO_CLAIM ? result : within(result, limits);
+    },
+  });
 }
 
 const DEFAULT_MACHINE = polynomialMachine();
