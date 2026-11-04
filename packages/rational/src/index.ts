@@ -14,6 +14,7 @@ export {
   fromDecimal,
   fromFloat,
   fromNumber,
+  gcd,
   inverse,
   isInteger,
   mul,
