@@ -58,6 +58,24 @@ export function report(ab: readonly PairedTime[], aa: readonly PairedTime[], lim
   return { limit, all: verdict(ab, aa, limit), families };
 }
 
+/** The size groups of the report, by the count of the nodes of a document. The first 64 cases have none from 8 to 14 nodes. */
+export const SIZE_GROUPS: readonly { readonly label: string; readonly low: number; readonly high: number }[] = [
+  { label: "1 to 7 nodes", low: 1, high: 7 },
+  { label: "8 to 14 nodes", low: 8, high: 14 },
+  { label: "15 nodes or more", low: 15, high: Infinity },
+];
+
+/** The time verdict of the cases of one size group. */
+export interface SizeRow {
+  readonly label: string;
+  readonly outcome: TimeVerdict["outcome"];
+  readonly medianRatio: number;
+  /** The count of the cases of the group. */
+  readonly cases: number;
+  /** The count of the cases with a ratio below 1. */
+  readonly faster: number;
+}
+
 /** A time verdict of two arms, with the median ratio of the cases, for all the cases and for each family. */
 export interface Speed {
   readonly outcome: TimeVerdict["outcome"];
@@ -83,6 +101,34 @@ export function speed(ab: readonly PairedTime[], aa: readonly PairedTime[]): Spe
     return [{ family, outcome: v.outcome, medianRatio: ratioOf(v) }];
   });
   return { outcome: all.outcome, medianRatio: ratioOf(all), families };
+}
+
+/**
+ * This function gives the time verdict of arm `b` against arm `a` for each size group with records.
+ *
+ * @param ab - The records of the pair.
+ * @param aa - The records of the pair `aa`.
+ * @param nodesOf - This function gives the count of the nodes of a case name.
+ * @returns One row for each group with records.
+ */
+export function speedBySize(ab: readonly PairedTime[], aa: readonly PairedTime[], nodesOf: (name: string) => number): SizeRow[] {
+  return SIZE_GROUPS.flatMap(({ label, low, high }) => {
+    const inGroup = (r: PairedTime): boolean => nodesOf(r.case) >= low && nodesOf(r.case) <= high;
+    const g = ab.filter(inGroup);
+    if (g.length === 0) return [];
+    const v = timeVerdict(g, aa.filter(inGroup));
+    return [{ label, outcome: v.outcome, medianRatio: ratioOf(v), cases: v.cases.length, faster: v.cases.filter((c) => c.ratio < 1).length }];
+  });
+}
+
+/** This function gives the size groups as Markdown. */
+export function sizeMarkdown(rows: readonly SizeRow[]): string {
+  return [
+    "| Size | Verdict | Median ratio | Cases | Faster cases |",
+    "| --- | --- | --- | --- | --- |",
+    ...rows.map((r) => `| ${r.label} | ${r.outcome} | ${r.medianRatio.toFixed(3)} | ${r.cases} | ${r.faster} |`),
+    "",
+  ].join("\n");
 }
 
 /** This function gives a time verdict as Markdown. */

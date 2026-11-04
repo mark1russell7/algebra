@@ -30,6 +30,25 @@ export const PAIRS: Readonly<Record<PairName, readonly [ArmKind, ArmKind]>> = {
 /** The name of a pair. */
 export type PairName = "ab" | "aa" | "at" | "ft" | "wf" | "wt";
 
+/**
+ * This function reads a list of seeds: whole numbers and ranges with commas, for example `1,2,9-24`.
+ *
+ * @param text - The list.
+ * @returns The seeds, in the order of the list.
+ */
+export function seedsOf(text: string): number[] {
+  return text.split(",").flatMap((part) => {
+    const range = /^(\d+)-(\d+)$/.exec(part);
+    if (range !== null) {
+      const [low, high] = [Number(range[1]), Number(range[2])];
+      if (high < low) throw new RangeError(`The range ${part} has no seeds.`);
+      return Array.from({ length: high - low + 1 }, (_, i) => low + i);
+    }
+    if (!/^\d+$/.test(part)) throw new RangeError(`The seed ${part} is not a whole number or a range.`);
+    return [Number(part)];
+  });
+}
+
 /** One case of the bench. */
 export interface Case {
   /** The name of the corpus case, `<family>/s<seed>`. */
