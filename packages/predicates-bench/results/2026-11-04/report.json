@@ -1,0 +1,325 @@
+{
+  "groups": [
+    {
+      "group": "random",
+      "cases": [
+        {
+          "case": "orient2d/random/s1",
+          "ratio": 1.0955128943902173,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s2",
+          "ratio": 1.1036877576508126,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s3",
+          "ratio": 1.1398957922267254,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s4",
+          "ratio": 1.1548574236576437,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s5",
+          "ratio": 1.1215523667927816,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s6",
+          "ratio": 1.1190015396894497,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s7",
+          "ratio": 1.1756619031886844,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/random/s8",
+          "ratio": 1.147267374743407,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s1",
+          "ratio": 3.998353485555748,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s2",
+          "ratio": 3.9712003581075397,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s3",
+          "ratio": 4.004608709912024,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s4",
+          "ratio": 3.978731077739646,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s5",
+          "ratio": 3.958625626621707,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s6",
+          "ratio": 4.125100128118555,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s7",
+          "ratio": 3.8546810933802473,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/random/s8",
+          "ratio": 3.981189000673469,
+          "rounds": 31
+        }
+      ],
+      "band": {
+        "cases": 16,
+        "kind": "median",
+        "noise": 0.02135463384490109,
+        "low": 0.9788717619515928,
+        "high": 1.0215842757648699,
+        "median": 0.9971378518564339
+      },
+      "verdict": {
+        "outcome": "slower",
+        "reason": "The interval of the candidate median over the A/A median is [1.1416, 4.0229]. The interval is above 1.",
+        "interval": {
+          "estimate": 2.1349133202001616,
+          "low": 1.141573120348086,
+          "high": 4.022913192564619,
+          "level": 0.95,
+          "runs": 10000,
+          "finite": 10000,
+          "seed": 1
+        },
+        "rule": "difference"
+      }
+    },
+    {
+      "group": "near",
+      "cases": [
+        {
+          "case": "orient2d/near/s1",
+          "ratio": 1.229220914547103,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s2",
+          "ratio": 1.2438546803010198,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s3",
+          "ratio": 1.197843785632323,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s4",
+          "ratio": 1.21969565752687,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s5",
+          "ratio": 1.2463692592881517,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s6",
+          "ratio": 1.2602553273662755,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s7",
+          "ratio": 1.1893313188588346,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/near/s8",
+          "ratio": 1.2294572833388449,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s1",
+          "ratio": 0.933152182568901,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s2",
+          "ratio": 0.9209445877861443,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s3",
+          "ratio": 0.9248440880707326,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s4",
+          "ratio": 0.9348923910775525,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s5",
+          "ratio": 0.9243045229144509,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s6",
+          "ratio": 0.9334824836730712,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s7",
+          "ratio": 0.9330699094823081,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/near/s8",
+          "ratio": 0.9197754709254383,
+          "rounds": 31
+        }
+      ],
+      "band": {
+        "cases": 16,
+        "kind": "median",
+        "noise": 0.002415311591017257,
+        "low": 0.9975876029270616,
+        "high": 1.002418230805856,
+        "median": 0.9995379942472725
+      },
+      "verdict": {
+        "outcome": "cannot decide",
+        "reason": "The interval of the candidate median over the A/A median is [0.9308, 1.2294]. The interval holds 1 and crosses the margin of 0.05.",
+        "interval": {
+          "estimate": 1.054952566870925,
+          "low": 0.9308047341677529,
+          "high": 1.229372603313794,
+          "level": 0.95,
+          "runs": 10000,
+          "finite": 10000,
+          "seed": 1
+        },
+        "rule": "difference"
+      }
+    },
+    {
+      "group": "ties",
+      "cases": [
+        {
+          "case": "orient2d/ties/s1",
+          "ratio": 0.7309131389709629,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s2",
+          "ratio": 0.7450255669685625,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s3",
+          "ratio": 0.6795471862340018,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s4",
+          "ratio": 0.709612337414309,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s5",
+          "ratio": 0.7558893490770027,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s6",
+          "ratio": 0.7393226124602443,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s7",
+          "ratio": 0.6909712789917302,
+          "rounds": 31
+        },
+        {
+          "case": "orient2d/ties/s8",
+          "ratio": 0.6973941466295878,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s1",
+          "ratio": 0.6092998510793899,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s2",
+          "ratio": 0.5358428053241587,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s3",
+          "ratio": 0.566276184409747,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s4",
+          "ratio": 0.5778982474612597,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s5",
+          "ratio": 0.5736242705799262,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s6",
+          "ratio": 0.5554560204100066,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s7",
+          "ratio": 0.5862898811775772,
+          "rounds": 31
+        },
+        {
+          "case": "incircle/ties/s8",
+          "ratio": 0.5840279882376844,
+          "rounds": 31
+        }
+      ],
+      "band": {
+        "cases": 16,
+        "kind": "median",
+        "noise": 0.00360661152876097,
+        "low": 0.9963998844827222,
+        "high": 1.0036131231780971,
+        "median": 1.0022777776454856
+      },
+      "verdict": {
+        "outcome": "faster",
+        "reason": "The interval of the candidate median over the A/A median is [0.5766, 0.7095]. The interval is below 1.",
+        "interval": {
+          "estimate": 0.642003275600964,
+          "low": 0.5765745189659746,
+          "high": 0.7094791358019185,
+          "level": 0.95,
+          "runs": 10000,
+          "finite": 10000,
+          "seed": 1
+        },
+        "rule": "difference"
+      }
+    }
+  ]
+}
