@@ -5,6 +5,6 @@
  *
  * @packageDocumentation
  */
-export { type Case, caseOf, compiled, corpusCaseOf, type Evaluate, familyOf } from "./cases.ts";
-export { LIMIT, markdown, type Report, report, type Verdict } from "./report.ts";
-export { type Written, writtenBody, writtenModule } from "./source.ts";
+export { type ArmKind, type Case, caseOf, compiled, corpusCaseOf, type Evaluate, familyOf, type PairName, PAIRS, taped } from "./cases.ts";
+export { BOUND_LIMIT, LIMIT, markdown, type Report, report, type Speed, speed, speedMarkdown, type Verdict } from "./report.ts";
+export { boundBody, type Written, writtenBody, writtenModule } from "./source.ts";

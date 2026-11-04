@@ -19,6 +19,7 @@ export {
   compileFloat,
   compileInterval,
   compileStatic,
+  compileTape,
   expressionMachine,
   expressionWorld,
   EXACT,
@@ -30,6 +31,7 @@ export {
   staticBound,
   SUMMARY,
   summarize,
+  TAPE,
 } from "./kinds.ts";
 export type { BallFunction, BigfloatClaim, BigfloatFunction, BigfloatResult, CompileFloatOptions, ExactFunction, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
 export { floatNode, floatNum, floatRoot, floatVar, rootError, UNIT_ROUNDOFF } from "./float.ts";

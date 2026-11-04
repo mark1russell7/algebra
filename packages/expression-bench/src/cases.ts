@@ -6,10 +6,29 @@
  */
 import { corpusCase, FAMILIES } from "@algebra/expression-corpus";
 import type { CorpusCase, Family } from "@algebra/expression-corpus";
-import { compileFloat } from "@mark1russell7/expression";
+import { compileFloat, compileTape } from "@mark1russell7/expression";
 
 /** A function of the values of the variables. It gives the float value of a document. */
 export type Evaluate = (values: Float64Array) => number;
+
+/** An arm: the written function, the written function with a bound, the closures or the tape. */
+export type ArmKind = "written" | "bound" | "float" | "tape";
+
+/**
+ * The pairs of the bench: arm `a`, then arm `b`. A ratio is the time of `b` over the time of `a`. The pair `aa` has the
+ * same function in the two arms. It gives the A/A band of each other pair.
+ */
+export const PAIRS: Readonly<Record<PairName, readonly [ArmKind, ArmKind]>> = {
+  ab: ["written", "float"],
+  aa: ["written", "written"],
+  at: ["written", "tape"],
+  ft: ["float", "tape"],
+  wf: ["bound", "float"],
+  wt: ["bound", "tape"],
+};
+
+/** The name of a pair. */
+export type PairName = "ab" | "aa" | "at" | "ft" | "wf" | "wt";
 
 /** One case of the bench. */
 export interface Case {
@@ -43,6 +62,20 @@ export function corpusCaseOf(name: string): CorpusCase {
  */
 export function compiled(c: CorpusCase): Evaluate {
   const made = compileFloat(c.document);
+  if (!made.ok) throw new Error(`The case ${c.name} does not compile: ${made.error.reason}`);
+  const f = made.value;
+  return (values) => f.evaluate(values).value;
+}
+
+/**
+ * This function gives the arm of the tape: `compileTape`, which gives the value and the bound of its error. The arm
+ * uses only the value.
+ *
+ * @param c - The corpus case.
+ * @returns The function of the values of the variables.
+ */
+export function taped(c: CorpusCase): Evaluate {
+  const made = compileTape(c.document);
   if (!made.ok) throw new Error(`The case ${c.name} does not compile: ${made.error.reason}`);
   const f = made.value;
   return (values) => f.evaluate(values).value;

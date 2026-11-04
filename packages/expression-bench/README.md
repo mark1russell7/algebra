@@ -27,6 +27,20 @@ The method is the method of `@mark1russell7/rigor-bench`, and of the A5 bench in
 - Then a batch of calls of arm `a` takes at least the target time, 10 ms by default.
 - `limitVerdict` with the limit 1.5 gives the verdict of all the cases, and of the cases of each family.
 
+## The pairs
+
+A ratio is the time of arm `b` over the time of arm `a`. `PAIRS` of `src/cases.ts` names the pairs:
+
+| Pair | Arm `a` | Arm `b` |
+| --- | --- | --- |
+| `ab` | The written function | `compileFloat` |
+| `at` | The written function | `compileTape` |
+| `ft` | `compileFloat` | `compileTape` |
+| `wf` | The written function with a bound | `compileFloat` |
+| `wt` | The written function with a bound | `compileTape` |
+
+The pair `aa` has one written function in the two arms. It gives the A/A band, and it always operates. The written function gives no bound, but `compileFloat` and `compileTape` compute one. The written function with a bound does the same work, so its pairs compare the same result. The default is `ft,wt`. Run 41716693461 took 113 minutes for one pair and `aa`. Thus a run of two pairs and `aa` takes approximately 170 minutes.
+
 ## Start it
 
 The bench operates in CI, not on the local machine. Start the workflow `bench-expression.yml`:
@@ -35,7 +49,7 @@ The bench operates in CI, not on the local machine. Start the workflow `bench-ex
 node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-expression.yml "<reason>" --ref main --role algebra --heavy
 ```
 
-The artifact `a12-bench` has `records-ab.jsonl`, `records-aa.jsonl`, `meta.jsonl`, `written.mjs`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
+The artifact `a12-bench` has `records-<pair>.jsonl`, `meta.jsonl`, `written.mjs`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
 
 ## The kept run
 

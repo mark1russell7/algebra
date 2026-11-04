@@ -13,6 +13,9 @@ on:
       ms:
         description: The time in milliseconds of one batch of the arm a
         default: "10"
+      pairs:
+        description: The pairs of PAIRS in cases.ts, with commas. The pair aa always runs.
+        default: "ft,wt"
 
 permissions:
   contents: read
@@ -25,12 +28,13 @@ concurrency:
 jobs:
   bench:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 240
     permissions:
       contents: read
     env:
       ROUNDS: ${{ inputs.rounds }}
       MS: ${{ inputs.ms }}
+      PAIRS: ${{ inputs.pairs }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -48,7 +52,7 @@ jobs:
           cat "$RUNNER_TEMP/out/machine.txt"
       - name: Bench
         working-directory: packages/expression-bench
-        run: node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS"
+        run: node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS" --pairs "$PAIRS"
       - name: Summary
         if: always()
         run: cat "$RUNNER_TEMP/out/report.md" >> "$GITHUB_STEP_SUMMARY" || true
