@@ -110,7 +110,10 @@ export class Explorer {
   private palette: Palette;
   private frame = 0;
 
-  constructor(private readonly root: HTMLElement) {
+  private readonly root: HTMLElement;
+
+  constructor(root: HTMLElement) {
+    this.root = root;
     this.canvases = Object.fromEntries(
       PANELS.map((name) => [name, root.querySelector<HTMLCanvasElement>(`[data-panel="${name}"] canvas`) as HTMLCanvasElement]),
     ) as Record<PanelName, HTMLCanvasElement>;
