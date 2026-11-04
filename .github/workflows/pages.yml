@@ -2,18 +2,21 @@
 # the shared Pages workflow of mark1russell7 (reusable-pages.yml of mark1russell7/template, its CI.md).
 # The Pages source of the repository is "GitHub Actions" (Settings > Pages).
 # The site reads the items of docs/ROADMAP.md and the package.json of each package at build time.
+# A pull request builds and checks the site in a browser, with no deploy.
 name: Pages
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  pull_request:
 
 permissions: {}
 
 # One deployment at a time. A newer push cancels a deployment that waits.
+# Each pull request has its own group, and a newer push cancels its run.
 concurrency:
-  group: pages
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -35,15 +38,22 @@ jobs:
       build: pnpm --filter @algebra/site run build
       out: packages/site/dist
       env: '{"SITE_BASE": "/${{ github.event.repository.name }}"}'
+      deploy: ${{ github.event_name != 'pull_request' }}
       # The site-pages action adds releases/, status/, data/releases.json and data/status.json to the built site.
       roadmap: docs/ROADMAP.md
       packages: "@mark1russell7/rational"
       site-name: algebra
+      # The check opens each page in a browser at each width, in light and dark. The probe drives the explorer, the
+      # evaluators and the cost section. The check reads the TypeScript source and removes its types.
+      site-check: true
+      site-check-pages: /,/releases/,/status/
+      site-check-probe: packages/site/src/check-probe.ts
 
   # This job examines the deployed site: the home page, the Releases page, the Status page and their data files.
   # It starts no code of the repository and reads only the public site.
   served:
     needs: pages
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
