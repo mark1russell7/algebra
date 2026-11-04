@@ -20,6 +20,7 @@ Each predicate is a rule that asks the signs of expressions. The census applies 
 - A segment pair follows `geom.segmentsCross` of highways. The rule asks `orient(a,b,c)`, `orient(a,b,d)`, `orient(c,d,a)` and `orient(c,d,b)`.
 - A segment-box test follows `geom.segmentHitsRect` of highways. This rule clips the segment to the box (Liang-Barsky). The clipped part must be longer than `eps`.
 - A point-side test gives the sign of `orient(a,b,p)`.
+- A near tie of a nearest-centre test follows `nearestCentre` of highways. The rule asks the sign of the difference of the two squared distances. An exact tie goes to the lower index.
 - A box pair overlaps when the margin minus `eps` is larger than zero on each axis.
 
 The segment-box rule has no division. The sign of `dx` or `dy` and the sign of `diff(i,j)` compare two values of the clip parameter `t`. The sign of `len(i,j)` compares the squared length of the clipped part with `eps^2`. Without `eps`, `eps` is zero.
@@ -34,6 +35,7 @@ Each `.jsonl` file has one JSON object on each line. The shape of the line selec
 | `a`, `b` as `[x, y]`, `box` as `{x, y, w, h}`, and an optional `eps` | A segment-box test. The far corner is `x + w`, `y + h`, as an exact sum. |
 | `a`, `b` as `[x, y]`, `rect` as `[x0, y0, x1, y1]`, and an optional `eps` | A segment-box test with the given corners. |
 | `p`, `a`, `b` as `[x, y]` | A point-side test. Its `floatAnswer` is `-1`, `0`, `1` or a truth value. |
+| `p`, `c1`, `c2` as `[x, y]`, and the indices `i1`, `i2` | A near tie of a nearest-centre test. Its `floatAnswer` is `i1` or `i2`. |
 | `a`, `b` as `{x, y, w, h}`, and an optional `eps` | A box pair. |
 | `case` and a total field | A count line. |
 
