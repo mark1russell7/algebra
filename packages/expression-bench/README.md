@@ -51,4 +51,10 @@ node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-expressi
 
 The artifact `a12-bench` has `records-<pair>.jsonl`, `meta.jsonl`, `written.mjs`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
 
+## The kept run
+
+The folder `results/2026-11-03/` keeps run 41716693461, without `written.mjs`, because the artifact ends after 90 days. The bench writes that file again from the corpus.
+
+The time claim of A3 fails. The time of `compileFloat` over the time of the written function has a median of 65.6, and the claim is 1.5. Each of the 64 cases is above the limit. The median of a family goes from 16.5 for `small` to 1306 for `large`. The A/A band is [0.996, 1.004].
+
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 3 --ms 1 --cases <2 names>`.

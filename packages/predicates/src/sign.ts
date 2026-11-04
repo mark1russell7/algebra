@@ -9,7 +9,8 @@ export type Sign = -1 | 0 | 1;
 
 /**
  * The stage that decides a sign. The stage `filter` is the float filter. Its float value is farther from 0 than its
- * stated bound, or a factor of each term is exactly 0. The stage `exact` is the exact sign over dyadic numbers.
+ * stated bound, or a factor of each term is exactly 0, or two points repeat. The stage `exact` is an exact sign from the
+ * adaptive stage over float expansions, or from the dyadic numbers.
  */
 export type Stage = "filter" | "exact";
 
