@@ -58,6 +58,6 @@ To examine only the format of the records, start a small run: `node src/bench.ts
 | --- | --- | --- | --- |
 | `random` | [1.389, 6.412] | [1.142, 4.023] | Slower |
 | `near` | [1.595, 21.941] | [0.931, 1.229] | Cannot decide |
-| `ties` | [4.779, 9.619] | [0.577, 0.710] | Faster |
+| `ties` | [4.779, 9.618] | [0.577, 0.710] | Faster |
 
 The interval of `random` is wide because the group has two predicates. Each case of `orient2d` has a ratio from 1.10 to 1.18, and each case of `incircle` has a ratio from 3.86 to 4.13.
