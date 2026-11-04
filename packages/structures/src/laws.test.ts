@@ -10,6 +10,7 @@ import {
   RATIONAL_FIELD,
   RATIONALS,
   checkClaims,
+  inputsOf,
   integersMod,
   isPrime,
   partsOf,
@@ -25,7 +26,7 @@ const LARGEST_PRIME_BELOW_2_32 = 4294967291n;
 /** This function gives each claim of a structure and of its parts, as path and law. */
 const claimsOf = (structure: AnyStructure, path: string = structure.name): readonly string[] => [
   ...Object.keys(structure.claims).map((law) => `${path}: ${law}`),
-  ...partsOf(structure).flatMap(([field, part]) => claimsOf(part, `${path}/${field}`)),
+  ...[...partsOf(structure), ...inputsOf(structure)].flatMap(([field, part]) => claimsOf(part, `${path}/${field}`)),
 ];
 
 const failures = (reports: readonly LawReport[]): readonly LawReport[] => reports.filter((report) => report.failure !== null);

@@ -59,6 +59,14 @@ export interface Relation<T> {
   readonly apply: (a: T, b: T) => boolean;
 }
 
+/** A test of one value. A normal subgroup and an ideal use it for their members. */
+export interface Predicate<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 1;
+  readonly apply: (a: T) => boolean;
+}
+
 /** The names of the laws of one operation. */
 export type MagmaLaw =
   | "closed"
@@ -72,7 +80,10 @@ export type MagmaLaw =
   | "rightInverse";
 
 /** The names of the laws of a ring and a field. */
-export type RingLaw = "leftDistributive" | "rightDistributive" | "nontrivial" | "unitsAreNonzero" | "unitsAgree";
+export type RingLaw = "leftDistributive" | "rightDistributive" | "noZeroDivisors" | "nontrivial" | "unitsAreNonzero" | "unitsAgree";
+
+/** The names of the laws of a normal subgroup and an ideal. They examine the whole carrier, not only the representatives. */
+export type CongruenceLaw = "reduceSettles" | "memberAgrees" | "congruentLeft" | "congruentRight" | "absorbsLeft" | "absorbsRight";
 
 /** The names of the laws of an order and a lattice. */
 export type OrderLaw =
@@ -87,7 +98,7 @@ export type OrderLaw =
   | "distributive";
 
 /** The name of a law. The catalog `LAWS` has one law for each name. */
-export type LawName = MagmaLaw | RingLaw | OrderLaw;
+export type LawName = MagmaLaw | RingLaw | OrderLaw | CongruenceLaw;
 
 /** The laws that a structure claims. The names of `Required` are necessary, and the names of `Optional` are permitted. */
 export type Claims<Required extends LawName, Optional extends LawName = never> = { readonly [K in Required]: true } & {
@@ -117,7 +128,30 @@ export type Level =
   | "field"
   | "order"
   | "lattice"
-  | "bounded-lattice";
+  | "bounded-lattice"
+  | "normal-subgroup"
+  | "ideal";
+
+/**
+ * This record tells how a root extension knows if its polynomial is irreducible. The verdict `unknown` gives no claim
+ * of a field. The law runner cannot find a reducible polynomial by samples over an infinite carrier, so this proof
+ * carries the claim of a field.
+ */
+export interface Evidence {
+  readonly verdict: "irreducible" | "reducible" | "unknown";
+  /** The method of the verdict. The value `none` means that no method applied. */
+  readonly method: "degree-one" | "trial-division" | "rational-root" | "eisenstein" | "none";
+  /** The verdict as text. */
+  readonly note: string;
+}
+
+/** This record tells how a structure came from other structures. The runner tests the inputs too. */
+export interface Construction {
+  readonly name: "quotient" | "polynomial-ring" | "root-extension";
+  /** The input structures, by their role in the construction. */
+  readonly inputs: Readonly<Record<string, AnyStructure>>;
+  readonly evidence?: Evidence;
+}
 
 type OptionalMagmaLaw = "associative" | "commutative" | "idempotent";
 
@@ -129,6 +163,7 @@ export interface Magma<T> {
   readonly op: Binary<T>;
   readonly claims: Claims<"closed", OptionalMagmaLaw>;
   readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
 }
 
 /** A magma whose operation is associative. */
@@ -175,16 +210,20 @@ export interface Ring<T> {
   readonly carrier: Carrier<T>;
   readonly additive: Commutative<Group<T>>;
   readonly multiplicative: Monoid<T>;
-  readonly claims: Claims<"leftDistributive" | "rightDistributive">;
+  readonly claims: Claims<"leftDistributive" | "rightDistributive", "noZeroDivisors">;
   readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
 }
+
+/** A ring with a commutative multiplication. */
+export type CommutativeRing<T> = Ring<T> & { readonly multiplicative: Commutative<Monoid<T>> };
 
 /** A ring with a commutative multiplication, and a commutative group of units: all the values that are not zero. */
 export interface Field<T> extends Ring<T> {
   readonly level: "field";
   readonly multiplicative: Commutative<Monoid<T>>;
   readonly units: Commutative<Group<T>>;
-  readonly claims: Claims<"leftDistributive" | "rightDistributive" | "nontrivial" | "unitsAreNonzero" | "unitsAgree">;
+  readonly claims: Claims<"leftDistributive" | "rightDistributive" | "nontrivial" | "unitsAreNonzero" | "unitsAgree", "noZeroDivisors">;
 }
 
 /** A carrier with a partial order. The claim `total` is optional, because a product of total orders is not total. */
@@ -195,6 +234,7 @@ export interface Order<T> {
   readonly leq: Relation<T>;
   readonly claims: Claims<"reflexive" | "antisymmetric" | "transitive", "total">;
   readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
 }
 
 type LatticeLaw = "reflexive" | "antisymmetric" | "transitive" | "meetAgrees" | "joinAgrees" | "meetAbsorbs" | "joinAbsorbs";
@@ -214,8 +254,39 @@ export interface BoundedLattice<T> extends Lattice<T> {
   readonly join: Semilattice<Monoid<T>>;
 }
 
+/**
+ * A subset of a group, as a map to one representative of each coset. The carrier is the whole group, so the runner
+ * examines the laws on each value and not only on the representatives. The laws state that `reduce` respects the
+ * operation. Thus the kernel of `reduce` is a normal subgroup, and a quotient keeps each equation of the group.
+ */
+export interface NormalSubgroup<T> {
+  readonly level: "normal-subgroup" | "ideal";
+  readonly name: string;
+  readonly carrier: Carrier<T>;
+  readonly group: Group<T>;
+  readonly member: Predicate<T>;
+  /** This operation gives the canonical representative of the coset of a value. */
+  readonly reduce: Unary<T>;
+  /** The list of the representatives, when the quotient is small and finite. */
+  readonly representatives?: readonly T[];
+  readonly claims: Claims<"reduceSettles" | "memberAgrees" | "congruentLeft" | "congruentRight">;
+  readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
+}
+
+/** A normal subgroup of the additive group of a ring, and `reduce` respects the multiplication too. */
+export interface Ideal<T> extends NormalSubgroup<T> {
+  readonly level: "ideal";
+  readonly group: Commutative<Group<T>>;
+  readonly ring: Ring<T>;
+  readonly claims: Claims<"reduceSettles" | "memberAgrees" | "congruentLeft" | "congruentRight" | "absorbsLeft" | "absorbsRight">;
+}
+
+/** An ideal of a ring with a commutative multiplication. */
+export type CommutativeIdeal<T> = Ideal<T> & { readonly ring: CommutativeRing<T> };
+
 /** A structure of any level. */
-export type Structure<T> = Magma<T> | Ring<T> | Order<T>;
+export type Structure<T> = Magma<T> | Ring<T> | Order<T> | NormalSubgroup<T>;
 
 /** A structure of any carrier, for a list of mixed structures. The type of each structure ties its values together. */
 export type AnyStructure = Structure<any>;
@@ -245,4 +316,16 @@ export const withoutZero = <T>(name: string, carrier: Carrier<T>, zero: T): Carr
     show: carrier.show,
     ...(carrier.elements === undefined ? {} : { elements: carrier.elements.filter(nonzero) }),
   };
+};
+
+/**
+ * This function refuses an inexact carrier. A construction over rounded values has no exact equality of cosets or of
+ * coefficients, so it claims nothing.
+ *
+ * @param carrier - The input carrier.
+ * @param construction - The name of the construction, for the message.
+ * @throws TypeError when the carrier is not exact.
+ */
+export const requireExact = <T>(carrier: Carrier<T>, construction: string): void => {
+  if (!carrier.exact) throw new TypeError(`no ${construction} over the inexact carrier ${carrier.name}`);
 };
