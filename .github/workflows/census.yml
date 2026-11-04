@@ -1,6 +1,6 @@
 # The census of the predicate inputs (roadmap item A13). It downloads the predicate dumps of a highways or packing run,
 # starts packages/predicate-census on each set and keeps each report as an artifact.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra census.yml -f run=<run id>
+# Start it with: gh workflow run census.yml -R mark1russell7/algebra -f run=<run id>
 # For packing: -f repo=mark1russell7/packing -f prefix=predicates- -f sets='["pack-select-v2"]'
 name: Census
 

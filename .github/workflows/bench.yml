@@ -1,6 +1,6 @@
 # The bench of the time claim of A2 (docs/ROADMAP.md): the new rationals against the old rationals of quantity.
 # It starts packages/rational-bench, and keeps the raw PairedTime records, the facts of each process and the report.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench.yml "<reason>" --ref main --role algebra
+# Start it with: gh workflow run bench.yml -R mark1russell7/algebra --ref main
 name: Bench
 
 on:

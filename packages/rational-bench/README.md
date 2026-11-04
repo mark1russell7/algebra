@@ -31,7 +31,7 @@ The method is the method of `@mark1russell7/rigor-bench`:
 The bench operates in CI, not on the local machine. Start the workflow `bench.yml`:
 
 ```sh
-node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench.yml "<reason>" --ref main --role algebra
+gh workflow run bench.yml -R mark1russell7/algebra --ref main
 ```
 
 The artifact `a2-bench` has `records-ab.jsonl`, `records-aa.jsonl`, `meta.jsonl`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.

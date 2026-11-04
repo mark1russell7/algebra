@@ -46,7 +46,7 @@ The pair `aa` has one written function in the two arms. It gives the A/A band, a
 The bench operates in CI, not on the local machine. Start the workflow `bench-expression.yml`:
 
 ```sh
-node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-expression.yml "<reason>" --ref main --role algebra --heavy
+gh workflow run bench-expression.yml -R mark1russell7/algebra --ref main
 ```
 
 The artifact `a12-bench` has `records-<pair>.jsonl`, `meta.jsonl`, `written.mjs`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
