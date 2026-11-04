@@ -16,6 +16,12 @@ on:
       pairs:
         description: The pairs of PAIRS in cases.ts, with commas. The pair aa always runs.
         default: "ft,wt"
+      seeds:
+        description: The seeds of the corpus, with commas and ranges
+        default: "1-8"
+      families:
+        description: The families of the corpus, with commas. An empty value gives all the families.
+        default: ""
 
 permissions:
   contents: read
@@ -35,6 +41,8 @@ jobs:
       ROUNDS: ${{ inputs.rounds }}
       MS: ${{ inputs.ms }}
       PAIRS: ${{ inputs.pairs }}
+      SEEDS: ${{ inputs.seeds }}
+      FAMILIES: ${{ inputs.families }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -52,7 +60,10 @@ jobs:
           cat "$RUNNER_TEMP/out/machine.txt"
       - name: Bench
         working-directory: packages/expression-bench
-        run: node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS" --pairs "$PAIRS"
+        run: |
+          only=()
+          if [ -n "$FAMILIES" ]; then only=(--families "$FAMILIES"); fi
+          node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS" --pairs "$PAIRS" --seeds "$SEEDS" "${only[@]}"
       - name: Summary
         if: always()
         run: cat "$RUNNER_TEMP/out/report.md" >> "$GITHUB_STEP_SUMMARY" || true

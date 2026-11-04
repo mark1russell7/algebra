@@ -12,13 +12,13 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { corpus } from "@algebra/expression-corpus";
+import { corpus, FAMILIES, nodeCount, SEEDS } from "@algebra/expression-corpus";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
-import { type PairName, PAIRS } from "./cases.ts";
-import { BOUND_LIMIT, LIMIT, markdown, report, speed, speedMarkdown } from "./report.ts";
+import { type PairName, PAIRS, seedsOf } from "./cases.ts";
+import { BOUND_LIMIT, LIMIT, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown } from "./report.ts";
 import { writtenModule } from "./source.ts";
 
-const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>]";
+const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>] [--seeds <1,2,9-24>] [--families <name,name>]";
 const args = process.argv.slice(2);
 const option = (key: string, fallback?: string): string | undefined => {
   const i = args.indexOf(key);
@@ -33,8 +33,12 @@ if (out === undefined) {
 }
 fs.mkdirSync(out, { recursive: true });
 
-const cases = corpus();
+const seeds = option("--seeds", SEEDS.join(","))!;
+const families = option("--families")?.split(",");
+for (const family of families ?? []) if (!(FAMILIES as readonly string[]).includes(family)) throw new Error(`The family ${family} does not exist.`);
+const cases = corpus(seedsOf(seeds)).filter((c) => families === undefined || families.includes(c.family));
 const names = option("--cases")?.split(",") ?? cases.map((c) => c.name);
+const nodes = new Map(cases.map((c) => [c.name, nodeCount(c.document)]));
 const written = path.resolve(out, "written.mjs");
 fs.writeFileSync(written, writtenModule(cases));
 
@@ -67,8 +71,9 @@ for (const p of pairs) {
   const [a, b] = PAIRS[p];
   if (p === "ft") {
     const s = speed(records[p], aa);
-    results[p] = s;
-    parts.push(speedMarkdown(s, `The time of ${b} over the time of ${a}`));
+    const sizes = speedBySize(records[p], aa, (name) => nodes.get(name) ?? 0);
+    results[p] = { ...s, sizes };
+    parts.push(speedMarkdown(s, `The time of ${b} over the time of ${a}`), sizeMarkdown(sizes));
   } else {
     const r = report(records[p], aa, a === "bound" ? BOUND_LIMIT : LIMIT);
     results[p] = r;

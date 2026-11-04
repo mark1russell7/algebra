@@ -57,4 +57,22 @@ The folder `results/2026-11-03/` keeps run 41716693461, without `written.mjs`, b
 
 The time claim of A3 fails. The time of `compileFloat` over the time of the written function has a median of 65.6, and the claim is 1.5. Each of the 64 cases is above the limit. The median of a family goes from 16.5 for `small` to 1306 for `large`. The A/A band is [0.996, 1.004].
 
+The folder `results/2026-11-04/` keeps run 41895886738, the pairs `ft` and `wt`, also without `written.mjs`. This run used an AMD EPYC machine, and the run of 2026-11-03 used an Intel machine.
+
+The tape is faster than the closures of `compileFloat`: the median ratio is 0.765 over the 64 cases. The ratio depends on the size of the document:
+
+| Nodes | Cases | Median ratio |
+| --- | --- | --- |
+| 1 to 7 | 7 | 2.104, from 0.997 to 4.731 |
+| 8 to 14 | 0 | The corpus has no case of this size. |
+| 15 to 53 | 33 | 0.766, with one case at 1.267 (`orient-near/s3`) |
+| 119 | 16 | 0.365 |
+| 320 or more | 8 | 0.844 |
+
+The closures keep their advantage only on the smallest documents. The tape does not meet the claim of A3 alone. The time of the tape over the written function with a bound has a median of 3.882. In that pair, 21 of 64 cases are above the limit 5. The bound was most of the ratio 65.6, because the written function of that run gave no bound.
+
+The threshold of 7 nodes comes from these records, so these records do not test it. The next run uses new seeds, before a change to `compileFloat`.
+
+The inputs `seeds` and `families` of the workflow select the cases, for example `seeds=25-72` and `families=small`. The report groups the pair `ft` by the count of the nodes.
+
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 3 --ms 1 --cases <2 names>`.

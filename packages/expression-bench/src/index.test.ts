@@ -7,7 +7,7 @@ import { compileFloat, compileTape, random, randomExpression, rootError, summari
 import type { Expression } from "@mark1russell7/expression";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { BOUND_LIMIT, caseOf, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, markdown, report, speed, speedMarkdown, writtenModule } from "./index.ts";
+import { BOUND_LIMIT, caseOf, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, writtenModule } from "./index.ts";
 
 /** This function writes a module of written functions to a new folder, and imports it. */
 async function load(cases: readonly { name: string; document: Expression; variables: readonly string[] }[]): Promise<Record<string, Evaluate>> {
@@ -115,5 +115,18 @@ describe("the report", () => {
     expect(s.families.map((g) => g.family)).toEqual(["well"]);
     expect(speedMarkdown(s, "The title")).toContain("The title: **faster**");
     expect(report(quick, aa, BOUND_LIMIT).limit).toBe(5);
+  });
+
+  it("groups the cases by the count of their nodes", () => {
+    const quick = names.flatMap((n) => [0, 1, 2, 3, 4, 5, 6, 7].map((r) => rec(n, r, 0.5 + r * 0.001)));
+    const rows = speedBySize(quick, aa, () => 9);
+    expect(rows.map((r) => [r.label, r.outcome, r.cases, r.faster])).toEqual([["8 to 14 nodes", "faster", names.length, names.length]]);
+    expect(sizeMarkdown(rows)).toContain("| 8 to 14 nodes | faster |");
+  });
+
+  it("reads a list of seeds with ranges", () => {
+    expect(seedsOf("1,3,9-11")).toEqual([1, 3, 9, 10, 11]);
+    expect(() => seedsOf("5-2")).toThrow(RangeError);
+    expect(() => seedsOf("x")).toThrow(RangeError);
   });
 });
