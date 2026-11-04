@@ -11,6 +11,10 @@
  * Each double is exact in a `BigFloat`. At a precision of 53 or more, each end is at or inside the end of the verb
  * `interval`.
  *
+ * The value of a variable can have more bits than a double, because the values are not part of a document. A `BigFloat`
+ * value is exact at each precision. A `Rational` value is an outward interval at the precision of the call. A literal
+ * of a document stays a double: the kind `num` has no other value.
+ *
  * A result is one of three values:
  *
  * - `{ low, high }`: a claim. The expression has a real value at the point, and the value is in the interval.
@@ -25,6 +29,7 @@
  */
 import * as B from "@algebra/bigfloat";
 import type { BigFloat, Context, Rounding } from "@algebra/bigfloat";
+import type { Rational } from "@mark1russell7/rational";
 import type { Truth } from "./ball.ts";
 import { NO_CLAIM } from "./interval-evaluator.ts";
 import type { KindName, NodeData } from "./summary.ts";
@@ -40,8 +45,11 @@ export interface BigInterval {
 /** The result of a node for the verb `bigfloat`: an interval, `null` for no real value, or `"no claim"`. */
 export type BigEnclosure = BigInterval | null | typeof NO_CLAIM;
 
+/** The value of a variable for the verb `bigfloat`: a double, or a value with more bits than a double. */
+export type BigInput = number | BigFloat | Rational;
+
 /** The code of one node: a function of the values of the variables and of the precision in bits. */
-export type BigfloatRun = (values: ArrayLike<number>, precision: number) => BigEnclosure;
+export type BigfloatRun = (values: ArrayLike<BigInput>, precision: number) => BigEnclosure;
 
 /** The compiled code of one node. */
 export interface BigfloatCell {
@@ -85,17 +93,19 @@ export function bigfloatNum(value: number): BigfloatCell {
 }
 
 /**
- * This function compiles a variable. A finite number is its exact binary value. A number that is not finite makes no
- * claim.
+ * This function compiles a variable. A finite number and a `BigFloat` are exact points. A `Rational` gives the two
+ * rounded ends at the precision of the call. A number that is not finite makes no claim.
  *
  * @param index - The position of the variable in the values of a call.
  * @returns The cell of the variable.
  */
 export function bigfloatVar(index: number): BigfloatCell {
   return {
-    run: (values) => {
-      const v = values[index] as number;
-      return v - v === 0 ? point(B.fromNumber(v)) : NO_CLAIM;
+    run: (values, precision) => {
+      const v = values[index] as BigInput;
+      if (typeof v === "number") return v - v === 0 ? point(B.fromNumber(v)) : NO_CLAIM;
+      if ("mantissa" in v) return point(v);
+      return { low: B.fromRational(v, { precision, rounding: "down" }), high: B.fromRational(v, { precision, rounding: "up" }) };
     },
   };
 }
@@ -208,7 +218,7 @@ function ruleOf(kind: KindName, data: NodeData): Rule {
 }
 
 /** This function evaluates the parts of a node. The rule of `null` and `"no claim"` is the rule of the module. */
-function runParts(parts: readonly BigfloatCell[], values: ArrayLike<number>, precision: number): BigInterval[] | null | typeof NO_CLAIM {
+function runParts(parts: readonly BigfloatCell[], values: ArrayLike<BigInput>, precision: number): BigInterval[] | null | typeof NO_CLAIM {
   const out: BigInterval[] = [];
   let open = false;
   let none = false;

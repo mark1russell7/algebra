@@ -34,6 +34,10 @@ const result = summarize(doc, { bounds: { x: [0, 1] } });
 // result.value.bounds contains x + 0.1 for each x in [0, 1].
 ```
 
+## The tape evaluator
+
+`compileTape` gives the value and the bound of `compileFloat`, and it has the same type. It flattens a document into a list of float instructions, and one loop operates the list. It has no closure for a node, no `eval` and no `new Function`. A compiled tape keeps its registers between calls.
+
 ## The float evaluator
 
 The verb `float` compiles a document one time into a tree of closures (roadmap item A3). Each call gives a float value and a bound of its error. The code has no `eval` and no `new Function`.
@@ -181,6 +185,7 @@ if (f.ok) f.value.evaluate([], 256); // { low, high, error }: the error is the w
 - Each operation rounds correctly. The low end rounds down and the high end rounds up.
 - The field `error` is the width `high - low`, rounded up. It bounds the distance from each value of the interval to the exact value.
 - An exact operation gives a point, so a document of exact operations has the error zero.
+- A variable can have more bits than a double: its value can be a `BigFloat` or a rational. An interval goes outward from a rational at the precision of the call. A literal `num` of a document stays a double, because a document does not change.
 - `null` and `"no claim"` have the rules of the verb `interval`. An exponent past `MAX_EXPONENT` of `@algebra/bigfloat` gives `"no claim"` too.
 - A comparison gives the point 1, the point 0, or `[0, 1]` when the intervals do not decide it. `decideBigfloat` gives the truth value.
 

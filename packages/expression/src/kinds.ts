@@ -15,7 +15,7 @@ import type { BigFloat } from "@algebra/bigfloat";
 import { ballNode, ballNum, ballVar } from "./ball.ts";
 import type { Ball, BallCell, BallInput } from "./ball.ts";
 import { bigfloatNode, bigfloatNum, bigfloatVar } from "./bigfloat-evaluator.ts";
-import type { BigEnclosure, BigfloatCell, BigInterval } from "./bigfloat-evaluator.ts";
+import type { BigEnclosure, BigfloatCell, BigInput, BigInterval } from "./bigfloat-evaluator.ts";
 import { exactNode, exactNum, exactVar } from "./exact.ts";
 import type { ExactCell, ExactResult } from "./exact.ts";
 import { floatNode, floatNum, floatVar } from "./float.ts";
@@ -29,6 +29,8 @@ import { staticNode, staticNum, staticVar } from "./static-bound.ts";
 import type { StaticBound, StaticCell } from "./static-bound.ts";
 import { combine, numSummary, varSummary } from "./summary.ts";
 import type { KindName, NodeData, Summary } from "./summary.ts";
+import { tapeNode, tapeNum, tapeOf, tapeVar } from "./tape.ts";
+import type { TapeTree } from "./tape.ts";
 
 /** The verb that gives the summary of a node. */
 export const SUMMARY = "summary";
@@ -42,11 +44,13 @@ export const STATIC = "static";
 export const BALL = "ball";
 /** The verb that compiles a node into code that gives its exact rational value (roadmap item A6). */
 export const EXACT = "exact";
+/** The verb that gives a tree for the flat tape of float instructions, with the rules of `float`. */
+export const TAPE = "tape";
 /** The verb that compiles a node into code that gives an outward `BigFloat` interval at a precision (roadmap item A7). */
 export const BIGFLOAT = "bigfloat";
 
 /** The verbs of the compiled evaluators, which take the position of each variable from the context. */
-const COMPILED = [FLOAT, INTERVAL, BALL, EXACT, BIGFLOAT] as const;
+const COMPILED = [FLOAT, INTERVAL, BALL, EXACT, TAPE, BIGFLOAT] as const;
 
 const list: Shape = { shape: "list" };
 const term: Shape = { shape: "term" };
@@ -162,10 +166,11 @@ const RULES: Readonly<Record<(typeof COMPILED)[number], CompiledRules<unknown>>>
   [INTERVAL]: { num: intervalNum, variable: intervalVar, node: (k, p, d) => intervalNode(k, p as IntervalCell[], d) },
   [BALL]: { num: ballNum, variable: ballVar, node: (k, p, d) => ballNode(k, p as BallCell[], d) },
   [EXACT]: { num: exactNum, variable: exactVar, node: (k, p, d) => exactNode(k, p as ExactCell[], d) },
+  [TAPE]: { num: tapeNum, variable: tapeVar, node: (k, p, d) => tapeNode(k, p as TapeTree[], d) },
   [BIGFLOAT]: { num: bigfloatNum, variable: bigfloatVar, node: (k, p, d) => bigfloatNode(k, p as BigfloatCell[], d) },
 };
 
-/** The machine of the verbs `summary`, `float`, `interval`, `ball`, `exact` and `bigfloat` for the expression kinds. */
+/** The machine of the verbs `summary`, `float`, `interval`, `ball`, `exact`, `tape` and `bigfloat` for the expression kinds. */
 export const expressionMachine: Machine = {
   world: expressionWorld,
   evaluators: Object.fromEntries(
@@ -257,6 +262,28 @@ export function compileFloat(doc: Document, options: CompileFloatOptions = {}): 
       checkCount(values, variables.length);
       const value = run(values);
       return { value, error: root.error };
+    },
+  });
+}
+
+/**
+ * This function compiles a document one time into a flat tape of float instructions, with the verb `tape` of coeval.
+ * One loop operates the tape. Each call gives the value and the bound of `compileFloat`, with no closure for a node.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileTape(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
+  const made = compileWith<TapeTree>(TAPE, doc, options);
+  if (!made.ok) return made;
+  const { variables, root } = made.value;
+  const run = tapeOf(root);
+  return ok({
+    variables,
+    evaluate(values) {
+      checkCount(values, variables.length);
+      return run(values);
     },
   });
 }
@@ -437,12 +464,13 @@ export interface BigfloatFunction {
    * This function gives an interval that contains the exact value at one point, and the bound of its error. It uses only
    * the closures of the compilation.
    *
-   * @param values - The value of each variable, in the order of `variables`.
+   * @param values - The value of each variable, in the order of `variables`. A value is a double, a `BigFloat` or a
+   * `Rational`.
    * @param precision - The precision of each operation in bits, a whole number of 1 or more.
    * @returns A claim, `null` when the point gives no real value, or `"no claim"`.
    * @throws RangeError when the precision is not a whole number of 1 or more.
    */
-  evaluate(values: ArrayLike<number>, precision: number): BigfloatResult;
+  evaluate(values: ArrayLike<BigInput>, precision: number): BigfloatResult;
 }
 
 /**

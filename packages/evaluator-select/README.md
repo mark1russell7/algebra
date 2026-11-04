@@ -37,6 +37,22 @@ The stage `exact` answers each value question of a document without roots. A roo
 
 This package has no default cost model. The cost model comes from the records of the bench of A6, on the corpus of A12.
 
+## The stage `bigfloat`
+
+The stage `bigfloat` operates the verb `bigfloat` of `@mark1russell7/expression`, and it doubles the precision until the answer meets the question. It is not in the default plan, because a selector needs a measured cost. Give the stage in a plan, and give the limit in bits:
+
+```ts
+const s = stitch(document, { kind: "value", tolerance: { relative: 1e-30 } }, { plan: ["bigfloat", "exact"], precision: { limit: 4096 } });
+```
+
+- The precision starts at 64 bits, or at `start`, and it doubles up to the limit. The last try is at the limit.
+- Past the limit, the stage gives no answer. It does not give its last interval. Its claim has the kind `no claim`.
+- The field `big` of a claim has the ends of the interval as `BigFloat` values, and the precision of the answer. The field `error` states the error of the double `value`, so a double cannot state an accuracy below its own gap. Read `big` for that accuracy.
+- The test of a tolerance uses `big`, so the test is exact.
+- `raise(f, values, question, ladder)` operates the stage on a compiled function. It takes inputs with more bits than a double: a `BigFloat` or a rational. The function `answer` of `stitch` takes doubles, because the other verbs take doubles.
+- `select` uses the stage only when the model has a measured `cost.bigfloat`. `planCost` refuses a plan with the stage and no measured cost. The bench `@algebra/bigfloat-bench` gives the measure.
+- An exact zero with irrational parts does not have a sign at any precision. Then the stage gives no answer at each limit.
+
 ## The tests
 
 The property tests examine each answer of the stitched evaluator at each point of the default corpus of `@algebra/expression-corpus`. The four questions are the sign, the absolute tolerance `1e-9`, and the relative tolerances `1e-12` and `0`. Each answer contains the exact value of `compileExact` and meets its question. The stitched sign of the geometric families is the sign of `orient2d` and `incircle` of `@mark1russell7/predicates`.

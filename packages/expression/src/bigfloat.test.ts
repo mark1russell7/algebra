@@ -131,6 +131,80 @@ describe("the verb bigfloat", () => {
   });
 });
 
+describe("the variables with more bits than a double", () => {
+  const third = Q.rational(1n, 3n);
+  const tiny = B.add(B.fromNumber(1), B.fromRational(Q.rational(1n, 1n << 200n), { precision: 1 }), { precision: 201 });
+
+  it("keeps a BigFloat exact at each precision, and rounds a rational outward", () => {
+    const f = made(compileBigfloat(x));
+    expect(claimOf(f.evaluate([tiny], 64))).toMatchObject({ low: tiny, high: tiny, error: { sign: 0 } });
+    expect(B.compare(tiny, B.fromNumber(1))).toBe(1);
+    for (const p of [8, 64, 256]) {
+      const r = claimOf(f.evaluate([third], p));
+      expect(Q.compare(B.toRational(r.low), third)).toBe(-1);
+      expect(Q.compare(third, B.toRational(r.high))).toBe(-1);
+      expect(r.low.precision).toBe(p);
+    }
+    const exact = claimOf(f.evaluate([Q.rational(5n, 8n)], 64));
+    expect(exact.error.sign).toBe(0);
+    expect(B.toNumber(exact.low)).toBe(0.625);
+  });
+
+  it("decides what a double input loses", () => {
+    const gap: Document = { type: "lt", value: [c(1), x] };
+    const f = made(compileBigfloat(gap));
+    expect(decideBigfloat(f.evaluate([tiny], 64))).toBe(true);
+    expect(decideBigfloat(f.evaluate([B.toNumber(tiny)], 64))).toBe(false);
+  });
+
+  it("gives a width that falls with the precision", () => {
+    const f = made(compileBigfloat({ type: "mul", value: [x, x] }));
+    const coarse = claimOf(f.evaluate([third], 64));
+    const fine = claimOf(f.evaluate([third], 256));
+    expect(B.compare(fine.error, coarse.error)).toBe(-1);
+    expect(B.compare(coarse.low, fine.low)).toBeLessThanOrEqual(0);
+    expect(B.compare(fine.high, coarse.high)).toBeLessThanOrEqual(0);
+  });
+
+  it("holds against the rational oracle at each seeded point with more bits than a double", () => {
+    const rnd = random(47);
+    const big = (bits: number): bigint => {
+      let n = 1n;
+      for (let i = 0; i < bits; i += 16) n = (n << 16n) | BigInt(Math.floor(rnd() * 65536));
+      return n;
+    };
+    const counts = { cases: 0, claims: 0, none: 0, skipped: 0 };
+    for (const doc of docs(49)) {
+      const f = bigOf(doc);
+      for (let i = 0; i < POINTS; i++) {
+        // x is a rational and y is a BigFloat, each with more bits than a double. z stays a double.
+        const rx = Q.rational((rnd() < 0.5 ? -1n : 1n) * big(120), big(100));
+        const by = B.fromRational(Q.rational(big(160), big(150)), { precision: 200, rounding: "nearest" });
+        const z = randomPoint(rnd)["z"] as number;
+        const want = oracle(doc, { x: rx, y: B.toRational(by), z });
+        for (const precision of [64, 256]) {
+          const r = f.evaluate([rx, by, z], precision);
+          const where = (): string => JSON.stringify({ doc, x: Q.toString(rx), y: Q.toString(B.toRational(by)), z, precision });
+          counts.cases++;
+          if (want === "unknown" || want === "large") {
+            counts.skipped++;
+          } else if (want === "none") {
+            counts.none++;
+            expect(r === null || r === NO_CLAIM, where()).toBe(true);
+          } else {
+            expect(r, where()).not.toBeNull();
+            if (r === null || r === NO_CLAIM) continue;
+            counts.claims++;
+            expect(Q.compare(B.toRational(r.low), want.lo) <= 0 && Q.compare(want.hi, B.toRational(r.high)) <= 0, where()).toBe(true);
+          }
+        }
+      }
+    }
+    console.log(`the claims with wide inputs: ${JSON.stringify(counts)}`);
+    expect(counts.claims).toBeGreaterThan(counts.cases / 4);
+  }, LONG);
+});
+
 describe("the containment of the verb bigfloat", () => {
   it("holds at each point of the corpus at 64 and 256 bits, and it is never wider than the verb interval at 256 bits", () => {
     const rnd = random(42);

@@ -1,5 +1,6 @@
-import { corpus, exactValue, isPolynomial, POLYNOMIAL_FAMILIES } from "@algebra/expression-corpus";
-import { compileExact, type Expression, NO_CLAIM } from "@mark1russell7/expression";
+import * as B from "@algebra/bigfloat";
+import { corpus, exactValue, isPolynomial, POLYNOMIAL_FAMILIES, SEEDS } from "@algebra/expression-corpus";
+import { type BigfloatFunction, compileBigfloat, compileExact, type Expression, NO_CLAIM } from "@mark1russell7/expression";
 import { incircleSign, orient2dSign } from "@mark1russell7/predicates";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
@@ -7,6 +8,8 @@ import { describe, expect, it } from "vitest";
 import {
   type Answer,
   ballClaim,
+  bigfloatClaim,
+  bigWithin,
   type CostModel,
   exactClaim,
   floatClaim,
@@ -15,10 +18,13 @@ import {
   NO_VALUE,
   NOTHING,
   planCost,
+  precisions,
   type Question,
+  raise,
   select,
   signOf,
   STAGES,
+  START_PRECISION,
   stitch,
   within,
 } from "./index.ts";
@@ -206,4 +212,292 @@ describe("the selector", () => {
     expect(select({ kind: "value", tolerance: { relative: 1e-15 } }, model).plan).toEqual(["float", "ball", "interval", "exact"]);
     expect(select({ kind: "value", tolerance: { absolute: 1 } }, model).plan).toEqual(["float", "ball", "interval", "exact"]);
   });
+});
+
+/** The limit of the stage in the tests, in bits. */
+const LIMIT = 4096;
+/** The count of points of each case in the property test. The variable `STAGE_POINTS` sets it. The default is all. */
+const STAGE_POINTS = Number(process.env["STAGE_POINTS"] ?? 64);
+
+const raised = (doc: Expression, question: Question, limit: number = LIMIT, start?: number) =>
+  stitch(doc, question, { plan: ["bigfloat"], precision: { limit, ...(start === undefined ? {} : { start }) } });
+const compiled = (doc: Expression): BigfloatFunction => {
+  const r = compileBigfloat(doc);
+  if (!r.ok) throw new Error(r.error.reason);
+  return r.value;
+};
+const rootOf = (x: Expression): Expression => ({ type: "root", value: { radicand: x, index: 2 } });
+const rel = (relative: number): Question => ({ kind: "value", tolerance: { relative } });
+const big = (x: number): B.BigFloat => B.fromNumber(x);
+
+describe("the precisions of the stage bigfloat", () => {
+  it("double from the start up to the limit, and end at the limit", () => {
+    expect(precisions({ limit: 512 })).toEqual([START_PRECISION, 128, 256, 512]);
+    expect(precisions({ limit: 100 })).toEqual([64, 100]);
+    expect(precisions({ limit: 40, start: 10 })).toEqual([10, 20, 40]);
+    expect(precisions({ limit: 32 })).toEqual([32]);
+    expect(precisions({ limit: 7, start: 7 })).toEqual([7]);
+  });
+
+  it("refuse a precision that is not a whole number, and a start past the limit", () => {
+    expect(() => precisions({ limit: 0 })).toThrow(RangeError);
+    expect(() => precisions({ limit: 1.5 })).toThrow(RangeError);
+    expect(() => precisions({ limit: Number.NaN })).toThrow(RangeError);
+    expect(() => precisions({ limit: 64, start: 0 })).toThrow(RangeError);
+    expect(() => precisions({ limit: 64, start: 128 })).toThrow(RangeError);
+  });
+});
+
+describe("the claim of the verb bigfloat", () => {
+  const claimAt = (low: B.BigFloat, high: B.BigFloat, precision = 64) =>
+    bigfloatClaim({ low, high, error: B.sub(high, low, { precision, rounding: "up" }) }, precision);
+
+  it("gives no value, no claim, and a point of a double", () => {
+    expect(bigfloatClaim(null, 64)).toBe(NO_VALUE);
+    expect(bigfloatClaim(NO_CLAIM, 64)).toBe(NOTHING);
+    expect(claimAt(big(0.5), big(0.5))).toMatchObject({ kind: "value", value: 0.5, error: 0, low: 0.5, high: 0.5 });
+    const zero = claimAt(B.zero(), B.zero());
+    expect(Object.is(zero.error, 0) && Object.is(zero.high, 0)).toBe(true);
+  });
+
+  it("rounds outward to doubles, and keeps the sign that the doubles lose", () => {
+    const third = B.fromRational(Q.rational(1n, 3n), { precision: 200 });
+    const c = claimAt(third, third, 200);
+    expect(c.value).toBe(1 / 3);
+    expect(c.error).toBeGreaterThan(0);
+    expect(Q.compare(Q.abs(Q.sub(q(c.value), B.toRational(third))), q(c.error))).toBeLessThanOrEqual(0);
+    expect(c.low).toBeLessThanOrEqual(1 / 3);
+    expect(c.high).toBeGreaterThan(1 / 3);
+    const tiny = B.fromRational(Q.rational(1n, 1n << 2000n), { precision: 8 });
+    const small = claimAt(tiny, tiny);
+    expect(small).toMatchObject({ low: 0, high: Number.MIN_VALUE });
+    expect(signOf(small)).toBe(1);
+    expect(signOf(claimAt(B.neg(tiny), B.neg(tiny)))).toBe(-1);
+    expect(claimAt(B.neg(tiny), B.neg(tiny)).low).toBe(-Number.MIN_VALUE);
+    expect(signOf(claimAt(B.neg(tiny), tiny))).toBeUndefined();
+    expect(signOf(claimAt(B.zero(), B.zero()))).toBe(0);
+  });
+
+  it("states an infinite error past the range of the doubles, and the bounds stay", () => {
+    const huge = B.fromRational(Q.rational(10n ** 400n), { precision: 80 });
+    const c = claimAt(huge, huge);
+    expect(c).toMatchObject({ kind: "value", value: Infinity, error: Infinity, low: Number.MAX_VALUE, high: Infinity });
+    expect(signOf(c)).toBe(1);
+    expect(claimAt(B.neg(huge), B.neg(huge))).toMatchObject({ low: -Infinity, high: -Number.MAX_VALUE });
+    expect(claimAt(B.neg(huge), huge).error).toBe(Infinity);
+  });
+
+  it("meets a tolerance by an exact test of the interval", () => {
+    const a = (low: number, high: number) => claimAt(big(low), big(high)).big!;
+    expect(bigWithin(a(1, 1), { relative: 0 })).toBe(true);
+    expect(bigWithin(a(1, 2), { relative: 0 })).toBe(false);
+    expect(bigWithin(a(1, 2), { absolute: 1 })).toBe(true);
+    expect(bigWithin(a(1, 2), { absolute: 0.5 })).toBe(false);
+    expect(bigWithin(a(1, 2), { absolute: Infinity })).toBe(true);
+    expect(bigWithin(a(1, 2), { relative: 1 })).toBe(true);
+    expect(bigWithin(a(1, 2), { relative: 0.5 })).toBe(false);
+    expect(bigWithin(a(-1, 2), { relative: 10 })).toBe(false);
+    expect(bigWithin(a(-2, -1), { relative: 1 })).toBe(true);
+    expect(bigWithin(a(1, 2), { relative: Infinity })).toBe(true);
+    expect(bigWithin(a(0, 0), { relative: 0 })).toBe(true);
+  });
+});
+
+describe("the stage bigfloat", () => {
+  it("is not in the default plan, and a plan with it states a limit", () => {
+    expect(STAGES).toEqual(["float", "ball", "interval", "exact"]);
+    expect(stitch(v("x"), { kind: "sign" }).plan).not.toContain("bigfloat");
+    expect(() => stitch(v("x"), { kind: "sign" }, { plan: ["bigfloat"] })).toThrow(RangeError);
+    expect(() => stitch(v("x"), { kind: "sign" }, { plan: ["bigfloat"], precision: { limit: 0 } })).toThrow(RangeError);
+  });
+
+  it("stops at the first precision that meets the tolerance, and states the error", () => {
+    const two = rootOf(c(2));
+    expect(raised(two, rel(1e-12)).answer([])).toMatchObject({ stage: "bigfloat", met: true, big: { precision: 64 } });
+    const fine = raised(two, rel(1e-30)).answer([]);
+    expect(fine).toMatchObject({ met: true, big: { precision: 128 } });
+    const { low, high, error } = fine.big!;
+    expect(Q.compare(Q.pow(B.toRational(low), 2), Q.rational(2n))).toBe(-1);
+    expect(Q.compare(Q.pow(B.toRational(high), 2), Q.rational(2n))).toBe(1);
+    expect(B.toNumber(error)).toBeLessThanOrEqual(1e-30);
+    // a double cannot hold this accuracy, and the error of the double states it
+    expect(fine.error).toBeGreaterThan(1e-20);
+    expect(fine.value).toBe(Math.SQRT2);
+    expect(raised(two, { kind: "value", tolerance: { absolute: 1e-300 } }).answer([])).toMatchObject({ met: true, big: { precision: 1024 } });
+  });
+
+  it("gives no answer past the limit, and makes no call past it", () => {
+    const f = compiled(rootOf(c(2)));
+    const asked: number[] = [];
+    const spy: BigfloatFunction = { variables: f.variables, evaluate: (values, p) => (asked.push(p), f.evaluate(values, p)) };
+    expect(raise(spy, [], rel(1e-300), precisions({ limit: 500 }))).toBe(NOTHING);
+    expect(asked).toEqual([64, 128, 256, 500]);
+    const a = raised(rootOf(c(2)), rel(1e-300), 500).answer([]);
+    expect(a).toMatchObject({ stage: "bigfloat", kind: "no claim", met: false, error: Infinity, sign: undefined });
+    expect(a.big).toBeUndefined();
+    expect(Number.isNaN(a.value)).toBe(true);
+    // the tolerance 0 of an irrational value has no answer at each limit
+    expect(raised(rootOf(c(2)), rel(0), 2048).answer([]).met).toBe(false);
+    // the interval of the exact value 0 holds zero at each precision, so no limit tells the sign
+    const nought: Expression = { type: "sub", value: [{ type: "mul", value: [rootOf(c(2)), rootOf(c(2))] }, c(2)] };
+    expect(raised(nought, { kind: "sign" }).answer([]).met).toBe(false);
+    expect(raised(nought, rel(1)).answer([]).met).toBe(false);
+    expect(raised(nought, { kind: "value", tolerance: { absolute: 1e-100 } }).answer([]).met).toBe(true);
+  });
+
+  it("goes on after no claim at a low precision, and stops at no real value", () => {
+    const nearly = B.add(big(2), B.fromRational(Q.rational(1n, 1n << 100n), { precision: 1 }), { precision: 110 });
+    const doc: Expression = { type: "div", value: [c(1), { type: "sub", value: [{ type: "mul", value: [rootOf(c(2)), rootOf(c(2))] }, v("x")] }] };
+    const f = compiled(doc);
+    expect(f.evaluate([nearly], 64)).toBe(NO_CLAIM);
+    const claim = raise(f, [nearly], rel(1e-12), precisions({ limit: LIMIT }));
+    expect(claim).toMatchObject({ kind: "value", big: { precision: 256 } });
+    expect(claim.value).toBeCloseTo(-(2 ** 100), -20);
+    const none = compiled({ type: "div", value: [c(1), v("x")] });
+    const asked: number[] = [];
+    const spy: BigfloatFunction = { variables: none.variables, evaluate: (values, p) => (asked.push(p), none.evaluate(values, p)) };
+    expect(raise(spy, [0], rel(1e-12), precisions({ limit: LIMIT }))).toBe(NO_VALUE);
+    expect(asked).toEqual([64]);
+    expect(raised({ type: "div", value: [c(1), v("x")] }, { kind: "sign" }).answer([0])).toMatchObject({ kind: "no value", met: true });
+  });
+
+  it("gives no answer for a value past the range of a BigFloat, and no throw", () => {
+    let doc: Expression = c(2);
+    for (let i = 0; i < 6; i++) doc = { type: "pow", value: { base: doc, exp: 1000 } };
+    expect(raised(doc, { kind: "sign" }).answer([])).toMatchObject({ kind: "no claim", met: false });
+    const stop: BigfloatFunction = {
+      variables: [],
+      evaluate: () => {
+        throw new RangeError("the exponent is out of range");
+      },
+    };
+    expect(raise(stop, [], { kind: "sign" }, [64])).toBe(NOTHING);
+    const bug: BigfloatFunction = {
+      variables: [],
+      evaluate: () => {
+        throw new TypeError("a bug");
+      },
+    };
+    expect(() => raise(bug, [], { kind: "sign" }, [64])).toThrow(TypeError);
+  });
+
+  it("tells a sign past the range of the doubles", () => {
+    const tiny: Expression = { type: "pow", value: { base: c(2), exp: -2000 } };
+    const doc: Expression = { type: "sub", value: [{ type: "add", value: [c(1), tiny] }, c(1)] };
+    const a = raised(doc, { kind: "sign" }).answer([]);
+    expect(a).toMatchObject({ met: true, sign: 1, low: 0, big: { precision: 2048 } });
+    expect(raised(doc, { kind: "sign" }, 1024).answer([]).met).toBe(false);
+  });
+
+  it("takes inputs with more bits than a double", () => {
+    const third = Q.rational(1n, 3n);
+    const f = compiled({ type: "mul", value: [v("x"), c(3)] });
+    const claim = raise(f, [third], rel(1e-40), precisions({ limit: LIMIT }));
+    expect(claim).toMatchObject({ kind: "value", value: 1 });
+    expect(Q.compare(B.toRational(claim.big!.low), Q.ONE)).toBeLessThanOrEqual(0);
+    expect(Q.compare(B.toRational(claim.big!.high), Q.ONE)).toBeGreaterThanOrEqual(0);
+    expect(claim.big!.precision).toBe(256);
+  });
+
+  it("joins a plan that names it, and exact stays the fallback", () => {
+    const doc = rootOf(v("x"));
+    const fine = stitch(doc, rel(1e-30), { plan: ["float", "bigfloat", "exact"], precision: { limit: 256 } }).answer([2]);
+    expect(fine).toMatchObject({ stage: "bigfloat", met: true });
+    expect(stitch(doc, rel(1e-3), { plan: ["float", "bigfloat"], precision: { limit: 256 } }).answer([2]).stage).toBe("float");
+    const past = stitch(doc, rel(1e-300), { plan: ["float", "bigfloat"], precision: { limit: 256 } }).answer([2]);
+    expect(past).toMatchObject({ stage: "float", met: false });
+    const sum: Expression = { type: "add", value: [v("x"), c(1)] };
+    expect(stitch(sum, rel(0), { plan: ["bigfloat", "exact"], precision: { limit: 256 } }).answer([0.1]).stage).toBe("bigfloat");
+    expect(stitch(sum, rel(0), { plan: ["bigfloat", "exact"], precision: { limit: 32 } }).answer([0.1]).stage).toBe("exact");
+  });
+
+  it(
+    "gives each answer within its stated error of the exact value at each point of the corpus",
+    () => {
+      const questions: readonly Question[] = [...QUESTIONS.slice(0, 3), rel(1e-30)];
+      const counts = { rational: 0, met: 0, unmet: 0, noReal: 0, noExact: 0, precision: {} as Record<number, number> };
+      const inside = (y: B.BigFloat, x: Rational, error: B.BigFloat): boolean =>
+        Q.compare(Q.abs(Q.sub(B.toRational(y), x)), B.toRational(error)) <= 0;
+      for (const k of corpus(SEEDS, { points: STAGE_POINTS })) {
+        const ex = compileExact(k.document, { variables: k.variables });
+        if (!ex.ok) throw new Error(ex.error.reason);
+        const options = { variables: k.variables, plan: ["bigfloat"], precision: { limit: LIMIT } } as const;
+        const stages = questions.map((question) => stitch(k.document, question, options));
+        for (const p of k.points) {
+          const x = ex.value.evaluate(p);
+          if (x === NO_CLAIM) {
+            counts.noExact++;
+            continue;
+          }
+          for (const s of stages) {
+            const a = s.answer(p);
+            const where = `${k.name} ${JSON.stringify(s.question)} at ${p.join(", ")}`;
+            expect(a.stage, where).toBe("bigfloat");
+            if (x === null) {
+              counts.noReal++;
+              expect(a.kind, where).not.toBe("value");
+              continue;
+            }
+            counts.rational++;
+            expect(a.kind, where).not.toBe("no value");
+            if (!a.met) {
+              counts.unmet++;
+              expect(a.kind, where).toBe("no claim");
+              continue;
+            }
+            counts.met++;
+            const { low, high, error, precision } = a.big!;
+            counts.precision[precision] = (counts.precision[precision] ?? 0) + 1;
+            expect(contains(a, x), where).toBe(true);
+            expect(Q.compare(B.toRational(low), x) <= 0 && Q.compare(x, B.toRational(high)) <= 0, where).toBe(true);
+            expect(inside(low, x, error) && inside(high, x, error), where).toBe(true);
+            if (s.question.kind === "sign") expect(a.sign, where).toBe(Q.sign(x));
+            else {
+              const t = s.question.tolerance;
+              const reach = "absolute" in t ? q(t.absolute) : Q.mul(q(t.relative), Q.abs(x));
+              expect(Q.compare(Q.abs(Q.sub(B.toRational(low), x)), reach) <= 0, where).toBe(true);
+              expect(Q.compare(Q.abs(Q.sub(B.toRational(high), x)), reach) <= 0, where).toBe(true);
+            }
+          }
+        }
+      }
+      console.log(`the stage on the corpus: ${JSON.stringify(counts)}`);
+      // the limit reaches each question at each point with a rational value, so no check above is empty
+      expect(counts.rational).toBeGreaterThan(0);
+      expect(counts.met).toBe(counts.rational);
+    },
+    600_000,
+  );
+});
+
+describe("the selector with the stage bigfloat", () => {
+  const sign: Question = { kind: "sign" };
+  const shares = [
+    { question: sign, stage: "float", share: 0.5 },
+    { question: sign, stage: "bigfloat", share: 0.99 },
+    { question: sign, stage: "exact", share: 1 },
+  ] as const;
+  const cost = { float: 1, ball: 2, interval: 3, exact: 1000 };
+
+  it("needs a measured cost", () => {
+    expect(() => planCost(["bigfloat", "exact"], cost, {})).toThrow(RangeError);
+    expect(() => planCost(["bigfloat"], { ...cost, bigfloat: Number.NaN }, {})).toThrow(RangeError);
+    expect(planCost(["bigfloat", "exact"], { ...cost, bigfloat: 10 }, { bigfloat: 0.99 })).toBeCloseTo(20, 9);
+  });
+
+  it("leaves the stage out of each plan without a measured cost", () => {
+    const withNull = { ...cost, bigfloat: null as unknown as number };
+    for (const c of [cost, withNull]) {
+      expect(select(sign, { cost: c, shares: [...shares] }).plan).not.toContain("bigfloat");
+      expect(select(rel(1e-30), { cost: c, shares: [] }).plan).toEqual(["float", "ball", "interval", "exact"]);
+    }
+  });
+
+  it("uses the stage when a bench measured it and it lowers the expected cost", () => {
+    const measured = { ...cost, bigfloat: 10 };
+    expect(select(sign, { cost: measured, shares: [...shares] }).plan).toEqual(["float", "bigfloat", "exact"]);
+    expect(select(rel(1e-30), { cost: measured, shares: [] }).plan).toEqual(["float", "ball", "interval", "bigfloat", "exact"]);
+    expect(select(sign, { cost: { ...cost, bigfloat: 5000 }, shares: [...shares] }).plan).not.toContain("bigfloat");
+  });
+
 });

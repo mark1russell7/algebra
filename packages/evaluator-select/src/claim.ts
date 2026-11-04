@@ -4,16 +4,24 @@
  *
  * @packageDocumentation
  */
+import * as B from "@algebra/bigfloat";
+import type { BigFloat } from "@algebra/bigfloat";
 import { interval as I, NO_CLAIM } from "@mark1russell7/expression";
-import type { Ball, Enclosure, ExactResult, FloatResult } from "@mark1russell7/expression";
+import type { Ball, BigfloatClaim, BigfloatResult, Enclosure, ExactResult, FloatResult } from "@mark1russell7/expression";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
 
-/** An evaluator of the expression kinds, as a stage of a plan. */
-export type Stage = "float" | "ball" | "interval" | "exact";
+/** A stage of the default plan. */
+export type DefaultStage = "float" | "ball" | "interval" | "exact";
 
-/** The stages in the order of the roadmap: float first, exact last. */
-export const STAGES: readonly Stage[] = ["float", "ball", "interval", "exact"];
+/**
+ * An evaluator of the expression kinds, as a stage of a plan. The stage `bigfloat` raises the precision of the verb
+ * `bigfloat`. It is not in `STAGES`, so a plan has it only when the caller names it.
+ */
+export type Stage = DefaultStage | "bigfloat";
+
+/** The stages of the default plan, in the order of the roadmap: float first, exact last. */
+export const STAGES: readonly DefaultStage[] = ["float", "ball", "interval", "exact"];
 
 /**
  * What one stage tells about the exact value `x` at a point. Each field is a claim of the stage.
@@ -35,6 +43,14 @@ export interface Claim {
   readonly high: number;
   /** The exact value, only from the stage `exact`. Its error is zero. */
   readonly exact?: Rational;
+  /** The interval with `BigFloat` ends, only from the stage `bigfloat`. The fields above round it to doubles. */
+  readonly big?: BigClaim;
+}
+
+/** The claim of the verb `bigfloat` at the precision that made it. Each point `v` of the interval has `|v - x| <= error`. */
+export interface BigClaim extends BigfloatClaim {
+  /** The precision of the call, in bits. */
+  readonly precision: number;
 }
 
 /** The claim of no real value. */
@@ -44,6 +60,7 @@ export const NO_VALUE: Claim = { kind: "no value", value: Number.NaN, error: 0, 
 export const NOTHING: Claim = { kind: "no claim", value: Number.NaN, error: Infinity, low: -Infinity, high: Infinity };
 
 const finite = (x: number): boolean => x - x === 0;
+const HALF = B.fromNumber(0.5);
 
 /** This function gives the claim of a value and an error bound, with an outward interval. */
 function around(value: number, error: number): Claim {
@@ -114,4 +131,42 @@ export function exactClaim(r: ExactResult): Claim {
   if (error === 0) return { kind: "value", value, error, low: value, high: value, exact: r };
   // the nearest float is nearer than each neighbour, so the neighbours bound the rational
   return { kind: "value", value, error, low: I.nextDown(value), high: I.nextUp(value), exact: r };
+}
+
+/** This function gives the largest double that is at or below a value. */
+function doubleBelow(x: BigFloat): number {
+  const v = B.toNumber(x);
+  if (v === Infinity) return Number.MAX_VALUE;
+  if (v === -Infinity) return v;
+  return B.compare(B.fromNumber(v), x) > 0 ? I.nextDown(v) : v;
+}
+
+/** This function gives the smallest double that is at or above a value. */
+const doubleAbove = (x: BigFloat): number => 0 - doubleBelow(B.neg(x));
+
+/**
+ * This function gives the claim of a result of `compileBigfloat`. The field `big` keeps the interval. The other fields
+ * are its doubles: `value` is the double nearest to the midpoint, and `low` and `high` round outward. Thus `error`
+ * includes the rounding of `value` to a double, and it can be larger than the error of `big`.
+ *
+ * @param r - The interval, `null` or `"no claim"`.
+ * @param precision - The precision of the call, in bits.
+ * @returns The claim.
+ * @throws RangeError when a midpoint is past the range of a `BigFloat`.
+ */
+export function bigfloatClaim(r: BigfloatResult, precision: number): Claim {
+  if (r === null) return NO_VALUE;
+  if (r === NO_CLAIM) return NOTHING;
+  const { low, high } = r;
+  const low53 = doubleBelow(low);
+  const high53 = doubleAbove(high);
+  const big = { ...r, precision };
+  const middle = B.mul(B.add(low, high, { precision: precision + 1 }), HALF, { precision: precision + 1 });
+  const value = B.toNumber(middle);
+  if (!finite(value)) return { kind: "value", value, error: Infinity, low: low53, high: high53, big };
+  const v = B.fromNumber(value);
+  const up = { precision: B.DOUBLE_PRECISION, rounding: "up" } as const;
+  const above = B.sub(high, v, up);
+  const below = B.sub(v, low, up);
+  return { kind: "value", value, error: doubleAbove(B.compare(above, below) >= 0 ? above : below), low: low53, high: high53, big };
 }
