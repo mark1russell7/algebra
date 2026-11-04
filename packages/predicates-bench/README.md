@@ -52,7 +52,7 @@ To examine only the format of the records, start a small run: `node src/bench.ts
 
 ## The results
 
-`results/` keeps the base, run 41654612772 on `7a14a68`. `results/2026-11-04/` keeps run 41896000324, after the adaptive stage of #74. Each folder has the raw records. An interval is the candidate median over the A/A median. A value under 1 means that `@mark1russell7/predicates` is faster.
+`results/2026-11-03/` keeps the base, run 41654612772 on `7a14a68`. `results/2026-11-04/` keeps run 41896000324, after the adaptive stage of #74. Each folder has the raw records. An interval is the candidate median over the A/A median. A value under 1 means that `@mark1russell7/predicates` is faster.
 
 | Group | Base | 2026-11-04 | Verdict of 2026-11-04 |
 | --- | --- | --- | --- |
