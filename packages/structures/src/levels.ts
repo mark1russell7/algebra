@@ -97,6 +97,23 @@ export const LEVELS: Readonly<Record<Level, LevelSpecification>> = {
     ],
     laws: [],
   },
+  "normal-subgroup": {
+    level: "normal-subgroup",
+    below: [],
+    operations: ["member", "reduce"],
+    parts: [{ field: "group", level: "group", laws: [] }],
+    laws: ["reduceSettles", "memberAgrees", "congruentLeft", "congruentRight"],
+  },
+  ideal: {
+    level: "ideal",
+    below: ["normal-subgroup"],
+    operations: [],
+    parts: [
+      { field: "ring", level: "ring", laws: [] },
+      { field: "group", level: "group", laws: ["commutative"] },
+    ],
+    laws: ["absorbsLeft", "absorbsRight"],
+  },
 };
 
 /** This function gives the level and each level below it, with no repeats. */
@@ -133,10 +150,14 @@ export const fieldOf = (structure: AnyStructure, field: string): unknown => (str
 export const partsOf = (structure: AnyStructure): readonly (readonly [string, AnyStructure])[] =>
   partSpecifications(structure.level).map((part) => [part.field, fieldOf(structure, part.field) as AnyStructure]);
 
+/** This function gives the input structures of a construction, with their roles. A plain structure has none. */
+export const inputsOf = (structure: AnyStructure): readonly (readonly [string, AnyStructure])[] =>
+  Object.entries(structure.construction?.inputs ?? {});
+
 /**
  * This function gives each way in which a structure does not agree with the table. It does not start an operation.
  * A problem is a missing operation, part or law, a part at a low level, or a part with another carrier. A law that
- * is both claimed and refuted is a problem too.
+ * is both claimed and refuted is a problem too. This function examines the inputs of a construction as well.
  *
  * @returns The problems as text. An empty list means that the structure conforms, with its parts.
  */
@@ -172,5 +193,6 @@ export const conforms = (structure: AnyStructure): readonly string[] => {
     if (specification.ownCarrier !== true && part.carrier !== structure.carrier) report(`the part ${specification.field} has another carrier`);
     problems.push(...conforms(part));
   }
+  for (const [, input] of inputsOf(structure)) problems.push(...conforms(input));
   return problems;
 };

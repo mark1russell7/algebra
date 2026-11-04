@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Monoid, group, ring, field, order and lattice as data instances with law tests, and the product of structures.",
+  "description": "Monoid, group, ring, field, order and lattice as data instances with law tests, and the constructions: products, quotients, polynomial rings and field extensions.",
   "main": "./src/index.ts",
   "scripts": {
     "test": "vitest run",

@@ -5,16 +5,13 @@
  * @packageDocumentation
  */
 import { withoutZero } from "./structure.ts";
-import type { Binary, Carrier, Commutative, Field, Group, Monoid, Ring } from "./structure.ts";
+import type { Binary, Carrier, Commutative, CommutativeRing, Field, Group, Monoid } from "./structure.ts";
 
 /** The largest modulus. The seeded draws of `@mark1russell7/rigor-generators` give values of at most 32 bits. */
 export const MAX_MODULUS: bigint = 2n ** 32n;
 
 /** The largest carrier that lists its elements. The runner examines each tuple of a small carrier. */
 const LISTED_LIMIT = 64n;
-
-/** A ring with a commutative multiplication. */
-export type CommutativeRing<T> = Ring<T> & { readonly multiplicative: Commutative<Monoid<T>> };
 
 const checked = (n: bigint): bigint => {
   if (n < 1n || n > MAX_MODULUS) throw new RangeError(`not a modulus from 1 to 2^32: ${n}`);

@@ -7,7 +7,7 @@
 import { deriveSeed, random } from "@mark1russell7/rigor-generators";
 import type { Random } from "@mark1russell7/rigor-generators";
 import { LAWS } from "./laws.ts";
-import { partsOf } from "./levels.ts";
+import { inputsOf, partsOf } from "./levels.ts";
 import type { AnyStructure, Carrier, LawName } from "./structure.ts";
 
 /** The default count of samples of a law. */
@@ -91,17 +91,18 @@ const checkOne = (structure: AnyStructure, path: string, name: LawName, options:
 };
 
 /**
- * This function tests each law that a structure claims, and each law that its parts claim.
+ * This function tests each law that a structure claims, and each law that its parts and its inputs claim. A quotient
+ * can pass its own laws on its representatives when its subset is not an ideal. The test of the input finds this.
  *
  * @param structure - The structure.
  * @param options - The seed and the count of samples.
- * @returns One report for each claim of the structure and of its parts.
+ * @returns One report for each claim of the structure, of its parts and of its inputs.
  */
 export const checkClaims = (structure: AnyStructure, options: RunOptions = {}): readonly LawReport[] => {
   const settled = { seed: options.seed ?? DEFAULT_SEED, samples: options.samples ?? DEFAULT_SAMPLES };
   const walk = (current: AnyStructure, path: string): readonly LawReport[] => [
     ...(Object.keys(current.claims) as LawName[]).map((name) => checkOne(current, path, name, settled)),
-    ...partsOf(current).flatMap(([field, part]) => walk(part, `${path}/${field}`)),
+    ...[...partsOf(current), ...inputsOf(current)].flatMap(([field, part]) => walk(part, `${path}/${field}`)),
   ];
   return walk(structure, structure.name);
 };

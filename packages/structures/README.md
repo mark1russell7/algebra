@@ -72,4 +72,60 @@ The runner walks the parts of a structure too. A carrier with a list of elements
 - The product of two total orders is a partial order. The pairs `(1, 0)` and `(0, 1)` are not comparable.
 - The product of `RATIONAL_MUL` and `DOUBLE_ADD` is a unital magma, because one factor does not claim associativity.
 
-Quotients, polynomial rings and field extensions come in later pull requests.
+## Constructions
+
+A construction takes structures and gives a structure. Its field `construction` names its inputs, and its evidence when it has evidence. The runner and `conforms` walk the inputs too. `describe` gives them as JSON.
+
+A construction claims a law only when the laws of its inputs give that law. A carrier that is not exact gets no construction: `requireExact` stops it with a `TypeError`.
+
+### Quotients
+
+An ideal or a normal subgroup is data. It has a test of membership and a map to the canonical representative of a coset. Its carrier is the whole input, so the laws of congruence get all values and not only the representatives.
+
+```ts
+import { checkClaims, integerIdeal, listedIdeal, quotientRing, integersMod } from "@algebra/structures";
+
+quotientRing(integerIdeal(6n)); // agrees with integersMod(6n)
+quotientRing(listedIdeal(integersMod(12n), [0n, 4n, 8n])); // agrees with integersMod(4n)
+checkClaims(quotientRing(listedIdeal(integersMod(6n), [0n, 2n, 3n]))); // fails with an argument
+```
+
+- `idealOf` and `normalSubgroupOf` take a definition and check nothing. The runner does the check. This is how a forged ideal stays visible.
+- The integers are a normal subgroup of the rationals, so `RATIONALS_MOD_INTEGERS` passes. The same set as an ideal fails the laws of absorption, with two arguments.
+- The set `{0, x}` of the field of 4 elements is not an ideal, but its representatives pass their own laws. Only the walk of the inputs finds this failure.
+- A quotient keeps the laws with the flag `preservedByQuotient`. It does not keep `noZeroDivisors`: 2 and 3 are zero divisors of `Z/(6)`.
+- `quotientRing` does not claim a field. A field comes from `extendFinite` or `extendRationals`.
+
+### Polynomial rings
+
+`polynomialRing(ring)` gives the polynomials in one variable over a ring. A value is a list of coefficients, the constant first, with no zero at the end. This form is canonical, so the equality is exact.
+
+- The result claims commutativity only when the multiplication of the coefficients claims it.
+- It claims `noZeroDivisors` only over a field, or over a ring that claims this law.
+- It does not keep `idempotent`: over the booleans, the square of `x + 1` is `x^2 + 1`.
+- The polynomials over a field are a ring. The polynomial `x` has no inverse.
+
+`polynomialIdeal(ring, modulus)` gives the multiples of a monic polynomial, over any commutative ring. `@algebra/polynomial` is a different package: it is a symbolic evaluator of expression documents.
+
+### Field extensions
+
+`extendFinite(field, modulus)` and `extendRationals(modulus, prime?)` give a ring, a field or `null`, and the evidence. These functions decide irreducibility. A caller cannot give the verdict.
+
+| Method | Base | Tells | Limit |
+| --- | --- | --- | --- |
+| `trial-division` | a field with a list | irreducible or reducible | at most `SEARCH_LIMIT` divisors |
+| `rational-root` | the rationals | reducible at each degree with a root, irreducible to degree 3 | outer coefficients to `ROOT_TEST_LIMIT` |
+| `eisenstein` | the rationals | irreducible | the function examines the prime that the caller gives |
+| `none` | either | `unknown` | the result is a ring with no claim of a field |
+
+- A reducible modulus gives a ring and a refutation of `noZeroDivisors`, and a test replays it.
+- The polynomial `x^4 + 4` has no rational root, but it is `(x^2 + 2x + 2)(x^2 - 2x + 2)`. So the verdict at degree 4 with no prime is `unknown`.
+- The verdict `unknown` also applies to `x^4 + 1`, which is irreducible. The method is sound, and it is not complete.
+
+### Limits
+
+- Claims over an infinite carrier rest on samples and on the laws of the inputs. They are not proofs.
+- Sampled polynomials stop at degree `SAMPLE_DEGREE`. A modulus of a higher degree gets samples of a lower degree only.
+- The ideals with a ready form are the integer ideals, the multiples of a monic polynomial, and the listed ideals.
+- The base of an extension is the rationals or a field with a list.
+- `product` records no `construction` yet.

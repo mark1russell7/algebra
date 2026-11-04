@@ -57,6 +57,24 @@ describe("the descriptions", () => {
     expect(JSON.parse(JSON.stringify(description))).toEqual(description);
   });
 
+  it("cover each construction, with its inputs and its evidence as text", () => {
+    const byName = new Map(descriptions.map((entry) => [entry.name, entry]));
+    expect(byName.get("Z/(6)")?.construction?.name).toBe("quotient");
+    expect(byName.get("Z/(6)")?.construction?.inputs["ideal"]?.level).toBe("ideal");
+    expect(byName.get("Z/(6)")?.construction?.inputs["ideal"]?.parts["ring"]?.name).toBe("Z");
+    expect(byName.get("S3/A3")?.level).toBe("group");
+    expect(byName.get("Q/Z")?.carrier.exact).toBe(true);
+    expect(byName.get("Q[x]")?.construction).toMatchObject({ name: "polynomial-ring", inputs: { coefficients: { name: "Q" } } });
+    const field = byName.get("Q[x]/(x^2 + -2)");
+    expect(field).toMatchObject({ level: "field", construction: { name: "root-extension", evidence: { verdict: "irreducible", method: "rational-root" } } });
+    const ring = byName.get("Q[x]/(x^2 + -1)");
+    expect(ring).toMatchObject({ level: "ring", construction: { evidence: { verdict: "reducible" } } });
+    expect(ring?.refuted.map((entry) => entry.law)).toEqual(["noZeroDivisors"]);
+    expect(ring?.refuted[0]?.note).toContain("is 0 modulo");
+    expect(byName.get("Z/2[x]/(x^2 + x + 1)")?.carrier.size).toBe(4);
+    expect(byName.get("Q")).not.toHaveProperty("construction");
+  });
+
   it("give each law as data", () => {
     expect(describeLaw("associative")).toEqual({
       name: "associative",
@@ -64,6 +82,7 @@ describe("the descriptions", () => {
       arity: 3,
       statement: "(a · b) · c = a · (b · c)",
       preservedByProduct: true,
+      preservedByQuotient: true,
     });
   });
 });
