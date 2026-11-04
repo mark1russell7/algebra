@@ -49,3 +49,15 @@ gh workflow run bench-predicates.yml -R mark1russell7/algebra --ref main
 The artifact `a5-bench` has `records-ab.jsonl`, `records-aa.jsonl`, `meta.jsonl`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
 
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 3 --ms 1 --cases <2 names>`.
+
+## The results
+
+`results/` keeps the base, run 41654612772 on `7a14a68`. `results/2026-11-04/` keeps run 41896000324, after the adaptive stage of #74. Each folder has the raw records. An interval is the candidate median over the A/A median. A value under 1 means that `@mark1russell7/predicates` is faster.
+
+| Group | Base | 2026-11-04 | Verdict of 2026-11-04 |
+| --- | --- | --- | --- |
+| `random` | [1.389, 6.412] | [1.142, 4.023] | Slower |
+| `near` | [1.595, 21.941] | [0.931, 1.229] | Cannot decide |
+| `ties` | [4.779, 9.619] | [0.577, 0.710] | Faster |
+
+The interval of `random` is wide because the group has two predicates. Each case of `orient2d` has a ratio from 1.10 to 1.18, and each case of `incircle` has a ratio from 3.86 to 4.13.
