@@ -39,7 +39,7 @@ const written = path.resolve(out, "written.mjs");
 fs.writeFileSync(written, writtenModule(cases));
 
 const child = path.join(path.dirname(fileURLToPath(import.meta.url)), "child.ts");
-const pairs = (option("--pairs", "ft,wt")!.split(",") as PairName[]).filter((p) => p !== "aa").concat("aa");
+const pairs: PairName[] = [...(option("--pairs", "ft,wt")!.split(",") as PairName[]).filter((p) => p !== "aa"), "aa"];
 for (const p of pairs) if (!(p in PAIRS)) throw new Error(`The pair ${p} does not exist.`);
 const records = Object.fromEntries(pairs.map((p) => [p, [] as PairedTime[]])) as Record<PairName, PairedTime[]>;
 const meta: unknown[] = [];

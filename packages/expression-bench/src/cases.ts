@@ -18,17 +18,17 @@ export type ArmKind = "written" | "bound" | "float" | "tape";
  * The pairs of the bench: arm `a`, then arm `b`. A ratio is the time of `b` over the time of `a`. The pair `aa` has the
  * same function in the two arms. It gives the A/A band of each other pair.
  */
-export const PAIRS = {
+export const PAIRS: Readonly<Record<PairName, readonly [ArmKind, ArmKind]>> = {
   ab: ["written", "float"],
   aa: ["written", "written"],
   at: ["written", "tape"],
   ft: ["float", "tape"],
   wf: ["bound", "float"],
   wt: ["bound", "tape"],
-} as const satisfies Record<string, readonly [ArmKind, ArmKind]>;
+};
 
 /** The name of a pair. */
-export type PairName = keyof typeof PAIRS;
+export type PairName = "ab" | "aa" | "at" | "ft" | "wf" | "wt";
 
 /** One case of the bench. */
 export interface Case {
