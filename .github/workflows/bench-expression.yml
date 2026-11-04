@@ -1,7 +1,7 @@
 # The bench of the time claim of A3 (docs/ROADMAP.md) on the corpus of A12: compileFloat against a written function.
 # It starts packages/expression-bench, and keeps the raw PairedTime records, the written functions, the facts of each
 # process and the report.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-expression.yml "<reason>" --ref main --role algebra --heavy
+# Start it with: gh workflow run bench-expression.yml -R mark1russell7/algebra --ref main
 name: Bench expression
 
 on:

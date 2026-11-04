@@ -1,7 +1,7 @@
 # The bench of A6 (docs/ROADMAP.md) on the corpus of A12: the stitched plan of @algebra/evaluator-select against each
 # fixed stage (float, ball, interval, exact), with an A/A pair. It starts packages/evaluator-bench, and keeps the raw
 # PairedTime records, the error records of each answer, the cost model, the facts of each process and the report.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-select.yml "<reason>" --ref main --role algebra --heavy
+# Start it with: gh workflow run bench-select.yml -R mark1russell7/algebra --ref main
 name: Bench select
 
 on:

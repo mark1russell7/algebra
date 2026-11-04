@@ -2,7 +2,7 @@
 # against the verb polynomial, the proof of equality by keys, and the cost of the tolerance of a solution, with an A/A
 # pair. It starts packages/polynomial-bench, and keeps the raw PairedTime records, the claim records with the losers,
 # the facts of each process and the report.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-polynomial.yml "<reason>" --ref main --role algebra --heavy
+# Start it with: gh workflow run bench-polynomial.yml -R mark1russell7/algebra --ref main
 name: Bench polynomial
 
 on:

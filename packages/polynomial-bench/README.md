@@ -49,5 +49,5 @@ The time of a claim record is one sample. It is a fact of the record, not a verd
 ## A run
 
 ```sh
-node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-polynomial.yml "<reason>" --ref main --role algebra --heavy
+gh workflow run bench-polynomial.yml -R mark1russell7/algebra --ref main
 ```

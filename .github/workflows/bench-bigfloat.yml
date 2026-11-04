@@ -1,7 +1,7 @@
 # The bench of A7 (docs/ROADMAP.md) on the corpus of A12: the verb bigfloat at each precision and the stage of
 # @algebra/evaluator-select against the verbs exact and interval, with an A/A pair. It starts packages/bigfloat-bench,
 # and keeps the raw PairedTime records, the error records of the stage, the facts of each process and the report.
-# Start it with: node ~/git/fleet/scripts/fleet.mjs dispatch mark1russell7/algebra bench-bigfloat.yml "<reason>" --ref main --role algebra --heavy
+# Start it with: gh workflow run bench-bigfloat.yml -R mark1russell7/algebra --ref main
 name: Bench bigfloat
 
 on:

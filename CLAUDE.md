@@ -36,7 +36,6 @@ Write all prose of this repository in the style of ASD-STE100 Simplified Technic
 
 ## The project
 
-- `docs/ROADMAP.md` is the plan. The tracker `~/git/fleet/artifacts/algebra-roadmap/` mirrors it. Change the two together.
 - `docs/ROADMAP.md` is the plan. Write the prediction of an item before its code: the claims, the measure, the base and the noise.
 - The npm name `@mark1russell7/algebra` is the timer algebra of systems. Name each package here by its contents, for example `@mark1russell7/rational`.
 - An expression is a coeval document. Add an evaluator as a new answer of a kind. Do not change the documents.
