@@ -17,6 +17,9 @@ import {
   containerPredicate,
   edgePair,
   edgePairPoint,
+  nearest,
+  nearestFirstHigher,
+  nearestPoint,
   pointSidePoint,
   PREDICATES,
   segmentBoxPoint,
@@ -191,8 +194,8 @@ export const PACKING_PREDICATES: Readonly<Record<string, Group["predicate"]>> = 
 export interface Group {
   readonly case: string;
   readonly fn: string;
-  /** The predicate. The names `nearest`, `xAt` and `samePlacements` are tests without a rule of the census. */
-  readonly predicate: PredicateName | "nearest" | "xAt" | "samePlacements" | "unknown";
+  /** The predicate. The names `xAt` and `samePlacements` are tests without a rule of the census. */
+  readonly predicate: PredicateName | "xAt" | "samePlacements" | "unknown";
   /**
    * The value is `lines` for input lines, `far` for the far tests of a count line, and `unseen` for near tests without
    * a line. The value `touch` is for the touch inputs of a packing case line: inputs with only values of exactly 0 near.
@@ -351,6 +354,8 @@ function point(line: Line): { predicate: Predicate; point: Point } | undefined {
       return { predicate: segmentRect, point: segmentRectPoint(line.line.a, line.line.b, line.line.rect, line.line.eps) };
     case "pointSide":
       return { predicate: ruleOf(line.form, line.line, PREDICATES.pointSide), point: pointSidePoint(line.line.p, line.line.a, line.line.b) };
+    case "nearest":
+      return { predicate: line.line.i1 < line.line.i2 ? nearest : nearestFirstHigher, point: nearestPoint(line.line.p, line.line.c1, line.line.c2) };
     case "boxPair":
       return { predicate: PREDICATES.boxPair, point: boxPairPoint(line.line.a, line.line.b, line.line.eps) };
     case "edgePair":
@@ -534,7 +539,8 @@ export class Tally {
       throw e;
     }
     const { predicate, point: p } = found;
-    const { n, floatAnswer, fn } = line.line;
+    const { n, fn } = line.line;
+    const floatAnswer = line.form === "nearest" ? line.line.floatAnswer === line.line.i1 : line.line.floatAnswer;
     if ((line.form === "segmentPair" || line.form === "pointSide") && line.line["rule"] === undefined && CALL_SITE_RULES[fn] !== undefined) {
       this.#copyUses.set(fn, (this.#copyUses.get(fn) ?? 0) + 1);
     }

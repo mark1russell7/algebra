@@ -53,6 +53,13 @@ function stopOnStaleCopy(copyUses: Readonly<Record<string, number>>): void {
   if (stale.length > 0) process.exit(3);
 }
 
+/** This function stops the command with exit code 4 when the census did not score each line, after it wrote the report. */
+function stopOnUnknown(unknown: number): void {
+  if (unknown === 0) return;
+  console.error(`The census did not score ${unknown} unknown lines, so its totals are not complete.`);
+  process.exit(4);
+}
+
 /** A file that gets one JSON line for each value, with a buffer of writes. */
 class Lines {
   readonly path: string;
@@ -90,6 +97,7 @@ if (out === undefined) {
   const report = censusOfFiles(inputs, repo);
   process.stdout.write(JSON.stringify(report, null, 2) + "\n");
   stopOnStaleCopy(report.copyUses);
+  stopOnUnknown(report.totals.unknown);
 } else {
   const stem = out.endsWith(".json") ? out.slice(0, -".json".length) : out;
   const records = new Lines(`${stem}.records.jsonl`);
@@ -106,4 +114,5 @@ if (out === undefined) {
       `floatWrong ${t.floatWrong}, unseen ${t.unseen}, unknown ${t.unknown}. Report: ${out}, ${records.count} records.`,
   );
   stopOnStaleCopy(report.copyUses);
+  stopOnUnknown(report.totals.unknown);
 }

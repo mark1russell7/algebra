@@ -57,6 +57,20 @@ export interface PointSideLine extends LineBase {
   readonly a: Vec;
   readonly b: Vec;
 }
+/** A near tie of the two nearest centres of the point `p`. The field `floatAnswer` is the index that the sender found. */
+export interface NearestLine {
+  readonly case: string;
+  readonly fn: string;
+  /** The weight of the line. */
+  readonly n: number;
+  readonly p: Vec;
+  readonly c1: Vec;
+  readonly c2: Vec;
+  readonly i1: number;
+  readonly i2: number;
+  readonly floatAnswer: number;
+  readonly [field: string]: unknown;
+}
 /** A box pair line. */
 export interface BoxPairLine extends LineBase {
   readonly a: Box;
@@ -111,12 +125,17 @@ export const pointSideLine: z.ZodType<PointSideLine> = z.looseObject({
   b: vec,
   floatAnswer: z.union([z.boolean(), z.literal(-1), z.literal(0), z.literal(1)]).optional(),
 });
+const index = z.number().int().nonnegative();
+/** The schema of a near tie of two centres. The float answer must be one of the two indices. */
+export const nearestLine: z.ZodType<NearestLine> = z
+  .looseObject({ case: base.case, fn: base.fn, n: base.n, p: vec, c1: vec, c2: vec, i1: index, i2: index, floatAnswer: index })
+  .refine((line) => line.i1 !== line.i2 && (line.floatAnswer === line.i1 || line.floatAnswer === line.i2), "The float answer must be one of two different indices.");
 /** The schema of a box pair: is the margin of the two boxes on each axis larger than `eps`. */
 export const boxPairLine: z.ZodType<BoxPairLine> = z.looseObject({ ...base, a: box, b: box, eps: finite.optional() });
 
 const count = z.number().int().nonnegative();
 
-/** The kinds of test of a count line: the four predicates, and the nearest-centre test, which has no predicate. */
+/** The kinds of test of a count line. Only a near tie of a nearest-centre test has a line. */
 export type CountKind = "segmentPair" | "segmentBox" | "boxPair" | "pointSide" | "nearest";
 
 /**
@@ -285,6 +304,7 @@ export type Line =
   | { readonly form: "segmentBox"; readonly line: SegmentBoxLine }
   | { readonly form: "segmentRect"; readonly line: SegmentRectLine }
   | { readonly form: "pointSide"; readonly line: PointSideLine }
+  | { readonly form: "nearest"; readonly line: NearestLine }
   | { readonly form: "boxPair"; readonly line: BoxPairLine }
   | { readonly form: "count"; readonly line: CountLine }
   | { readonly form: "edgePair"; readonly line: EdgePairLine }
@@ -342,6 +362,8 @@ export function parseLine(raw: unknown): Line {
   if (segRect.success) return { form: "segmentRect", line: segRect.data };
   const side = pointSideLine.safeParse(raw);
   if (side.success) return { form: "pointSide", line: side.data };
+  const near = nearestLine.safeParse(raw);
+  if (near.success) return { form: "nearest", line: near.data };
   const boxes = boxPairLine.safeParse(raw);
   if (boxes.success) return { form: "boxPair", line: boxes.data };
   const packingCounts = packingCountLine.safeParse(raw);

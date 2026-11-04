@@ -485,12 +485,57 @@ describe("the field rule of a dump line (highways #258)", () => {
     expect(r.cases[0]?.floatWrong).toBe(0);
   });
 
+  it("reads the key of a rule, as a dump of highways writes it (highways #258)", () => {
+    const closed = tally({ case: "c", fn: "mesh.crossing", n: 1, ...touch, floatAnswer: true, rule: "mesh.crossing" });
+    expect(closed.cases[0]).toMatchObject({ unknown: 0, floatWrong: 0 });
+    const low = tally({ case: "c", fn: "physics.outOf", n: 2, ...mid, floatAnswer: -1, rule: "physics.outOf" });
+    expect(low.cases[0]).toMatchObject({ unknown: 0, floatWrong: 0 });
+    expect({ ...closed.copyUses, ...low.copyUses }).toEqual({});
+  });
+
+  it("keeps the key of a rule of another form as unknown", () => {
+    const r = tally({ case: "c", fn: "physics.outOf", n: 1, ...touch, floatAnswer: true, rule: "physics.outOf" });
+    expect(r.cases[0]?.unknown).toBe(1);
+    expect(r.unknown[0]?.error).toContain('the rule "physics.outOf" is not a rule of the form segmentPair');
+  });
+
   it("keeps a line with a rule that the census cannot use as unknown, with the reason", () => {
     const r = tally({ case: "c", fn: "other.outOf", n: 3, ...mid, floatAnswer: 1, rule: { zero: 1 } }, { case: "c", fn: "x", n: 1, ...touch, rule: "closed" });
     expect(r.cases[0]?.unknown).toBe(4);
     expect(r.unknown.map((u) => u.error)).toEqual([
       "The census has no predicate for the rule of the line: the census has no point-side rule with zero 1.",
-      'The census has no predicate for the rule of the line: the rule field is not an object: "closed".',
+      'The census has no predicate for the rule of the line: the census has no rule with the key "closed".',
     ]);
+  });
+});
+
+describe("a near tie of the nearest centre", () => {
+  const tally = (...lines: object[]): ReturnType<Tally["result"]> => {
+    const t = new Tally();
+    lines.forEach((l, i) => t.addText("f", i + 1, JSON.stringify(l)));
+    return t.result();
+  };
+  const fn = "territories.nearestCentre";
+  const tie = { case: "c", fn, n: 4, p: [584, 393], c1: [538.5, 348], c2: [629.5, 438] };
+
+  it("gives an exact tie to the lower index", () => {
+    const r = tally({ ...tie, i1: 7, i2: 14, floatAnswer: 7 });
+    expect(r.cases[0]).toMatchObject({ unknown: 0, floatWrong: 0, total: 4 });
+  });
+
+  it("counts a float answer with the higher index of an exact tie as wrong", () => {
+    const r = tally({ ...tie, i1: 14, i2: 7, floatAnswer: 14 });
+    expect(r.cases[0]).toMatchObject({ unknown: 0, floatWrong: 4 });
+  });
+
+  it("compares the exact squared distances, not the float distances", () => {
+    const near = { case: "c", fn, n: 1, p: [426, 743], c1: [312.6666666666667, 725], c2: [539.3333333333334, 725], i1: 19, i2: 18 };
+    expect(tally({ ...near, floatAnswer: 19 }).cases[0]).toMatchObject({ unknown: 0, floatWrong: 0 });
+    expect(tally({ ...near, floatAnswer: 18 }).cases[0]).toMatchObject({ unknown: 0, floatWrong: 1 });
+  });
+
+  it("keeps a float answer that is not one of the two indices as unknown", () => {
+    const r = tally({ ...tie, i1: 7, i2: 14, floatAnswer: 3 });
+    expect(r.cases[0]?.unknown).toBe(4);
   });
 });

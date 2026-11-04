@@ -11,7 +11,7 @@ import type { Expression } from "@mark1russell7/expression";
 import type { Box, ContainerLine, EdgeBox, Rect, StripLine, Vec } from "./input.ts";
 
 /** The name of each predicate. The names `container` and `strip` are predicates of packing. */
-export type PredicateName = "segmentPair" | "segmentBox" | "boxPair" | "pointSide" | "container" | "strip";
+export type PredicateName = "segmentPair" | "segmentBox" | "boxPair" | "pointSide" | "nearest" | "container" | "strip";
 
 /** The answer of a predicate: a truth value, or a sign for `pointSide`. */
 export type Answer = boolean | Sign;
@@ -84,6 +84,33 @@ export const pointSideTieLow: Predicate = {
   answer: (s) => (s(side) > 0 ? 1 : -1),
 };
 
+const px = v("px");
+const py = v("py");
+const square = (x: Expression): Expression => times(x, x);
+/** This function gives the squared distance from `p` to the centre with the variables `x` and `y`. */
+const toCentre = (x: string, y: string): Expression => plus(square(minus(px, v(x))), square(minus(py, v(y))));
+const nearer = signForm("distance(p,c2)^2 - distance(p,c1)^2", minus(toCentre("c2x", "c2y"), toCentre("c1x", "c1y")));
+
+/**
+ * This function makes the rule of a near tie of two centres, as `nearestCentre` of highways. The answer is `true` when
+ * `c1` is the nearest. That loop reads the lower index first, and a later centre must be strictly nearer.
+ */
+function nearestRule(firstIndexIsLower: boolean): Predicate {
+  return {
+    name: "nearest",
+    signs: [nearer],
+    answer: (s) => {
+      const sign = s(nearer);
+      return sign > 0 || (sign === 0 && firstIndexIsLower);
+    },
+  };
+}
+
+/** The near tie of two centres when `c1` has the lower index. */
+export const nearest: Predicate = nearestRule(true);
+/** The near tie of two centres when `c1` has the higher index. */
+export const nearestFirstHigher: Predicate = nearestRule(false);
+
 /** A line of the source of highways that a rule of the census copies. */
 export interface RuleSource {
   /** The file, from the root of the highways repository. */
@@ -127,8 +154,8 @@ export const CALL_SITE_RULES: Readonly<Record<string, CallSiteRule>> = {
 };
 
 /**
- * The field `rule` of a dump line of highways (highways #258, `CALL_SITE_RULES` of `packages/core/src/predicate-sink.ts`).
- * A call site with the default rule of its form has no field. The census does not use the two tolerances.
+ * A rule as an object, with the fields of a rule of highways (`CALL_SITE_RULES` of `packages/core/src/predicate-sink.ts`).
+ * A dump of highways writes the key of the rule, not this object. The census does not use the two tolerances.
  */
 export interface DumpRule {
   /** For a point-side test: the answer of a zero sign. */
@@ -140,15 +167,21 @@ export interface DumpRule {
 }
 
 /**
- * This function gives the predicate of the field `rule` of a dump line. The predicate is the default of the form
- * when the field has no change of that form.
+ * This function gives the predicate of the field `rule` of a dump line. A dump of highways writes a key of
+ * `CALL_SITE_RULES` (highways #258). A call site with the default rule of its form has no field. An object gives the
+ * default of the form when it has no change of that form.
  *
  * @param form - The form of the line.
- * @param rule - The field `rule` of the line.
+ * @param rule - The field `rule` of the line: a key of `CALL_SITE_RULES`, or a `DumpRule`.
  * @returns The predicate, or a reason when the census has no predicate for the rule.
  */
 export function predicateOfRule(form: "segmentPair" | "pointSide", rule: unknown): Predicate | { readonly reason: string } {
-  if (typeof rule !== "object" || rule === null || Array.isArray(rule)) return { reason: `the rule field is not an object: ${JSON.stringify(rule)}` };
+  if (typeof rule === "string") {
+    if (!Object.hasOwn(CALL_SITE_RULES, rule)) return { reason: `the census has no rule with the key ${JSON.stringify(rule)}` };
+    const predicate = (CALL_SITE_RULES[rule] as CallSiteRule).predicate;
+    return predicate.name === form ? predicate : { reason: `the rule ${JSON.stringify(rule)} is not a rule of the form ${form}` };
+  }
+  if (typeof rule !== "object" || rule === null || Array.isArray(rule)) return { reason: `the rule field is not a key or an object: ${JSON.stringify(rule)}` };
   const r = rule as DumpRule;
   if (form === "segmentPair") {
     if (r.zero !== undefined) return { reason: "a segment pair rule has the field zero" };
@@ -437,9 +470,15 @@ export const PREDICATES: Readonly<Record<PredicateName, Predicate>> = {
   segmentBox,
   boxPair,
   pointSide,
+  nearest,
   container: containerPredicate(true, true),
   strip,
 };
+
+/** This function gives the variables of a near tie of two centres. */
+export function nearestPoint(p: Vec, c1: Vec, c2: Vec): Point {
+  return { px: p[0], py: p[1], c1x: c1[0], c1y: c1[1], c2x: c2[0], c2y: c2[1] };
+}
 
 /** This function gives the variables of a segment pair. */
 export function segmentPairPoint(a: Vec, b: Vec, c: Vec, d: Vec): Point {
