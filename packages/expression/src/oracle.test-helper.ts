@@ -70,12 +70,15 @@ function powEnc(e: Enc, n: number): Oracle {
   return hull(ends);
 }
 
-export function oracle(doc: Document, at: Readonly<Record<string, number>>): Oracle {
+/** The values of the variables of the oracle. A rational can have more bits than a double. */
+export type OraclePoint = Readonly<Record<string, number | Rational>>;
+
+export function oracle(doc: Document, at: OraclePoint): Oracle {
   const v = oracleOf(doc, at);
   return typeof v === "string" || (small(v.lo) && small(v.hi)) ? v : "large";
 }
 
-function oracleOf(doc: Document, at: Readonly<Record<string, number>>): Oracle {
+function oracleOf(doc: Document, at: OraclePoint): Oracle {
   const many = (xs: readonly Expression[]): Enc[] | "none" | "unknown" | "large" => {
     const out: Enc[] = [];
     let unknown: "unknown" | "large" | undefined;
@@ -91,7 +94,8 @@ function oracleOf(doc: Document, at: Readonly<Record<string, number>>): Oracle {
     case "num":
       return point(Q.fromFloat(doc.value));
     case "var": {
-      const v = at[doc.value] as number;
+      const v = at[doc.value] as number | Rational;
+      if (typeof v !== "number") return point(v);
       return Number.isFinite(v) ? point(Q.fromFloat(v)) : "none";
     }
     case "neg": {

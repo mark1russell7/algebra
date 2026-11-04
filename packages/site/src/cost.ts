@@ -73,13 +73,14 @@ export function scaleExact(model: CostModel, factor: number): CostModel {
 export function stageRows(question: Question, model: CostModel, plan: readonly Stage[]): readonly StageRow[] {
   const key = JSON.stringify(question);
   const shareOf = (stage: Stage): number => model.shares.find((r) => r.stage === stage && JSON.stringify(r.question) === key)?.share ?? 0;
-  const filters = (Object.keys(model.cost) as Stage[]).filter((s) => s !== "exact").sort((a, b) => model.cost[a] - model.cost[b]);
+  const measured = Object.entries(model.cost) as [Stage, number][];
+  const filters = measured.filter(([stage]) => stage !== "exact").sort((a, b) => a[1] - b[1]).map(([stage]) => stage);
   let answered = 0;
   return [...filters, "exact" as const].map((stage) => {
     const inPlan = plan.includes(stage);
     const reach = inPlan ? 1 - answered : null;
     if (inPlan) answered = Math.max(answered, shareOf(stage));
-    return { stage, cost: model.cost[stage], share: shareOf(stage), inPlan, reach };
+    return { stage, cost: model.cost[stage] as number, share: shareOf(stage), inPlan, reach };
   });
 }
 

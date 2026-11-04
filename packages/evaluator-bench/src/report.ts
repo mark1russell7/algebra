@@ -59,7 +59,7 @@ export interface Report {
 const ratioOf = (v: TimeVerdict): number => median(v.cases.map((c) => c.ratio));
 
 /** This function gives the median time of one call of arm `a` for one node and one point, in nanoseconds. */
-function costOf(records: readonly PairedTime[], metas: readonly Meta[], pair: string, arm: "a" | "b"): number {
+export function costOf(records: readonly PairedTime[], metas: readonly Meta[], pair: string, arm: "a" | "b"): number {
   const perCase = metas
     .filter((m) => m.pair === pair)
     .map((m) => median(records.filter((r) => r.case === m.case).map((r) => r[arm])) / m.count / m.points / m.nodes);
