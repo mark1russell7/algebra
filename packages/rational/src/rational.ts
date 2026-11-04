@@ -14,8 +14,14 @@ export interface Rational {
 
 const abs64 = (x: bigint): bigint => (x < 0n ? -x : x);
 
-/** This function gives the greatest common divisor of `|a|` and `|b|`. The result for `0` and `0` is `0`. */
-const gcd = (a: bigint, b: bigint): bigint => {
+/**
+ * This function gives the greatest common divisor of `|a|` and `|b|`. The result for `0` and `0` is `0`.
+ *
+ * @param a - An integer.
+ * @param b - An integer.
+ * @returns The exact divisor. It is not negative.
+ */
+export const gcd = (a: bigint, b: bigint): bigint => {
   let x = abs64(a);
   let y = abs64(b);
   while (y !== 0n) [x, y] = [y, x % y];

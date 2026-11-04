@@ -14,6 +14,7 @@ import {
   fromDecimal,
   fromFloat,
   fromNumber,
+  gcd as commonDivisor,
   inverse,
   isInteger,
   mul,
@@ -286,6 +287,20 @@ describe("the other operations", () => {
     for (const [a] of cases(14)) {
       const [n = "", d = "1"] = toString(a).split("/");
       expectSame(rational(BigInt(n), BigInt(d)), a);
+    }
+  });
+
+  it("gives the greatest common divisor of two integers", () => {
+    expect(commonDivisor(0n, 0n)).toBe(0n);
+    expect(commonDivisor(0n, -7n)).toBe(7n);
+    expect(commonDivisor(-12n, 18n)).toBe(6n);
+    for (const [a, b] of cases(19)) {
+      const g = commonDivisor(a.n, b.n);
+      if (g === 0n) continue;
+      expect(g > 0n).toBe(true);
+      expect(a.n % g).toBe(0n);
+      expect(b.n % g).toBe(0n);
+      expect(gcd(a.n / g, b.n / g)).toBe(1n);
     }
   });
 

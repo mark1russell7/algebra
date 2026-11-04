@@ -4,7 +4,7 @@
 # and private members. The command `api-report check` compares this file with the built .d.ts files.
 # To accept a change of the API, start the build, then `api-report update`, and review the diff.
 
-## . (build/index.d.ts): 26 names
+## . (build/index.d.ts): 27 names
 
 ONE: build/index.d.ts#ONE
 type Rational: build/index.d.ts#Rational
@@ -20,6 +20,7 @@ floor: build/index.d.ts#floor
 fromDecimal: build/index.d.ts#fromDecimal
 fromFloat: build/index.d.ts#fromFloat
 fromNumber: build/index.d.ts#fromNumber
+gcd: build/index.d.ts#gcd
 integerRoot: build/index.d.ts#integerRoot
 inverse: build/index.d.ts#inverse
 isInteger: build/index.d.ts#isInteger
@@ -79,6 +80,9 @@ export declare const fromFloat: (value: number) => Rational;
 
 ### build/index.d.ts#fromNumber
 export declare const fromNumber: (value: number) => Rational;
+
+### build/index.d.ts#gcd
+export declare const gcd: (a: bigint, b: bigint) => bigint;
 
 ### build/index.d.ts#integerRoot
 export declare const integerRoot: (n: bigint, k: number) => bigint;

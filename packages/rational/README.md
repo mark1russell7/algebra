@@ -20,6 +20,7 @@ This package holds the exact rationals of algebra (roadmap item A2). A rational 
 | `pow(a, e)` | The power of `a` to an integer `e` | Exact |
 | `compare`, `cmp`, `equals`, `sign`, `isInteger` | The order and the tests | Exact |
 | `floor`, `ceil` | The nearest integer below or above | Exact |
+| `gcd(a, b)` | The greatest common divisor of two integers. It is not negative | Exact |
 | `toString(a)` | The text `"n/d"`, or `"n"` for an integer | Exact |
 | `toNumber(a)` | The nearest double, with ties to even | Half a unit in the last place |
 
