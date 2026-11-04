@@ -15,7 +15,7 @@
  *
  * @packageDocumentation
  */
-import { ONE, neg, rational } from "@mark1russell7/rational";
+import { ONE, gcd, neg, rational } from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
 import { MAX_MODULUS, isPrime } from "./integers-mod.ts";
 import { coefficientLists, degree, divideMonic, evaluate, polynomial, polynomialIdeal, showPolynomial } from "./polynomial-ring.ts";
@@ -169,13 +169,6 @@ export const extendFinite = <T>(field: Field<T>, modulus: Polynomial<T>): RootEx
 };
 
 const magnitude = (a: bigint): bigint => (a < 0n ? -a : a);
-
-/** This function gives the greatest common divisor through the lowest terms of the home of the rationals. */
-const gcd = (a: bigint, b: bigint): bigint => {
-  if (b === 0n) return magnitude(a);
-  if (a === 0n) return magnitude(b);
-  return magnitude(a) / magnitude(rational(a, b).n);
-};
 
 /** This function gives the primitive integer polynomial that is a rational multiple of `f`. */
 const integerForm = (f: Polynomial<Rational>): readonly bigint[] => {
