@@ -50,6 +50,9 @@ check("the example gives a value from each of the five evaluators", await until(
 check("the float value of the example is 0", values()[0] === "0", values());
 check("the exact value of the example is not 0", values().length >= 5 && values()[4] !== "0", values());
 check("the page says that the float sign is wrong", $("#pg-results .pg-verdict.bad") !== null, text("#pg-results").slice(0, 200));
+// The word "undecided" is the widest answer, so this example shows the tightest row.
+const answers = (): Element[] => $$("#pg-results .decide li");
+check("each answer stays in its cell", answers().length === 5 && answers().every((cell) => cell.scrollWidth <= cell.clientWidth), answers().map((cell) => `${cell.scrollWidth}/${cell.clientWidth}`));
 
 type("#pg-text", "a * (");
 check("a broken expression gives an error", await until(() => text("#pg-error") !== ""), text("#pg-error"));

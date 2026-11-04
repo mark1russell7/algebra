@@ -831,7 +831,7 @@ button:disabled {
   margin: 0 0 6px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 182px), 1fr));
   gap: 6px;
 }
 
