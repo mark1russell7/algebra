@@ -25,6 +25,19 @@ The artifact `a7-bench` has these files:
 - `report.json` and `report.md`: the verdicts, the cost of each arm, and the answers of the stage.
 - `machine.txt`: the facts of the runner.
 
+## The read plan
+
+This plan tells which rows of a run decide A7. It comes before the first run, so the result does not set the rule.
+
+1. Read the field `wrong` of each row of `stage`. Each wrong answer is a bug. If one row has a wrong answer, A7 stays open, and the run gives no cost.
+2. Read the outcome of each pair. An outcome of `cannot decide` gives no claim. A pair with fewer than 5 cases gives no verdict.
+3. Read the rows `<precision>-exact` and `<precision>-interval` for each family. The lowest precision with the outcome `faster` is the precision where the baseline becomes faster than the verb `bigfloat`. The roadmap states this precision for each family.
+4. Read the rows `stage-exact` and `stage-interval`, and the field `model`. Put `model.bigfloat` and `model.shares` into the cost model of A6. Then start `select` for each question of the error records.
+5. Find each question where `select` gives a plan with the stage. If `stage-exact` is not `faster` in its families, add the stage to its default plan.
+6. If `select` gives no plan with the stage, the stage stays out of `STAGES`. Then A7 closes with the stage as a choice of the caller.
+
+After steps 5 and 6, the raw records go to `results/<date>/`. The site gets a page of the cost at each precision.
+
 ## The limits of the method
 
 - The cost of the stage holds only for the limit and the questions of the run.
