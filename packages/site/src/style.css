@@ -1140,6 +1140,16 @@ button:disabled {
   background: var(--panel);
 }
 
+/* The shadow at a side of the box shows that the table continues past that side. */
+.scroll-cue {
+  background:
+    linear-gradient(to right, var(--panel) 40%, transparent) left / 36px 100% no-repeat local,
+    linear-gradient(to left, var(--panel) 40%, transparent) right / 36px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--ink) 28%, transparent), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--ink) 28%, transparent), transparent) right / 12px 100% no-repeat scroll,
+    var(--panel);
+}
+
 .records {
   width: 100%;
   border-collapse: collapse;
