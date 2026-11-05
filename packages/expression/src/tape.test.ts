@@ -25,7 +25,7 @@ const y: Expression = { type: "var", value: VARS[1] as string };
 const num = (value: number): Expression => ({ type: "num", value });
 
 describe("the choice of compileFloat", () => {
-  const sumOf = (count: number): Expression => ({ type: "add", value: Array.from({ length: count }, () => x) });
+  const sumOf = (count: number): Expression => ({ type: "add", value: [x, x, ...Array.from({ length: count - 2 }, () => x)] });
   const nodes = (doc: Expression): number => {
     const s = summarize(doc);
     if (!s.ok) throw new Error(s.error.reason);

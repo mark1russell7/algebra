@@ -98,7 +98,7 @@ This table compares the rule "the tape above T nodes, and else the closures" on 
 | 16 | 45 | 0.735 | 1.12 |
 | 30 | 66 | 0.761 | 1.00 |
 
-These records select T, so they do not test it. The bench also does not measure the cost of a compile. `compileFloat` now uses the tape above 10 nodes, and a run on other seeds tests this choice.
+These records select T, so they do not test it. The bench also does not measure the cost of a compile. `compileFloat` uses the tape above 10 nodes, and a run on other seeds tests this choice.
 
 The inputs `seeds` and `families` of the workflow select the cases, for example `seeds=25-72` and `families=small`. The report groups the pair `ft` by the count of the nodes.
 

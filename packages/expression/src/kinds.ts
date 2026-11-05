@@ -211,8 +211,9 @@ export interface CompileFloatOptions {
 export type FloatEngine = "closures" | "tape";
 
 /**
- * The largest count of nodes for which `compileFloat` uses the closures. Runs 41912567142 and 41912596070 selected this
- * value: the closures win at 7 nodes or fewer, the tape wins at 15 nodes or more, and the sizes between are a tie.
+ * The largest count of nodes for which `compileFloat` uses the closures. The runs 41912567142 and 41912596070 gave this
+ * value. In those runs, the closures win at 7 nodes or fewer, and the tape wins at 15 nodes or more. The sizes between
+ * are a tie.
  */
 export const TAPE_ABOVE = 10;
 
