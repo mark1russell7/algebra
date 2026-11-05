@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
   },
   "devDependencies": {
-    "@mark1russell7/cue": "^1.0.2",
+    "@mark1russell7/cue": "^2.1.1",
     "@types/node": "^26.6.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@algebra/evaluator-select": "workspace:*",
-    "@mark1russell7/coeval": "^0.20.0",
+    "@mark1russell7/coeval": "^0.22.0",
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/predicate-census": "workspace:*",
     "@mark1russell7/predicates": "workspace:*",
