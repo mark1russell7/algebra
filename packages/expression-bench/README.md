@@ -71,7 +71,32 @@ The tape is faster than the closures of `compileFloat`: the median ratio is 0.76
 
 The closures keep their advantage only on the smallest documents. The tape does not meet the claim of A3 alone. The time of the tape over the written function with a bound has a median of 3.882. In that pair, 21 of 64 cases are above the limit 5. The bound was most of the ratio 65.6, because the written function of that run gave no bound.
 
-The threshold of 7 nodes comes from these records, so these records do not test it. The next run uses new seeds, before a change to `compileFloat`.
+The threshold of 7 nodes comes from these records, so these records do not test it. Two more runs test it on new seeds.
+
+The folders `results/2026-11-04-seeds-9-24/` and `results/2026-11-04-seeds-25-72/` keep runs 41912567142 and 41912596070, also without `written.mjs`. The first has each family on an AMD EPYC 9V74. The second has only `small` on an AMD EPYC 7763. Together they give 176 new cases:
+
+| Nodes | Cases | Faster cases | Median ratio |
+| --- | --- | --- | --- |
+| 1 to 7 | 38 | 2 | 3.278, from 0.912 to 7.074 |
+| 8 to 14 | 15 | 7 | 1.024, from 0.778 to 1.344 |
+| 15 to 30 | 58 | 57 | 0.779, with one case at 1.122 (`small/s60`, 25 nodes) |
+| Above 30 | 65 | 65 | 0.394, from 0.296 to 0.907 |
+
+The two ends agree with the first run. The closures win at 7 nodes or fewer, and the tape wins at 15 nodes or more. From 8 to 14 nodes, the result is a tie, so 7 nodes is not a sharp threshold.
+
+This table compares the rule "the tape above T nodes, and else the closures" on the same 176 cases. A wrong case is a case where the other arm is faster. The geometric mean and the worst ratio compare the chosen arm with the closures.
+
+| T | Wrong cases | Geometric mean | Worst ratio |
+| --- | --- | --- | --- |
+| 0 | 45 | 0.852 | 7.07 |
+| 7 | 11 | 0.702 | 1.34 |
+| 10 | 6 | 0.699 | 1.12 |
+| 12 | 9 | 0.700 | 1.12 |
+| 14 | 10 | 0.701 | 1.12 |
+| 16 | 45 | 0.735 | 1.12 |
+| 30 | 66 | 0.761 | 1.00 |
+
+These records select T, so they do not test it. The bench also does not measure the cost of a compile. A change to `compileFloat` needs its own prediction and a run on other seeds.
 
 The inputs `seeds` and `families` of the workflow select the cases, for example `seeds=25-72` and `families=small`. The report groups the pair `ft` by the count of the nodes.
 

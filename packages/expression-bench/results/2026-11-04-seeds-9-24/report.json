@@ -1,0 +1,71 @@
+{
+  "ft": {
+    "outcome": "faster",
+    "medianRatio": 0.7729654487522226,
+    "families": [
+      {
+        "family": "small",
+        "outcome": "cannot decide",
+        "medianRatio": 1.0680420506202077
+      },
+      {
+        "family": "large",
+        "outcome": "faster",
+        "medianRatio": 0.8310510032994837
+      },
+      {
+        "family": "well",
+        "outcome": "faster",
+        "medianRatio": 0.4337339918454888
+      },
+      {
+        "family": "ill",
+        "outcome": "faster",
+        "medianRatio": 0.8179088261446775
+      },
+      {
+        "family": "orient-random",
+        "outcome": "faster",
+        "medianRatio": 0.7784162203967873
+      },
+      {
+        "family": "orient-near",
+        "outcome": "faster",
+        "medianRatio": 0.7773130194436835
+      },
+      {
+        "family": "incircle-random",
+        "outcome": "faster",
+        "medianRatio": 0.3617884070738834
+      },
+      {
+        "family": "incircle-near",
+        "outcome": "faster",
+        "medianRatio": 0.34308427771934114
+      }
+    ],
+    "sizes": [
+      {
+        "label": "1 to 7 nodes",
+        "outcome": "slower",
+        "medianRatio": 2.086864440435497,
+        "cases": 8,
+        "faster": 1
+      },
+      {
+        "label": "8 to 14 nodes",
+        "outcome": "cannot decide",
+        "medianRatio": 1.0680420506202077,
+        "cases": 4,
+        "faster": 1
+      },
+      {
+        "label": "15 nodes or more",
+        "outcome": "faster",
+        "medianRatio": 0.7654334224396107,
+        "cases": 116,
+        "faster": 116
+      }
+    ]
+  }
+}
