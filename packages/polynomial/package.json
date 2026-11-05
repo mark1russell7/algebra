@@ -13,14 +13,14 @@
   },
   "devDependencies": {
     "@algebra/expression-corpus": "workspace:*",
-    "@mark1russell7/cue": "^1.0.2",
+    "@mark1russell7/cue": "^2.1.1",
     "@mark1russell7/rigor-generators": "^0.1.1",
     "@types/node": "^26.6.5",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   },
   "dependencies": {
-    "@mark1russell7/coeval": "^0.20.0",
+    "@mark1russell7/coeval": "^0.22.0",
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/rational": "workspace:*"
   }

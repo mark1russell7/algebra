@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@algebra/expression-corpus": "workspace:*",
-    "@mark1russell7/cue": "^1.0.2",
+    "@mark1russell7/cue": "^2.1.1",
     "@mark1russell7/predicates": "workspace:*",
     "@types/node": "^26.6.5",
     "typescript": "^7.0.2",
