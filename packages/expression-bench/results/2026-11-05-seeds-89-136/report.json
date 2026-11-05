@@ -1,0 +1,37 @@
+{
+  "ft": {
+    "outcome": "slower",
+    "medianRatio": 1.1048968108231882,
+    "families": [
+      {
+        "family": "small",
+        "outcome": "slower",
+        "medianRatio": 1.1048968108231882
+      }
+    ],
+    "sizes": [
+      {
+        "label": "1 to 7 nodes",
+        "outcome": "slower",
+        "medianRatio": 3.414331317761805,
+        "cases": 25,
+        "faster": 1
+      },
+      {
+        "label": "8 to 14 nodes",
+        "outcome": "cannot decide",
+        "medianRatio": 1.0160857372309302,
+        "cases": 15,
+        "faster": 7
+      },
+      {
+        "label": "15 nodes or more",
+        "outcome": "faster",
+        "medianRatio": 0.6923371227057209,
+        "cases": 8,
+        "faster": 8
+      }
+    ],
+    "compile": 1.0611582694325936
+  }
+}
