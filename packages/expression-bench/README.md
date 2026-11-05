@@ -100,6 +100,25 @@ This table compares the rule "the tape above T nodes, and else the closures" on 
 
 These records select T, so they do not test it. The bench also does not measure the cost of a compile. `compileFloat` uses the tape above 10 nodes, and a run on other seeds tests this choice.
 
+The folders `results/2026-11-05-seeds-73-88/` and `results/2026-11-05-seeds-89-136/` keep that test, runs 41948999649 and 41949047378 on `e2edff9`, without `written.mjs`. The first has each family on an AMD EPYC 7763. The second has only `small` on an AMD EPYC 9V74. These 176 cases selected nothing.
+
+| Measure | Limit | All 176 cases | Seeds 73 to 88 | Seeds 89 to 136 |
+| --- | --- | --- | --- | --- |
+| Wrong cases | At most 10 percent | 7, 3.98 percent | 1 of 128 | 6 of 48, 12.5 percent |
+| Geometric mean of the chosen arm over the closures | At most 0.8 | 0.708 | 0.641 | 0.924 |
+| Worst ratio above 10 nodes | At most 1.5 | 1.147 | 0.998 | 1.147 |
+| Median compile time of the tape over the closures | At most 2 | 1.031 | 1.005 | 1.061 |
+
+Each limit holds on all 176 cases, as the prediction asked. The share of wrong cases in `small` alone is above the limit, because `small` has the sizes near the line. From 8 to 14 nodes, 5 of 18 cases are wrong and the median ratio is near 1, so these choices cost little. A compile time comes from a warm process after the timed rounds, so it is not the cost of a first compile.
+
+| Nodes | Cases | Faster cases | Median ratio |
+| --- | --- | --- | --- |
+| 1 to 7 | 36 | 2 | 3.335 |
+| 8 to 10 | 7 | 2 | 1.069 |
+| 11 to 14 | 11 | 8 | 0.993 |
+| 15 to 30 | 54 | 54 | 0.802 |
+| Above 30 | 68 | 68 | 0.458 |
+
 The inputs `seeds` and `families` of the workflow select the cases, for example `seeds=25-72` and `families=small`. The report groups the pair `ft` by the count of the nodes.
 
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 3 --ms 1 --cases <2 names>`.
