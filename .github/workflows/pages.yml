@@ -48,6 +48,7 @@ jobs:
       site-check: true
       site-check-pages: /,/releases/,/status/
       site-check-probe: packages/site/src/check-probe.ts
+      data-stamps: packages/site/dist/data-stamps.json
 
   # This job examines the deployed site: the home page, the Releases page, the Status page and their data files.
   # It starts no code of the repository and reads only the public site.
