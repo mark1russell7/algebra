@@ -247,10 +247,10 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.14
+        version: 0.2.15
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.11
+        version: 0.1.12
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -281,10 +281,10 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.14
+        version: 0.2.15
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.11
+        version: 0.1.12
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -350,7 +350,7 @@ importers:
         version: 2.1.1
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.11
+        version: 0.1.12
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -371,10 +371,10 @@ importers:
         version: link:../expression
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.14
+        version: 0.2.15
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.11
+        version: 0.1.12
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -409,7 +409,7 @@ importers:
         version: 2.1.1
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.11
+        version: 0.1.12
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -467,13 +467,13 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.14
+        version: 0.2.15
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.1
         version: 0.1.5
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.11
+        version: 0.1.12
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -550,7 +550,7 @@ importers:
         version: link:../predicates
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.14
+        version: 0.2.15
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -593,7 +593,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.14
+        version: 0.2.15
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -876,8 +876,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/rigor-bench@0.2.14':
-    resolution: {integrity: sha512-ITF8MY2SVe6eL0pDiGf/tyP8NQo2plkxQsxC2PP+bVosy1itbWYuLpix+YV/WnK95mRT0iT1veT76t4U5nRHpQ==}
+  '@mark1russell7/rigor-bench@0.2.15':
+    resolution: {integrity: sha512-nW/akUUUpBN7cKrIroDb7yPF0kgDQfPJaz1PyMks5FdwJI1VCZvq9luIH4nLQlJHD9r95lxau9fBDxWjFLBDZg==}
     engines: {node: '>=22'}
 
   '@mark1russell7/rigor-generators@0.1.5':
@@ -886,6 +886,10 @@ packages:
 
   '@mark1russell7/rigor-statistics@0.1.11':
     resolution: {integrity: sha512-5tD7QqLE7Y6wWsoImXuszH3JA5VHwGDHjVzobn/JGtYgo24AFTzXlngEPxfW9A5kHD9GFXgWbkgUCNa0RlLToA==}
+    engines: {node: '>=22'}
+
+  '@mark1russell7/rigor-statistics@0.1.12':
+    resolution: {integrity: sha512-7Cc2Ro1CzxcHDYHjQoewYJo+WIoOyBMxhbNk2pgcuvvm6kYP7HcRBwWW/gENIdj3HxzUup4t4M78bvAj0/XsIA==}
     engines: {node: '>=22'}
 
   '@mark1russell7/site-pages@0.2.13':
@@ -2020,14 +2024,18 @@ snapshots:
 
   '@mark1russell7/cue@2.1.1': {}
 
-  '@mark1russell7/rigor-bench@0.2.14':
+  '@mark1russell7/rigor-bench@0.2.15':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.5
-      '@mark1russell7/rigor-statistics': 0.1.11
+      '@mark1russell7/rigor-statistics': 0.1.12
 
   '@mark1russell7/rigor-generators@0.1.5': {}
 
   '@mark1russell7/rigor-statistics@0.1.11':
+    dependencies:
+      '@mark1russell7/rigor-generators': 0.1.5
+
+  '@mark1russell7/rigor-statistics@0.1.12':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.5
 
