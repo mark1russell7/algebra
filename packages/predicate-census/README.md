@@ -80,6 +80,19 @@ After the near lines of a case, one case line gives `totals`, `near`, `touch` an
 
 `nearCheck` compares `near` of each function with the weight of its lines, and `lines` with the count of the lines. `nearReasons` gives the weight of the lines of each function and each near reason, for example `x:zero` or `y:tolerance`.
 
+## The classes of a float-wrong test
+
+The report gives each float-wrong test a class in `floatWrongClasses`. The field `floatWrongSites` gives the weight of each class, function and call site.
+
+| Class | The test | The meaning |
+| --- | --- | --- |
+| 1 | A float sign differs from an exact sign that the bound fixes. | A value other than 0 is a defect of the bound. |
+| 2 | A sign is near zero. | Rounding decides the answer of a tie. |
+| 3 | A class 2 segment pair in a crossing measure of the bench. | The rule of the measure decides a touch. |
+| 4 | Each sign is clear and correct, but the answer of the sender differs. | The rule of the sender differs from the rule of the census. |
+
+The count of class 1 is not a test of the senders, because a correct bound gives 0. Read class 4 for a difference of the rules. The field `classInputs` keeps the first inputs of the classes 1 and 4.
+
 ## The far assumption
 
 The census counts the far tests as decided. It does not see them. The report examines this assumption in `farCheck`. A case passes when the largest bound width of its seen inputs is less than `1e-9`, the filter of the senders.

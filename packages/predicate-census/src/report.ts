@@ -95,6 +95,8 @@ export const ASSUMPTIONS: readonly string[] = [
   "A line without floatAnswer gets the float answer of the census: the same sign rule with plain float values.",
   "A point-side test with a truth value as its float answer is not compared with the exact sign.",
   "The field rule of a line gives the key of a rule of its call site in CALL_SITE_RULES (highways #258): mesh.crossing counts a touch, and physics.outOf gives -1 for a zero sign.",
+  "A float-wrong test has a class. Class 1 is a float sign that differs from a sign that the bound fixes, class 2 is a sign near zero, and class 3 is class 2 in a crossing measure.",
+  "Class 4 of a float-wrong test has only clear and correct signs. The rule of the sender differs from the rule of the census, for example by a tolerance.",
   "A near tie of a nearest-centre test compares the squared distances of the two nearest centres. An exact tie goes to the lower index, as the loop of nearestCentre of highways does. A third centre is not in the line.",
   "A line without the field rule gets the copy CALL_SITE_RULES, for the dumps before highways #258: mesh.crossing and physics.outOf.",
   "The census does not use the shareTolerance and parallelTolerance of a rule. A share near 0 or 1 can thus give a float-wrong record.",
