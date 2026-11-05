@@ -1,0 +1,28 @@
+Warning: the rule of mesh.crossing copies packages/core/src/highways/mesh/index.ts:55, but highways no longer has that line.
+Warning: the line of the rule of mesh.crossing moved from packages/core/src/highways/mesh/index.ts:59 to line 66.
+Warning: the rule of physics.outOf copies packages/core/src/routers/physics.ts:109, but highways no longer has that line.
+1 files: total 156763576730, undecided 4338238 (8597 with the filter), floatWrong 94, unseen 497637120, unknown 0. Report: /home/runner/work/_temp/out/report-fixtures.json, 287586 records.
+Classes of the float-wrong tests: 1 = 0, 2 = 0, 3 = 12, 4 = 82. Sites: {"3 geom.segmentsCross src/bench/measures/lanes.ts:58":1,"3 geom.segmentsCross src/bench/quality.ts:183":8,"3 routes.segmentsCrossInside src/bench/measures/routes.ts:106":3,"4 geom.segmentHitsBox src/bench/links.ts:132":6,"4 geom.segmentHitsBox src/visibility.ts:52":76}
+	Command being timed: "node --max-old-space-size=12288 src/cli.ts /home/runner/work/_temp/in --highways /home/runner/work/algebra/algebra/highways-tree --out /home/runner/work/_temp/out/report-fixtures.json"
+	User time (seconds): 134.56
+	System time (seconds): 1.20
+	Percent of CPU this job got: 101%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:13.21
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 399508
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 288967
+	Voluntary context switches: 30885
+	Involuntary context switches: 1091
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 738512
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

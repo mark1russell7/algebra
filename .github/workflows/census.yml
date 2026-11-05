@@ -69,6 +69,10 @@ jobs:
           ref: ${{ steps.dump.outputs.sha }}
           path: highways-tree
           persist-credentials: false
+      # The tree of highways is not a change of this repository, so the field dirty of the report stays correct.
+      - name: Exclude the tree of highways from the status
+        if: inputs.repo == 'mark1russell7/highways'
+        run: echo highways-tree >> .git/info/exclude
       # The dump repository is public, so the token of this run can read its artifacts.
       - name: Download the dump
         env:

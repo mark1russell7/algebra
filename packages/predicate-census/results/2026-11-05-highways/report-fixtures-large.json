@@ -1,0 +1,899 @@
+{
+  "tool": "@mark1russell7/predicate-census",
+  "commit": "b7196ba8758105c23247256f6f3b7e1c46e3942e",
+  "dirty": true,
+  "createdAt": "2026-11-05T01:00:32.214Z",
+  "files": [
+    {
+      "path": "../../../../_temp/in/predicate-dump-fixtures-large.jsonl",
+      "sha256": "722fd48966bf01a970fd1cf5b85d879fa073292ed96381dda0976f57472d79e1",
+      "lines": 200001
+    }
+  ],
+  "totals": {
+    "total": 3234175115,
+    "decided": 3231193812,
+    "undecided": 33781,
+    "undecidedFiltered": 223,
+    "unseen": 2947522,
+    "touch": 0,
+    "unknown": 0,
+    "floatWrong": 104,
+    "floatWrongNearCollinear": 0,
+    "sharedEnd": {
+      "total": 628160,
+      "undecided": 33648,
+      "undecidedFiltered": 90
+    }
+  },
+  "assumptions": [
+    "A total of a count line counts each test of its kind, the near tests too. The far tests are total - near.",
+    "The sender writes a line for each near test. Without a near field, near is the weight of the lines.",
+    "The census counts the far tests as decided and not float-wrong, without a check. farCheck examines this assumption.",
+    "A truncated case has near - seen unseen tests. They are in total and in unseen, not in decided and not in undecided.",
+    "nearCheck compares each near field with the weight of the lines. A case that is not truncated needs equal values.",
+    "A segment-box test follows geom.segmentHitsRect of highways: the clipped part must be longer than eps. Without eps, eps is zero.",
+    "The corners x + w and y + h of a box are exact sums, not float sums.",
+    "A box pair overlaps when the margin minus eps is larger than zero on each axis. Without eps, eps is zero.",
+    "The structural filter gives the sign 0 to an orientation with two equal points. undecidedFiltered uses it.",
+    "A line without floatAnswer gets the float answer of the census: the same sign rule with plain float values.",
+    "A point-side test with a truth value as its float answer is not compared with the exact sign.",
+    "The field rule of a line gives the key of a rule of its call site in CALL_SITE_RULES (highways #258): mesh.crossing counts a touch, and physics.outOf gives -1 for a zero sign.",
+    "A float-wrong test has a class. Class 1 is a float sign that differs from a sign that the bound fixes, class 2 is a sign near zero, and class 3 is class 2 in a crossing measure.",
+    "Class 4 of a float-wrong test has only clear and correct signs. The rule of the sender differs from the rule of the census, for example by a tolerance.",
+    "A near tie of a nearest-centre test compares the squared distances of the two nearest centres. An exact tie goes to the lower index, as the loop of nearestCentre of highways does. A third centre is not in the line.",
+    "A line without the field rule gets the copy CALL_SITE_RULES, for the dumps before highways #258: mesh.crossing and physics.outOf.",
+    "The census does not use the shareTolerance and parallelTolerance of a rule. A share near 0 or 1 can thus give a float-wrong record.",
+    "A packing line has the weight times. A packing case line gives far = total - near - touch for each function.",
+    "A packing touch input has only values of exactly 0 near. It has no line. The census counts it as decided and not float-wrong.",
+    "The census counts the far inputs of packing as decided and not float-wrong. The near rule of packing is 1e-9 times the scale of the inputs.",
+    "A packing box pair follows overlap of packing: the float margin min(right) - max(left) of each axis must be larger than tolerance.",
+    "The exact answer of a packing box pair compares the exact margin with the float tolerance. The float answer is the answer of packing.",
+    "The box a of a packing pair with gap already has the gap on each side. The census reads the boxes as packing gives them.",
+    "A packing container test follows checkHard: only a fixed side counts, against x + inset - tolerance or x + w - inset + tolerance.",
+    "The exact answer of a container test compares the edge with the exact side. The census float answer has the float sums of packing.",
+    "A fixed side of the container with an infinite size gives an unknown line, because JSON gives that size as null.",
+    "A packing strip test is the test of edgeRange that the segment has a part in the open strip. The census does not examine the range of xAt.",
+    "The packing functions xAt and samePlacements have no exact rule. Their near lines are unknown, with the reason of PACKING_UNMODELED."
+  ],
+  "farCheck": [
+    {
+      "case": "fixtures-large/large-clustered",
+      "far": 3228784882,
+      "maxWidth": 1.4901161193847656e-8,
+      "maxScale": 18052.484375,
+      "filter": 1e-9,
+      "holds": false
+    }
+  ],
+  "groups": [
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "far",
+      "predicate": "nearest",
+      "source": "far",
+      "sharedEnd": false,
+      "total": 0,
+      "decided": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "far",
+      "predicate": "pointSide",
+      "source": "far",
+      "sharedEnd": false,
+      "total": 21258615,
+      "decided": 21258615,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "far",
+      "predicate": "segmentBox",
+      "source": "far",
+      "sharedEnd": false,
+      "total": 3166761550,
+      "decided": 3166761550,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "far",
+      "predicate": "segmentPair",
+      "source": "far",
+      "sharedEnd": false,
+      "total": 40764717,
+      "decided": 40764717,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "geom.segmentHitsBox",
+      "predicate": "segmentBox",
+      "source": "lines",
+      "sharedEnd": false,
+      "total": 1868,
+      "decided": 1864,
+      "undecided": 4,
+      "undecidedFiltered": 4,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 104,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 1.862645149230957e-9,
+      "maxScale": 9532
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "geom.segmentHitsRect",
+      "predicate": "segmentBox",
+      "source": "lines",
+      "sharedEnd": false,
+      "total": 486052,
+      "decided": 486052,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 4.656612873077393e-10,
+      "maxScale": 18052.484375
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "geom.segmentsCross",
+      "predicate": "segmentPair",
+      "source": "lines",
+      "sharedEnd": false,
+      "total": 12595,
+      "decided": 12509,
+      "undecided": 86,
+      "undecidedFiltered": 86,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 1.4901161193847656e-8,
+      "maxScale": 9769
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "geom.segmentsCross",
+      "predicate": "segmentPair",
+      "source": "lines",
+      "sharedEnd": true,
+      "total": 103622,
+      "decided": 81036,
+      "undecided": 22586,
+      "undecidedFiltered": 60,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 9.313225746154785e-10,
+      "maxScale": 10331
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "levels.tidyPoints",
+      "predicate": "pointSide",
+      "source": "lines",
+      "sharedEnd": false,
+      "total": 1783006,
+      "decided": 1783006,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 1783006,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 10370
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "nearBoxTests",
+      "predicate": "segmentBox",
+      "source": "unseen",
+      "sharedEnd": false,
+      "total": 206827,
+      "decided": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 206827,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "nearPointSideTests",
+      "predicate": "pointSide",
+      "source": "unseen",
+      "sharedEnd": false,
+      "total": 2206186,
+      "decided": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 2206186,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "nearSegmentPairs",
+      "predicate": "segmentPair",
+      "source": "unseen",
+      "sharedEnd": false,
+      "total": 59315,
+      "decided": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 59315,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "nearSegmentPairs",
+      "predicate": "segmentPair",
+      "source": "unseen",
+      "sharedEnd": true,
+      "total": 475194,
+      "decided": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "unseen": 475194,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 0,
+      "maxScale": 0
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "routes.segmentsCrossInside",
+      "predicate": "segmentPair",
+      "source": "lines",
+      "sharedEnd": false,
+      "total": 6224,
+      "decided": 6181,
+      "undecided": 43,
+      "undecidedFiltered": 43,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 1.4901161193847656e-8,
+      "maxScale": 9769
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "fn": "routes.segmentsCrossInside",
+      "predicate": "segmentPair",
+      "source": "lines",
+      "sharedEnd": true,
+      "total": 49344,
+      "decided": 38282,
+      "undecided": 11062,
+      "undecidedFiltered": 30,
+      "unseen": 0,
+      "touch": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "boundWrong": 0,
+      "boundViolations": 0,
+      "maxWidth": 9.313225746154785e-10,
+      "maxScale": 10331
+    }
+  ],
+  "cases": [
+    {
+      "case": "fixtures-large/large-clustered",
+      "total": 3234175115,
+      "decided": 3231193812,
+      "undecided": 33781,
+      "undecidedFiltered": 223,
+      "unseen": 2947522,
+      "touch": 0,
+      "floatWrong": 104,
+      "floatWrongNearCollinear": 0,
+      "unknown": 0,
+      "truncated": true,
+      "unseenNear": {
+        "nearSegmentPairs": 534509,
+        "nearBoxTests": 206827,
+        "nearPointSideTests": 2206186
+      },
+      "sharedEnd": {
+        "total": 628160,
+        "undecided": 33648,
+        "undecidedFiltered": 90
+      }
+    }
+  ],
+  "nearCheck": [
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.geom.segmentHitsBox",
+      "total": 1101120923,
+      "near": 3033,
+      "seen": 1868,
+      "unseen": 1165,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.geom.segmentHitsRect",
+      "total": 2066335374,
+      "near": 691714,
+      "seen": 486052,
+      "unseen": 205662,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.geom.segmentsCross",
+      "total": 29519763,
+      "near": 622012,
+      "seen": 116217,
+      "unseen": 505795,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.levels.tidyPoints",
+      "total": 18106092,
+      "near": 3849262,
+      "seen": 1783006,
+      "unseen": 2066256,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.routes.segmentsCrossInside",
+      "total": 11951248,
+      "near": 84282,
+      "seen": 55568,
+      "unseen": 28714,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "near.symmetry.cornersOf",
+      "total": 7141715,
+      "near": 139930,
+      "seen": 0,
+      "unseen": 139930,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "nearBoxTests",
+      "total": 3167456297,
+      "near": 694747,
+      "seen": 487920,
+      "unseen": 206827,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "nearNearestTests",
+      "total": 0,
+      "near": 0,
+      "seen": 0,
+      "unseen": 0,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "nearPointSideTests",
+      "total": 25247807,
+      "near": 3989192,
+      "seen": 1783006,
+      "unseen": 2206186,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "nearSegmentPairs",
+      "total": 41471011,
+      "near": 706294,
+      "seen": 171785,
+      "unseen": 534509,
+      "holds": true
+    },
+    {
+      "case": "fixtures-large/large-clustered",
+      "field": "nearSharedEnd",
+      "total": 706294,
+      "near": 628160,
+      "seen": 152966,
+      "unseen": 475194,
+      "holds": true
+    }
+  ],
+  "byPredicate": [
+    {
+      "key": "nearest",
+      "predicates": [
+        "nearest"
+      ],
+      "total": 0,
+      "lines": 0,
+      "far": 0,
+      "touch": 0,
+      "unseen": 0,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "pointSide",
+      "predicates": [
+        "pointSide"
+      ],
+      "total": 25247807,
+      "lines": 1783006,
+      "far": 21258615,
+      "touch": 0,
+      "unseen": 2206186,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 1783006,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "segmentBox",
+      "predicates": [
+        "segmentBox"
+      ],
+      "total": 3167456297,
+      "lines": 487920,
+      "far": 3166761550,
+      "touch": 0,
+      "unseen": 206827,
+      "undecided": 4,
+      "undecidedFiltered": 4,
+      "floatWrong": 104,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "segmentPair",
+      "predicates": [
+        "segmentPair"
+      ],
+      "total": 41471011,
+      "lines": 171785,
+      "far": 40764717,
+      "touch": 0,
+      "unseen": 534509,
+      "undecided": 33777,
+      "undecidedFiltered": 219,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 628160,
+        "undecided": 33648,
+        "undecidedFiltered": 90
+      }
+    }
+  ],
+  "byFn": [
+    {
+      "key": "geom.segmentHitsBox",
+      "predicates": [
+        "segmentBox"
+      ],
+      "total": 1101120923,
+      "lines": 1868,
+      "far": 1101117890,
+      "touch": 0,
+      "unseen": 1165,
+      "undecided": 4,
+      "undecidedFiltered": 4,
+      "floatWrong": 104,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "geom.segmentHitsRect",
+      "predicates": [
+        "segmentBox"
+      ],
+      "total": 2066335374,
+      "lines": 486052,
+      "far": 2065643660,
+      "touch": 0,
+      "unseen": 205662,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "geom.segmentsCross",
+      "predicates": [
+        "segmentPair"
+      ],
+      "total": 29519763,
+      "lines": 116217,
+      "far": 28897751,
+      "touch": 0,
+      "unseen": 505795,
+      "undecided": 22672,
+      "undecidedFiltered": 146,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 103622,
+        "undecided": 22586,
+        "undecidedFiltered": 60
+      }
+    },
+    {
+      "key": "levels.tidyPoints",
+      "predicates": [
+        "pointSide"
+      ],
+      "total": 18106092,
+      "lines": 1783006,
+      "far": 14256830,
+      "touch": 0,
+      "unseen": 2066256,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 1783006,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    },
+    {
+      "key": "routes.segmentsCrossInside",
+      "predicates": [
+        "segmentPair"
+      ],
+      "total": 11951248,
+      "lines": 55568,
+      "far": 11866966,
+      "touch": 0,
+      "unseen": 28714,
+      "undecided": 11105,
+      "undecidedFiltered": 73,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 49344,
+        "undecided": 11062,
+        "undecidedFiltered": 30
+      }
+    },
+    {
+      "key": "symmetry.cornersOf",
+      "predicates": [],
+      "total": 7141715,
+      "lines": 0,
+      "far": 7001785,
+      "touch": 0,
+      "unseen": 139930,
+      "undecided": 0,
+      "undecidedFiltered": 0,
+      "floatWrong": 0,
+      "floatWrongNearCollinear": 0,
+      "floatUncompared": 0,
+      "unknown": 0,
+      "sharedEnd": {
+        "total": 0,
+        "undecided": 0,
+        "undecidedFiltered": 0
+      }
+    }
+  ],
+  "nearReasons": {},
+  "copyUses": {},
+  "floatWrongClasses": {
+    "1": {
+      "tests": 0,
+      "records": 0
+    },
+    "2": {
+      "tests": 2,
+      "records": 1
+    },
+    "3": {
+      "tests": 0,
+      "records": 0
+    },
+    "4": {
+      "tests": 102,
+      "records": 13
+    }
+  },
+  "floatWrongSites": {
+    "2 geom.segmentHitsBox src/geom.ts:121": 2,
+    "4 geom.segmentHitsBox src/visibility.ts:52": 102
+  },
+  "classInputs": [
+    {
+      "class": "4",
+      "input": {
+        "case": "fixtures-large/large-clustered",
+        "fn": "geom.segmentHitsBox",
+        "a": [
+          3624,
+          6046
+        ],
+        "b": [
+          3624,
+          6397
+        ],
+        "box": {
+          "x": 3260.5,
+          "y": 6396.5,
+          "w": 392,
+          "h": 354
+        },
+        "eps": 0.5,
+        "floatAnswer": true,
+        "via": "src/visibility.ts:52",
+        "n": 8
+      }
+    },
+    {
+      "class": "4",
+      "input": {
+        "case": "fixtures-large/large-clustered",
+        "fn": "geom.segmentHitsBox",
+        "a": [
+          8679,
+          7277
+        ],
+        "b": [
+          8629,
+          7277
+        ],
+        "box": {
+          "x": 8281.5,
+          "y": 7131.5,
+          "w": 348,
+          "h": 299
+        },
+        "eps": 0.5,
+        "floatAnswer": true,
+        "via": "src/visibility.ts:52",
+        "n": 8
+      }
+    },
+    {
+      "class": "4",
+      "input": {
+        "case": "fixtures-large/large-clustered",
+        "fn": "geom.segmentHitsBox",
+        "a": [
+          3644,
+          1549
+        ],
+        "b": [
+          3644,
+          1694
+        ],
+        "box": {
+          "x": 3634.5,
+          "y": 1693.5,
+          "w": 147,
+          "h": 189
+        },
+        "eps": 0.5,
+        "floatAnswer": true,
+        "via": "src/visibility.ts:52",
+        "n": 8
+      }
+    },
+    {
+      "class": "4",
+      "input": {
+        "case": "fixtures-large/large-clustered",
+        "fn": "geom.segmentHitsBox",
+        "a": [
+          574,
+          3339
+        ],
+        "b": [
+          574,
+          3497
+        ],
+        "box": {
+          "x": 459.5,
+          "y": 3496.5,
+          "w": 156,
+          "h": 175
+        },
+        "eps": 0.5,
+        "floatAnswer": true,
+        "via": "src/visibility.ts:52",
+        "n": 8
+      }
+    },
+    {
+      "class": "4",
+      "input": {
+        "case": "fixtures-large/large-clustered",
+        "fn": "geom.segmentHitsBox",
+        "a": [
+          1401,
+          3831
+        ],
+        "b": [
+          1301,
+          3831
+        ],
+        "box": {
+          "x": 1107.5,
+          "y": 3729.5,
+          "w": 194,
+          "h": 144
+        },
+        "eps": 0.5,
+        "floatAnswer": true,
+        "via": "src/visibility.ts:52",
+        "n": 8
+      }
+    }
+  ],
+  "ruleSources": [
+    {
+      "fn": "mesh.crossing",
+      "file": "packages/core/src/highways/mesh/index.ts",
+      "line": 55,
+      "foundAt": null,
+      "holds": false
+    },
+    {
+      "fn": "mesh.crossing",
+      "file": "packages/core/src/highways/mesh/index.ts",
+      "line": 59,
+      "foundAt": 66,
+      "holds": true
+    },
+    {
+      "fn": "physics.outOf",
+      "file": "packages/core/src/routers/physics.ts",
+      "line": 109,
+      "foundAt": null,
+      "holds": false
+    }
+  ],
+  "recordFiles": {
+    "records": "report-fixtures-large.records.jsonl",
+    "recordCount": 22099,
+    "unknown": "report-fixtures-large.unknown.jsonl",
+    "unknownCount": 0
+  }
+}
