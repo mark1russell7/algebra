@@ -10,6 +10,6 @@ export type { Dyadic } from "./dyadic.ts";
 export { UNDERFLOW_TERM, UNIT_ROUNDOFF } from "./sign.ts";
 export type { Sign, SignResult, Stage } from "./sign.ts";
 export { ORIENT_BOUND, orient2d, orient2dExact, orient2dSign } from "./orient.ts";
-export { INCIRCLE_BOUND, incircle, incircleExact, incircleSign } from "./incircle.ts";
+export { INCIRCLE_BOUND, INCIRCLE_UNDERFLOW_TERM, incircle, incircleExact, incircleSign } from "./incircle.ts";
 export { classifySegments } from "./segment.ts";
 export type { SegmentIntersection, SegmentRelation } from "./segment.ts";

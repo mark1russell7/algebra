@@ -42,9 +42,9 @@ The flag `collinear` is `true` when the four points are on one line. Then the or
 | Predicate | The filter decides when | Bound |
 | --- | --- | --- |
 | `orient2d` | `abs(det) > ORIENT_BOUND * abs(left + right) + UNDERFLOW_TERM` | `ORIENT_BOUND = (3 + 32u) u` |
-| `incircle` | `abs(det) > INCIRCLE_BOUND * permanent + UNDERFLOW_TERM * (alift + blift + clift + 1)` | `INCIRCLE_BOUND = (10 + 128u) u` |
+| `incircle` | `abs(det) > INCIRCLE_BOUND * permanent + INCIRCLE_UNDERFLOW_TERM * (alift + blift + clift + 1)` | `INCIRCLE_BOUND = (10 + 128u) u` |
 
-The value `u` is `2^-53`, and `UNDERFLOW_TERM` is `2^-1069`. The bounds are the bounds of Shewchuk (1997) with a larger second term. The term for underflow is new: Shewchuk assumes that no operation underflows. The TSDoc of each bound has the proof sketch.
+The value `u` is `2^-53`, `UNDERFLOW_TERM` is `2^-1069`, and `INCIRCLE_UNDERFLOW_TERM` is `2^-1022`. The in-circle filter multiplies its term at each call, and a product with a subnormal result is slow on some processors. So its factor is the smallest normal float. The bounds are the bounds of Shewchuk (1997) with a larger second term. The term for underflow is new: Shewchuk assumes that no operation underflows. The TSDoc of each bound has the proof sketch.
 
 The filter of `orient2d` also decides an exact 0. When a factor of each product is a difference of two equal floats, the sign is 0. Two equal points `a` and `b` also give 0.
 
