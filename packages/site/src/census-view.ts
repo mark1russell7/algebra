@@ -1,44 +1,89 @@
 /**
- * The census part of the page: the three classes of the `exact-v1` cases, and the table of the real float-wrong
- * records. A button of a record opens it in the explorer.
+ * The census part of the page: the four classes of the float-wrong tests of each set, and the table of the real
+ * float-wrong records. A button of a record opens it in the explorer.
  *
  * @packageDocumentation
  */
 import type { NearMiss, NearMissFile } from "./presets.ts";
 
-/** One class of the cases of the A13 census on `exact-v1`. */
+/** The id of a class of the float-wrong tests. */
+export type ClassId = 1 | 2 | 3 | 4;
+
+/** The counts of one set of the census. */
+export interface CensusSet {
+  readonly set: string;
+  readonly tests: number;
+  readonly undecided: number;
+  readonly floatWrong: number;
+  readonly classes: Readonly<Record<ClassId, number>>;
+}
+
+/** The float-wrong tests of one call site, over all sets. */
+export interface CensusSite {
+  readonly class: ClassId;
+  readonly fn: string;
+  readonly via: string;
+  readonly tests: number;
+}
+
+/** The file `data/census-classes.json`. A test compares it with the kept reports of the census. */
+export interface CensusFile {
+  readonly highways: { readonly census: string; readonly dump: string; readonly sets: readonly CensusSet[]; readonly sites: readonly CensusSite[] };
+  readonly packing: { readonly census: string; readonly dump: string; readonly set: string; readonly tests: number; readonly undecided: number; readonly floatWrong: number };
+}
+
+/** The text of one class. */
 export interface CensusClass {
-  readonly id: number;
+  readonly id: ClassId;
   readonly name: string;
-  readonly cases: number;
   readonly meaning: string;
   readonly finding: string;
 }
 
-/** The three classes of the A13 census on the `exact-v1` dump of highways. */
+/** The four classes of `wrongClassOf` of the census. */
 export const CLASSES: readonly CensusClass[] = [
   {
     id: 1,
-    name: "A wrong sign that exact signs fix",
-    cases: 0,
-    meaning: "The float sign is wrong, a user sees the error in the drawing, and the exact sign gives the correct drawing.",
-    finding: "No test of the dump is in this class. This class is the reason for exact predicates, and it is empty.",
+    name: "A defect of the bound",
+    meaning: "A float sign differs from an exact sign that the bound fixes.",
+    finding: "No test of any set is in this class. A value other than 0 is a defect of the bound.",
   },
   {
     id: 2,
-    name: "A tie at a tolerance or a touch",
-    cases: 5,
-    meaning: "The exact clipped length of a segment in a box is equal to the tolerance eps 0.5. The float length is a little larger, so the float test says that the segment hits the box.",
-    finding: "Four ties are in a measure and one is in a router. An A/B run of the router showed no change of a route, a cost or a measure.",
+    name: "A sign near zero",
+    meaning: "The bound cannot fix a sign, so rounding decides the float answer.",
+    finding: "In this class, an exact sign can change a decision of highways. Highways examines these sites with the A5 predicates.",
   },
   {
     id: 3,
-    name: "The rule of the measure",
-    cases: 1,
-    meaning: "Two routes share a run of a line, and one route leaves on the other side. The crossing count misses this true crossing.",
-    finding: "Exact signs do not fix this case. The fix is a rule for a shared run in the crossing measure of highways, with no new predicate.",
+    name: "A crossing measure",
+    meaning: "This class is a class 2 segment pair in a crossing measure of the bench of highways.",
+    finding: "A router does not read these answers. On exact-v1, one such pair is a lane that leaves a shared lane. Exact signs do not fix that pair: its fix is a rule for a shared run.",
+  },
+  {
+    id: 4,
+    name: "A tie at the tolerance",
+    meaning: "The exact part of the segment in the box has a length of exactly eps 0.5. The float length is a little larger, so the float test says that the segment hits the box.",
+    finding: "Each record is such a tie, and a test examines this on the kept records. An earlier A/B run of the router on exact-v1 showed no change of a route, a cost or a measure. No A/B run covers the other sets.",
   },
 ];
+
+/** This function gives the sum of the counts of the sets, as one more row. */
+export function sumOfSets(sets: readonly CensusSet[]): CensusSet {
+  const sum = (pick: (s: CensusSet) => number): number => sets.reduce((total, s) => total + pick(s), 0);
+  return {
+    set: "All",
+    tests: sum((s) => s.tests),
+    undecided: sum((s) => s.undecided),
+    floatWrong: sum((s) => s.floatWrong),
+    classes: { 1: sum((s) => s.classes[1]), 2: sum((s) => s.classes[2]), 3: sum((s) => s.classes[3]), 4: sum((s) => s.classes[4]) },
+  };
+}
+
+/** This function gives the share of a class in a set, in percent. */
+export function sharePercent(set: CensusSet, id: ClassId): number {
+  return set.floatWrong === 0 ? 0 : (set.classes[id] / set.floatWrong) * 100;
+}
 
 function byId<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -50,35 +95,67 @@ function esc(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-/** This function starts the bars of the classes. */
-export function startClasses(): void {
-  const most = Math.max(...CLASSES.map((entry) => entry.cases), 1);
-  let selected = 2;
-  const box = byId("classes");
-  box.innerHTML = CLASSES.map((entry) => {
-    const width = (entry.cases / most) * 100;
-    return `<button type="button" class="bar-row" data-class="${entry.id}" aria-pressed="false">
-      <span class="bar-label">Class ${entry.id}<span class="bar-name">${esc(entry.name)}</span></span>
-      <span class="bar-track"><span class="bar c${entry.id}" style="width:${width}%"></span><span class="bar-value">${entry.cases} ${entry.cases === 1 ? "case" : "cases"}</span></span>
-    </button>`;
-  }).join("");
+const count = (n: number): string => n.toLocaleString("en-US");
+const giga = (n: number): string => `${(n / 1e9).toFixed(1)} G`;
+
+function tile(value: string, caption: string, sub: string): string {
+  return `<div class="tile big good"><span class="num">${esc(value)}</span><span class="cap">${caption}</span><span class="sub">${sub}</span></div>`;
+}
+
+function rowOf(row: CensusSet, selected: ClassId, isSum: boolean): string {
+  const segments = CLASSES.filter((entry) => row.classes[entry.id] > 0)
+    .map((entry) => {
+      const label = `${row.set}, class ${entry.id}: ${count(row.classes[entry.id])} tests, ${sharePercent(row, entry.id).toFixed(1)} percent`;
+      return `<button type="button" class="class-seg class-c${entry.id}${entry.id === selected ? " on" : ""}" data-class="${entry.id}" style="flex:${row.classes[entry.id]} 1 0" title="${esc(label)}" aria-label="${esc(label)}"></button>`;
+    })
+    .join("");
+  return `<div class="class-row${isSum ? " all" : ""}"><span class="set">${esc(row.set)}</span><span class="class-track">${segments}</span><span class="count">${count(row.floatWrong)}</span></div>`;
+}
+
+/**
+ * This function starts the tiles, the bars and the table of the classes.
+ *
+ * @param file - The counts of the census.
+ */
+export function startClasses(file: CensusFile): void {
+  const { sets, sites } = file.highways;
+  const all = sumOfSets(sets);
+  const exact = sets.find((s) => s.set === "exact-v1");
+  byId("census-totals").innerHTML = [
+    exact ? tile(count(exact.tests), "tests on <code>exact-v1</code> of highways, 40 boards", `float-wrong ${count(exact.floatWrong)} · class 1: ${count(exact.classes[1])}`) : "",
+    tile(giga(all.tests), `tests on ${sets.length} sets of highways, with the rule of each call site`, `float-wrong ${count(all.floatWrong)} · class 1: ${count(all.classes[1])}`),
+    tile(giga(file.packing.tests), `tests on <code>${esc(file.packing.set)}</code> of packing`, `float-wrong ${count(file.packing.floatWrong)} · undecided ${count(file.packing.undecided)}`),
+  ].join("");
+  const open = sites.filter((s) => s.class === 2).slice(0, 2);
+  byId("census-open").innerHTML = `The largest open call sites of highways are ${open.map((s) => `<code>${esc(s.fn)}</code> at <code>${esc(s.via)}</code> (${count(s.tests)} tests)`).join(" and ")}. These sums count a board again if two sets have it.`;
+  byId("census-result").textContent = `On these inputs, class 1 is ${count(all.classes[1])} in each set. So a float answer differs from the exact answer only at a tie or at a sign near zero, and the value of item A5 is its robustness there.`;
+  byId("class-table").innerHTML = `<table><thead><tr><th scope="col">Set</th><th scope="col">Tests</th><th scope="col">Undecided</th><th scope="col">Float-wrong</th>${CLASSES.map((entry) => `<th scope="col">Class ${entry.id}</th>`).join("")}</tr></thead><tbody>${[...sets, all]
+    .map((s) => `<tr><td>${esc(s.set)}</td><td>${count(s.tests)}</td><td>${count(s.undecided)}</td><td>${count(s.floatWrong)}</td>${CLASSES.map((entry) => `<td>${count(s.classes[entry.id])}</td>`).join("")}</tr>`)
+    .join("")}</tbody></table>`;
+
+  let selected: ClassId = 2;
+  const legend = byId("class-legend");
+  const chart = byId("classes");
   const show = (): void => {
-    for (const row of box.querySelectorAll<HTMLElement>(".bar-row")) row.setAttribute("aria-pressed", String(Number(row.dataset["class"]) === selected));
-    const entry = CLASSES.find((item) => item.id === selected) ?? CLASSES[0];
+    legend.innerHTML = CLASSES.map(
+      (entry) => `<button type="button" class="class-key" data-class="${entry.id}" aria-pressed="${entry.id === selected}"><span class="swatch class-c${entry.id}"></span>${entry.id}: ${esc(entry.name)} <span class="n">${count(all.classes[entry.id])}</span></button>`,
+    ).join("");
+    chart.innerHTML = [rowOf(all, selected, true), ...sets.map((s) => rowOf(s, selected, false))].join("");
+    const entry = CLASSES.find((item) => item.id === selected);
     if (!entry) return;
-    byId("class-detail").innerHTML = `<h4>Class ${entry.id}: ${esc(entry.name)}</h4><p>${esc(entry.meaning)}</p><p>${esc(entry.finding)}</p>`;
+    const here = sites.filter((s) => s.class === selected);
+    const list = here.length === 0 ? "" : `<ul class="class-sites">${here.map((s) => `<li><code>${esc(s.fn)} ${esc(s.via)}</code><span class="n">${count(s.tests)}</span></li>`).join("")}</ul>`;
+    byId("class-detail").innerHTML = `<h4>Class ${entry.id}: ${esc(entry.name)}</h4><p>${esc(entry.meaning)}</p><p>${esc(entry.finding)}</p>${list}`;
   };
   const pick = (event: Event): void => {
-    const target = (event.target as HTMLElement).closest<HTMLElement>(".bar-row");
-    const id = Number(target?.dataset["class"]);
+    const target = (event.target as HTMLElement).closest<HTMLElement>("[data-class]");
+    const id = Number(target?.dataset["class"]) as ClassId;
     if (!target || id === selected) return;
     selected = id;
     show();
   };
-  box.addEventListener("click", pick);
-  box.addEventListener("mouseover", (event) => {
-    if (window.matchMedia("(hover: hover)").matches) pick(event);
-  });
+  legend.addEventListener("click", pick);
+  chart.addEventListener("click", pick);
   show();
 }
 
