@@ -70,11 +70,8 @@ export function crosses(a: V, b: V, c: V, d: V): boolean {
 const max = (a: Rat, b: Rat): Rat => (cmp(a, b) >= 0 ? a : b);
 const min = (a: Rat, b: Rat): Rat => (cmp(a, b) <= 0 ? a : b);
 
-/**
- * The exact copy of `geom.segmentHitsRect` of highways, in rationals: the Liang-Barsky clip of the segment to the
- * rectangle, and a clipped part longer than `eps`. The length test compares squares, so it needs no square root.
- */
-export function hitsRectExact(a: V, b: V, x0: Rat, y0: Rat, x1: Rat, y1: Rat, eps: number): boolean {
+/** This function gives the square of the exact length of the part of the segment in the rectangle, or `null` for no part. */
+function clippedLength2(a: V, b: V, x0: Rat, y0: Rat, x1: Rat, y1: Rat): Rat | null {
   const [ax, ay] = pt(a);
   const [bx, by] = pt(b);
   const dx = sub(bx, ax);
@@ -86,20 +83,38 @@ export function hitsRectExact(a: V, b: V, x0: Rat, y0: Rat, x1: Rat, y1: Rat, ep
     [dy, ay, y0, y1],
   ] as const) {
     if (sign(d) === 0) {
-      if (cmp(p, lo) <= 0 || cmp(p, hi) >= 0) return false;
+      if (cmp(p, lo) <= 0 || cmp(p, hi) >= 0) return null;
       continue;
     }
     const ta = div(sub(lo, p), d);
     const tb = div(sub(hi, p), d);
     t0 = max(t0, min(ta, tb));
     t1 = min(t1, max(ta, tb));
-    if (cmp(t0, t1) > 0) return false;
+    if (cmp(t0, t1) > 0) return null;
   }
+  const part = sub(t1, t0);
+  return mul(mul(part, part), add(mul(dx, dx), mul(dy, dy)));
+}
+
+/**
+ * The exact copy of `geom.segmentHitsRect` of highways, in rationals: the Liang-Barsky clip of the segment to the
+ * rectangle, and a clipped part longer than `eps`. The length test compares squares, so it needs no square root.
+ */
+export function hitsRectExact(a: V, b: V, x0: Rat, y0: Rat, x1: Rat, y1: Rat, eps: number): boolean {
+  const length2 = clippedLength2(a, b, x0, y0, x1, y1);
+  if (length2 === null) return false;
   const e = fromFloat(eps);
   if (sign(e) < 0) return true;
-  const part = sub(t1, t0);
-  const length2 = mul(mul(part, part), add(mul(dx, dx), mul(dy, dy)));
   return cmp(length2, mul(e, e)) > 0;
+}
+
+/** This function tells if the exact part of the segment in the box has a length of exactly `eps`. */
+export function clippedLengthIsEps(a: V, b: V, box: { x: number; y: number; w: number; h: number }, eps: number): boolean {
+  const x0 = fromFloat(box.x);
+  const y0 = fromFloat(box.y);
+  const length2 = clippedLength2(a, b, x0, y0, add(x0, fromFloat(box.w)), add(y0, fromFloat(box.h)));
+  const e = fromFloat(eps);
+  return length2 !== null && cmp(length2, mul(e, e)) === 0;
 }
 
 /** The exact copy of `geom.segmentHitsRect` for a rectangle `[x0, y0, x1, y1]` of floats. */
