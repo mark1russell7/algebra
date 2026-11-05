@@ -61,3 +61,34 @@ To examine only the format of the records, start a small run: `node src/bench.ts
 | `ties` | [4.779, 9.618] | [0.577, 0.710] | Faster |
 
 The interval of `random` is wide because the group has two predicates. Each case of `orient2d` has a ratio from 1.10 to 1.18, and each case of `incircle` has a ratio from 3.86 to 4.13.
+
+### The test of the change to the in-circle filter
+
+One product of the in-circle filter had a subnormal result at each call, and such a product is slow on some processors. Commit `35a7968` removes that product. These three folders test the change:
+
+| Folder | Run | Commit | Processor |
+| --- | --- | --- | --- |
+| `results/2026-11-05-before-9v45/` | 41950165798 | `e2edff9`, before the change | AMD EPYC 9V45 |
+| `results/2026-11-05-after-9v45/` | 41950209701 | `9150080`, after the change | AMD EPYC 9V45 |
+| `results/2026-11-05-after-7763/` | 41949248942 | After the change | AMD EPYC 7763 |
+
+Only the first two folders compare the same processor. Each value of this table is the median ratio of the eight cases of a predicate and a group.
+
+| Cases | Before, 9V45 | After, 9V45 | After, 7763 |
+| --- | --- | --- | --- |
+| `incircle/random` | 4.224 | 0.911 | 0.810 |
+| `incircle/near` | 0.819 | 0.790 | 0.940 |
+| `incircle/ties` | 0.655 | 0.541 | 0.523 |
+| `orient2d/random` | 1.191 | 1.187 | 1.103 |
+| `orient2d/near` | 1.215 | 1.234 | 1.109 |
+| `orient2d/ties` | 0.657 | 0.656 | 0.685 |
+
+| Group | Before, 9V45 | After, 9V45 | After, 7763 |
+| --- | --- | --- | --- |
+| `random` | [1.193, 4.190], slower | [0.911, 1.187], cannot decide | [0.810, 1.102], cannot decide |
+| `near` | [0.820, 1.212], cannot decide | [0.791, 1.231], cannot decide | [0.942, 1.108], cannot decide |
+| `ties` | [0.634, 0.680], faster | [0.545, 0.655], faster | [0.523, 0.677], faster |
+
+The change makes `incircle` on random points faster than `robust-predicates` on both processors. The group `random` has no decision, because its two predicates are on the two sides of 1. `orient2d` on random points stays slower, from 1.10 to 1.19 times.
+
+An open result: in the run before the change, `orient2d/random/s6` and `orient2d/random/s8` have ratios of 2.91 and 2.80 in each round. The time of `@mark1russell7/predicates` is 40.6 ms and 36.1 ms, against 15.7 ms in `orient2d/random/s5`. The change does not touch `orient2d`. The other 38 `orient2d/random` cases of the five kept runs have no such ratio. So a process can stay in a slow state from its start. The cause is not known.
