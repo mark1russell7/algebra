@@ -247,7 +247,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.15
+        version: 0.2.16
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
         version: 0.1.12
@@ -281,7 +281,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.15
+        version: 0.2.16
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
         version: 0.1.12
@@ -371,7 +371,7 @@ importers:
         version: link:../expression
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.15
+        version: 0.2.16
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
         version: 0.1.12
@@ -467,7 +467,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.3
-        version: 0.2.15
+        version: 0.2.16
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.1
         version: 0.1.5
@@ -550,7 +550,7 @@ importers:
         version: link:../predicates
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.15
+        version: 0.2.16
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -593,7 +593,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.2
-        version: 0.2.15
+        version: 0.2.16
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -876,8 +876,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/rigor-bench@0.2.15':
-    resolution: {integrity: sha512-nW/akUUUpBN7cKrIroDb7yPF0kgDQfPJaz1PyMks5FdwJI1VCZvq9luIH4nLQlJHD9r95lxau9fBDxWjFLBDZg==}
+  '@mark1russell7/rigor-bench@0.2.16':
+    resolution: {integrity: sha512-vAi8iyI1RyHDddKQWxTdFzQJI9VQ7K1krWvC06DUEKYJr0MUV/nE8qyjxF+kZ5LaUZIYobCZvJRgTXOl8aD8+A==}
     engines: {node: '>=22'}
 
   '@mark1russell7/rigor-generators@0.1.5':
@@ -2024,7 +2024,7 @@ snapshots:
 
   '@mark1russell7/cue@2.1.1': {}
 
-  '@mark1russell7/rigor-bench@0.2.15':
+  '@mark1russell7/rigor-bench@0.2.16':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.5
       '@mark1russell7/rigor-statistics': 0.1.12
