@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { censusOfFiles, classify, containerPoint, containerPredicate, edgePair, edgePairPoint, PACKING_UNMODELED, parseLine, Tally } from "./index.ts";
-import type { Census, Group, Predicate } from "./index.ts";
+import { wrongClassOf } from "./index.ts";
+import type { Census, Group, Predicate, SignRecord } from "./index.ts";
 import { boxPairPoint, PREDICATES, pointSidePoint, segmentBoxPoint, segmentPairPoint, segmentRect, segmentRectPoint } from "./predicates.ts";
 import type { Point } from "./expressions.ts";
 import * as O from "./oracle.test-helper.ts";
@@ -537,5 +538,44 @@ describe("a near tie of the nearest centre", () => {
   it("keeps a float answer that is not one of the two indices as unknown", () => {
     const r = tally({ ...tie, i1: 7, i2: 14, floatAnswer: 3 });
     expect(r.cases[0]?.unknown).toBe(4);
+  });
+});
+
+describe("the class of a float-wrong test", () => {
+  const sign = (boundSign: -1 | 0 | 1 | null, exactSign: -1 | 0 | 1, floatSign: -1 | 0 | 1): SignRecord => ({
+    name: "s",
+    bounds: null,
+    boundSign,
+    filterSign: boundSign,
+    exactSign,
+    floatSign,
+    contained: true,
+  });
+
+  it("gives class 2 to a sign near zero, and class 3 to a segment pair in a crossing measure", () => {
+    const signs = [sign(null, 0, 1)];
+    expect(wrongClassOf({ predicate: "pointSide", signs }, { via: "src/routers/physics.ts:109" })).toBe("2");
+    expect(wrongClassOf({ predicate: "segmentPair", signs }, { via: "src/mesh.ts:5" })).toBe("2");
+    expect(wrongClassOf({ predicate: "segmentPair", signs }, { via: "src/bench/quality.ts:9" })).toBe("3");
+    expect(wrongClassOf({ predicate: "segmentPair", signs }, { via: "src/bench/measures/lanes.ts:9" })).toBe("3");
+    expect(wrongClassOf({ predicate: "pointSide", signs }, { via: "src/bench/quality.ts:9" })).toBe("2");
+    expect(wrongClassOf({ predicate: "segmentPair", signs }, null)).toBe("2");
+  });
+
+  it("gives class 4 to clear and correct signs, and class 1 to a float sign against a fixed sign", () => {
+    expect(wrongClassOf({ predicate: "segmentPair", signs: [sign(1, 1, 1)] }, {})).toBe("4");
+    expect(wrongClassOf({ predicate: "pointSide", signs: [sign(1, -1, 1)] }, {})).toBe("1");
+  });
+
+  it("counts the weight of each class and call site, and keeps the input of class 4", () => {
+    const t = new Tally();
+    const line = { case: "c", fn: "other.crossing", n: 3, a: [0, 0], b: [2, 2], c: [0, 2], d: [2, 0], floatAnswer: false, via: "src/x.ts:1" };
+    t.addText("f", 1, JSON.stringify(line));
+    const r = t.result();
+    expect(r.cases[0]?.floatWrong).toBe(3);
+    expect(r.floatWrongClasses["4"]).toEqual({ tests: 3, records: 1 });
+    expect(r.floatWrongClasses["1"]).toEqual({ tests: 0, records: 0 });
+    expect(r.floatWrongSites).toEqual({ "4 other.crossing src/x.ts:1": 3 });
+    expect(r.classInputs).toEqual([{ class: "4", input: line }]);
   });
 });

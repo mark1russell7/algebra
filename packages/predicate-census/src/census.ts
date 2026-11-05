@@ -252,6 +252,45 @@ export interface CaseSummary {
   readonly sharedEnd: SharedEndCounts;
 }
 
+/**
+ * The class of a float-wrong test.
+ * Class 1: a float sign differs from an exact sign that the bound fixes. A value other than 0 is a defect of the bound.
+ * Class 2: a sign is near zero, so rounding decides the answer.
+ * Class 3: a class 2 segment pair in a crossing measure of the bench.
+ * Class 4: each sign is clear and each float sign is correct, but the answer of the sender differs from the rule.
+ */
+export type WrongClass = "1" | "2" | "3" | "4";
+
+/** The weight and the count of the records of one class. */
+export interface ClassCount {
+  tests: number;
+  records: number;
+}
+
+/** The files of the crossing measures of the bench of highways. */
+const CROSSING_MEASURES = /src\/bench\/(quality|measures\/routes|measures\/lanes)\.ts/;
+
+/** This function gives the field `via` of a raw line, or an empty string. */
+function viaOf(input: unknown): string {
+  const via = input !== null && typeof input === "object" ? (input as Record<string, unknown>)["via"] : undefined;
+  return typeof via === "string" ? via : "";
+}
+
+/**
+ * This function gives the class of a float-wrong test.
+ *
+ * @param result - The predicate and the signs of the test.
+ * @param input - The raw line of the test.
+ * @returns The class.
+ */
+export function wrongClassOf(result: Pick<Classified, "predicate" | "signs">, input: unknown): WrongClass {
+  if (result.signs.some((s) => s.boundSign === null)) return result.predicate === "segmentPair" && CROSSING_MEASURES.test(viaOf(input)) ? "3" : "2";
+  return result.signs.every((s) => s.floatSign === s.exactSign) ? "4" : "1";
+}
+
+/** The largest count of the inputs of the classes 1 and 4 that a result keeps for a check by hand. */
+export const CLASS_INPUTS = 5;
+
 /** The raw record of an undecided or a wrong input. */
 export interface InputRecord extends Classified {
   readonly file: string;
@@ -326,6 +365,12 @@ export interface Census {
    * Only the dumps before highways #258 have such lines.
    */
   readonly copyUses: Readonly<Record<string, number>>;
+  /** The float-wrong tests of each class. */
+  readonly floatWrongClasses: Readonly<Record<WrongClass, ClassCount>>;
+  /** The weight of the float-wrong tests of each class, function and call site, with the key `<class> <fn> <via>`. */
+  readonly floatWrongSites: Readonly<Record<string, number>>;
+  /** The first inputs of the classes 1 and 4, for a check by hand. */
+  readonly classInputs: readonly { readonly class: WrongClass; readonly input: unknown }[];
   readonly records: readonly InputRecord[];
   readonly unknown: readonly UnknownRecord[];
 }
@@ -455,6 +500,14 @@ export class Tally {
   readonly #seen = new Map<string, Seen>();
   readonly #reasons = new Map<string, Record<string, number>>();
   readonly #copyUses = new Map<string, number>();
+  readonly #classes: Record<WrongClass, ClassCount> = {
+    "1": { tests: 0, records: 0 },
+    "2": { tests: 0, records: 0 },
+    "3": { tests: 0, records: 0 },
+    "4": { tests: 0, records: 0 },
+  };
+  readonly #sites = new Map<string, number>();
+  readonly #classInputs: { readonly class: WrongClass; readonly input: unknown }[] = [];
   readonly #records: InputRecord[] = [];
   readonly #unknown: UnknownRecord[] = [];
   readonly #onRecord: ((record: InputRecord) => void) | undefined;
@@ -576,6 +629,12 @@ export class Tally {
     if (result.floatWrong) {
       g.floatWrong += n;
       if (extra.nearCollinear === true) g.floatWrongNearCollinear += n;
+      const wrongClass = wrongClassOf(result, raw);
+      this.#classes[wrongClass].tests += n;
+      this.#classes[wrongClass].records += 1;
+      const site = `${wrongClass} ${fn} ${viaOf(raw)}`;
+      this.#sites.set(site, (this.#sites.get(site) ?? 0) + n);
+      if ((wrongClass === "1" || wrongClass === "4") && this.#classInputs.length < CLASS_INPUTS) this.#classInputs.push({ class: wrongClass, input: raw });
     }
     if (result.undecided || result.floatWrong || violated || boundWrong) {
       const record: InputRecord = { file, line: lineNo, case: line.line.case, fn, n, sharedEnd: isShared, ...extra, input: raw, ...result };
@@ -793,6 +852,14 @@ export class Tally {
       byFn: order(byFn),
       nearReasons: sortKeys(Object.fromEntries([...this.#reasons].map(([fn, r]) => [fn, sortKeys(r)]))),
       copyUses: sortKeys(Object.fromEntries(this.#copyUses)),
+      floatWrongClasses: {
+        "1": { ...this.#classes["1"] },
+        "2": { ...this.#classes["2"] },
+        "3": { ...this.#classes["3"] },
+        "4": { ...this.#classes["4"] },
+      },
+      floatWrongSites: sortKeys(Object.fromEntries(this.#sites)),
+      classInputs: [...this.#classInputs],
       records: [...this.#records],
       unknown: [...this.#unknown],
     };

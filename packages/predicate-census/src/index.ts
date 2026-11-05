@@ -75,7 +75,7 @@ export {
   stripPoint,
 } from "./predicates.ts";
 export type { Answer, CallSiteRule, DumpRule, Predicate, PredicateName, RuleSource, RuleSourceCheck } from "./predicates.ts";
-export { classify, NEAR_COLLINEAR, nearLine, PACKING_PREDICATES, sharedVertex, Tally } from "./census.ts";
+export { CLASS_INPUTS, classify, NEAR_COLLINEAR, nearLine, PACKING_PREDICATES, sharedVertex, Tally, wrongClassOf } from "./census.ts";
 export type {
   CaseSummary,
   Census,
@@ -88,6 +88,8 @@ export type {
   SignRecord,
   TallyOptions,
   UnknownRecord,
+  ClassCount,
+  WrongClass,
 } from "./census.ts";
 export { ASSUMPTIONS, censusOfFiles, FAR_FILTER, findFiles } from "./report.ts";
 export type { FarCheck, InputFile, Report, Totals } from "./report.ts";

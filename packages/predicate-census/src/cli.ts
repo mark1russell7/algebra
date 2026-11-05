@@ -113,6 +113,10 @@ if (out === undefined) {
     `${report.files.length} files: total ${t.total}, undecided ${t.undecided} (${t.undecidedFiltered} with the filter), ` +
       `floatWrong ${t.floatWrong}, unseen ${t.unseen}, unknown ${t.unknown}. Report: ${out}, ${records.count} records.`,
   );
+  const c = report.floatWrongClasses;
+  console.error(
+    `Classes of the float-wrong tests: 1 = ${c["1"].tests}, 2 = ${c["2"].tests}, 3 = ${c["3"].tests}, 4 = ${c["4"].tests}. Sites: ${JSON.stringify(report.floatWrongSites)}`,
+  );
   stopOnStaleCopy(report.copyUses);
   stopOnUnknown(report.totals.unknown);
 }
