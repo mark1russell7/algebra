@@ -94,3 +94,12 @@ Only the first two folders compare the same processor. Each value of this table 
 The change makes `incircle` on random points faster than `robust-predicates` on both processors. The group `random` has no decision, because its two predicates are on the two sides of 1. `orient2d` on random points stays slower, from 1.10 to 1.19 times.
 
 An open result: in the run before the change, `orient2d/random/s6` and `orient2d/random/s8` have ratios of 2.91 and 2.80 in each round. The time of `@mark1russell7/predicates` is 40.6 ms and 36.1 ms, against 15.7 ms in `orient2d/random/s5`. The change does not touch `orient2d`. The other 38 `orient2d/random` cases of the five kept runs have no such ratio. So a process can stay in a slow state from its start. The cause is not known.
+
+Two runs of the eight `orient2d/random` cases on `main` test if this state repeats, each process fresh. The folders keep the raw records of each start in one file, with the field `start`.
+
+| Folder | Run | Processor | Processes | Ratio of 2 or more | Median ratio | Highest ratio |
+| --- | --- | --- | --- | --- | --- | --- |
+| `results/2026-11-05-repeat-7763/` | 41957163050 | AMD EPYC 7763 | 240 | 0 | 1.103 | 1.190 |
+| `results/2026-11-05-repeat-9v74/` | 41959305594 | AMD EPYC 9V74 | 80 | 0 | 1.087 | 1.279 |
+
+The state did not repeat on these two processors. Neither run had the AMD EPYC 9V45, the only processor that showed the state, and a run cannot select its processor. With the released code, the kept runs have only 8 such processes on the 9V45, and none is slow. So these runs do not remove the state on that processor. A time is the only effect. Each process stops with an error when the sum of the signs of its two arms differs.
