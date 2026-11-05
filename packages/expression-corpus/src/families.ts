@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { randomExpression, summarize } from "@mark1russell7/expression";
+import { nodesOf, randomExpression, summarize } from "@mark1russell7/expression";
 import type { Expression, Summary } from "@mark1russell7/expression";
 import { incircleInput, orientInput, points as geometricPoints } from "@mark1russell7/predicates/corpus";
 import { deriveSeed, random } from "@mark1russell7/rigor-generators";
@@ -72,7 +72,7 @@ const add = (...parts: Parts): Expression => ({ type: "add", value: parts });
  * @returns The count of the nodes, the root included.
  */
 export function nodeCount(doc: Expression): number {
-  return Object.values(summaryOf(doc).cost).reduce((a, b) => a + b, 0);
+  return nodesOf(summaryOf(doc));
 }
 
 /** This function gives the summary of a document, or throws the error of coeval. */

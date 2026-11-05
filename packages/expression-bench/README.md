@@ -35,9 +35,11 @@ A ratio is the time of arm `b` over the time of arm `a`. `PAIRS` of `src/cases.t
 | --- | --- | --- |
 | `ab` | The written function | `compileFloat` |
 | `at` | The written function | `compileTape` |
-| `ft` | `compileFloat` | `compileTape` |
+| `ft` | `compileClosures` | `compileTape` |
 | `wf` | The written function with a bound | `compileFloat` |
 | `wt` | The written function with a bound | `compileTape` |
+
+`compileFloat` chooses the closures or the tape by the size of the document. The pairs `ab` and `wf` time that choice. The pair `ft` times the two forms by name, and each of its processes also records the median time of a compile of each form.
 
 The pair `aa` has one written function in the two arms. It gives the A/A band, and it always operates. The written function gives no bound, but `compileFloat` and `compileTape` compute one. The written function with a bound does the same work, so its pairs compare the same result. The default is `ft,wt`. Run 41716693461 took 113 minutes for one pair and `aa`. Thus a run of two pairs and `aa` takes approximately 170 minutes.
 
@@ -96,7 +98,7 @@ This table compares the rule "the tape above T nodes, and else the closures" on 
 | 16 | 45 | 0.735 | 1.12 |
 | 30 | 66 | 0.761 | 1.00 |
 
-These records select T, so they do not test it. The bench also does not measure the cost of a compile. A change to `compileFloat` needs its own prediction and a run on other seeds.
+These records select T, so they do not test it. The bench also does not measure the cost of a compile. `compileFloat` now uses the tape above 10 nodes, and a run on other seeds tests this choice.
 
 The inputs `seeds` and `families` of the workflow select the cases, for example `seeds=25-72` and `families=small`. The report groups the pair `ft` by the count of the nodes.
 

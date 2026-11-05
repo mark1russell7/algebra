@@ -4,7 +4,7 @@
  * the registers. There is one register for each result, and no closure for a node.
  *
  * The operations and their order are those of the verb `float`, and the bound rules are the functions of `float.ts`.
- * Thus a tape gives the value and the bound of `compileFloat` at each point. A list of parts folds from the left, and a
+ * Thus a tape gives the value and the bound of `compileClosures` at each point. A list of parts folds from the left, and a
  * power is a list of products by repeated squares, as in `float.ts`.
  *
  * A compiled tape keeps its registers between calls, so one tape does not do two calls at the same time.

@@ -36,7 +36,9 @@ const result = summarize(doc, { bounds: { x: [0, 1] } });
 
 ## The tape evaluator
 
-`compileTape` gives the value and the bound of `compileFloat`, and it has the same type. It flattens a document into a list of float instructions, and one loop operates the list. It has no closure for a node, no `eval` and no `new Function`. A compiled tape keeps its registers between calls.
+`compileFloat` chooses the form by the size of the document. A document with more than `TAPE_ABOVE` nodes gets the tape, and a smaller document gets the closures. The field `engine` of the result names the form. `compileClosures` and `compileTape` each give one form. The two forms give the same value and the same bound.
+
+`compileTape` has the type of `compileFloat`. It flattens a document into a list of float instructions, and one loop operates the list. It has no closure for a node, no `eval` and no `new Function`. A compiled tape keeps its registers between calls.
 
 ## The float evaluator
 

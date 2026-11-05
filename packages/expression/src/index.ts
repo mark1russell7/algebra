@@ -16,6 +16,7 @@ export {
   compileBall,
   compileBigfloat,
   compileExact,
+  compileClosures,
   compileFloat,
   compileInterval,
   compileStatic,
@@ -32,8 +33,10 @@ export {
   SUMMARY,
   summarize,
   TAPE,
+  TAPE_ABOVE,
+  nodesOf,
 } from "./kinds.ts";
-export type { BallFunction, BigfloatClaim, BigfloatFunction, BigfloatResult, CompileFloatOptions, ExactFunction, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
+export type { BallFunction, BigfloatClaim, BigfloatFunction, BigfloatResult, CompileFloatOptions, ExactFunction, FloatEngine, FloatFunction, IntervalFunction, Shape, SummarizeOptions } from "./kinds.ts";
 export { floatNode, floatNum, floatRoot, floatVar, rootError, UNIT_ROUNDOFF } from "./float.ts";
 export { decideInterval, intervalNode, intervalNum, intervalVar, NO_CLAIM } from "./interval-evaluator.ts";
 export type { Enclosure, IntervalCell, IntervalInput, IntervalRun } from "./interval-evaluator.ts";
