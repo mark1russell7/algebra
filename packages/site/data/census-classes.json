@@ -1,0 +1,156 @@
+{
+  "highways": {
+    "census": "41943849500",
+    "dump": "41647717024",
+    "sets": [
+      {
+        "set": "exact-v1",
+        "tests": 206265687,
+        "undecided": 315842,
+        "floatWrong": 8,
+        "classes": {
+          "1": 0,
+          "2": 0,
+          "3": 3,
+          "4": 5
+        }
+      },
+      {
+        "set": "exact-v1-bounds",
+        "tests": 2597972328,
+        "undecided": 3303590,
+        "floatWrong": 121,
+        "classes": {
+          "1": 0,
+          "2": 2,
+          "3": 59,
+          "4": 60
+        }
+      },
+      {
+        "set": "fixtures",
+        "tests": 156763576730,
+        "undecided": 4338238,
+        "floatWrong": 94,
+        "classes": {
+          "1": 0,
+          "2": 0,
+          "3": 12,
+          "4": 82
+        }
+      },
+      {
+        "set": "fixtures-large",
+        "tests": 3234175115,
+        "undecided": 33781,
+        "floatWrong": 104,
+        "classes": {
+          "1": 0,
+          "2": 2,
+          "3": 0,
+          "4": 102
+        }
+      },
+      {
+        "set": "screen-v1",
+        "tests": 1539279577,
+        "undecided": 1371492,
+        "floatWrong": 602,
+        "classes": {
+          "1": 0,
+          "2": 226,
+          "3": 354,
+          "4": 22
+        }
+      },
+      {
+        "set": "screen-v2",
+        "tests": 6573015403,
+        "undecided": 4977287,
+        "floatWrong": 13749,
+        "classes": {
+          "1": 0,
+          "2": 13202,
+          "3": 468,
+          "4": 79
+        }
+      },
+      {
+        "set": "screen-v3",
+        "tests": 12317181901,
+        "undecided": 10032303,
+        "floatWrong": 21187,
+        "classes": {
+          "1": 0,
+          "2": 20383,
+          "3": 639,
+          "4": 165
+        }
+      }
+    ],
+    "sites": [
+      {
+        "class": 2,
+        "fn": "physics.outOf",
+        "via": "src/routers/physics.ts:199",
+        "tests": 31253
+      },
+      {
+        "class": 2,
+        "fn": "geom.segmentHitsBox",
+        "via": "src/geom.ts:121",
+        "tests": 2476
+      },
+      {
+        "class": 2,
+        "fn": "geom.segmentsCross",
+        "via": "src/whole/curriculum/index.ts:146",
+        "tests": 84
+      },
+      {
+        "class": 2,
+        "fn": "geom.segmentHitsBox",
+        "via": "src/bench/links.ts:132",
+        "tests": 2
+      },
+      {
+        "class": 3,
+        "fn": "geom.segmentsCross",
+        "via": "src/bench/quality.ts:183",
+        "tests": 1051
+      },
+      {
+        "class": 3,
+        "fn": "routes.segmentsCrossInside",
+        "via": "src/bench/measures/routes.ts:106",
+        "tests": 443
+      },
+      {
+        "class": 3,
+        "fn": "geom.segmentsCross",
+        "via": "src/bench/measures/lanes.ts:58",
+        "tests": 41
+      },
+      {
+        "class": 4,
+        "fn": "geom.segmentHitsBox",
+        "via": "src/bench/links.ts:132",
+        "tests": 311
+      },
+      {
+        "class": 4,
+        "fn": "geom.segmentHitsBox",
+        "via": "src/visibility.ts:52",
+        "tests": 204
+      }
+    ]
+  },
+  "packing": {
+    "census": "41897600161",
+    "dump": "41716950631",
+    "set": "pack-select-v2",
+    "tests": 19752878890,
+    "undecided": 0,
+    "floatWrong": 0
+  }
+}

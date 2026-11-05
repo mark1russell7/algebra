@@ -1,7 +1,9 @@
 import "./style.css";
 import costReport from "../data/a6-report.json";
+import censusJson from "../data/census-classes.json";
 import nearMissJson from "../data/near-misses.json";
 import { startClasses, startRecords } from "./census-view.ts";
+import type { CensusFile } from "./census-view.ts";
 import type { CostReport } from "./cost.ts";
 import { startCost } from "./cost-view.ts";
 import { Explorer } from "./explorer.ts";
@@ -35,7 +37,7 @@ if (asked) explorer.load(asked);
 
 startPlayground();
 startCost(costReport as unknown as CostReport);
-startClasses();
+startClasses(censusJson as CensusFile);
 startRecords(file, (index) => {
   explorer.load(`record-${index}`);
   byId("explorer").scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });

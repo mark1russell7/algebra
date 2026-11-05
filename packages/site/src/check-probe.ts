@@ -27,6 +27,10 @@ const field = <T extends Element>(selector: string): T => {
 const tile = (kind: string): number => Number(text(`#ex-tiles .tile.${kind} .num`).replace(/\s/g, ""));
 const gridDone = (): boolean => text("#ex-tiles").includes("in a worker") && !text("#ex-tiles").includes("so far");
 
+// The census: a row for each set and for the sum, and the tiles from the data file.
+check("the census has a bar for each set and for the sum", $$("#classes .class-row").length === 8, $$("#classes .class-row").length);
+check("the census has its three tiles", $$("#census-totals .tile").length === 3, $$("#census-totals .tile").length);
+
 // The explorer: the worker finishes the grid of the first input, and the page counts the wrong float signs.
 check("the explorer has the presets and the records of the census", (await until(() => $$("#ex-preset option").length >= 8)) === true, $$("#ex-preset option").length);
 check("the worker finishes the grid of the first input", await until(gridDone, 30000), text("#ex-tiles").slice(0, 200));

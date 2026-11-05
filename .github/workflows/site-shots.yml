@@ -71,6 +71,8 @@ jobs:
               if (wide > 0) problems.push(`${name}: the page is ${wide} px wider than the window`);
               await page.screenshot({ path: `${out}/${name}-page.png`, fullPage: true });
               await page.locator("#cost").screenshot({ path: `${out}/${name}-cost.png` });
+              await page.locator("#census details.class-table").evaluate((box) => { box.open = true; });
+              await page.locator("#census").screenshot({ path: `${out}/${name}-census.png` });
               await page.close();
             }
           }

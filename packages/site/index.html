@@ -189,43 +189,19 @@
             <a href="https://github.com/mark1russell7/packing">packing</a> through the float signs and the exact signs.
           </p>
           <p>
-            Three censuses are complete. In each one, exact signs fix no wrong sign that a user sees. The classes and the
-            records below are of <code>exact-v1</code>. The census of the newest highways dump, with the rule of each call
-            site, waits for a CI slot.
+            A float answer can differ from the exact answer. The census gives each such test a class. Class 1 is a wrong
+            sign that the bound fixes, and no set has one. The other classes are ties and signs near zero.
           </p>
         </div>
-        <div class="totals">
-          <div class="tile big good">
-            <span class="num">194&#8239;549&#8239;364</span>
-            <span class="cap">tests on <code>exact-v1</code> of highways, 40 boards</span>
-            <span class="sub">float-wrong 8 · wrong signs that a user sees 0</span>
-          </div>
-          <div class="tile big good">
-            <span class="num">181.2&#8239;G</span>
-            <span class="cap">tests on 7 sets of highways, with the call-site rules</span>
-            <span class="sub">float-wrong 14&#8239;445&#8239;277 → 35&#8239;666 (−99.75&#8239;%) · wrong signs that a user sees 0</span>
-          </div>
-          <div class="tile big good">
-            <span class="num">28&#8239;364&#8239;460&#8239;708</span>
-            <span class="cap">tests on <code>pack-select-v2</code> of packing</span>
-            <span class="sub">float-wrong 0 · unknown 1&#8239;019, at <code>xAt</code> only</span>
-          </div>
-        </div>
-        <p class="small census-open">
-          Two call sites of highways stay open: <code>physics.outOf:195</code> (19&#8239;217 tests, in
-          <code>screen-v3</code>) and <code>geom.ts:121</code> (1&#8239;068 tests). At these sites an exact sign changes a
-          decision of highways. Highways examines them with the A5 predicates.
-        </p>
+        <div class="totals" id="census-totals"></div>
+        <p class="small census-open" id="census-open"></p>
         <div class="census-grid">
           <div>
-            <h3>The cases where the float answer is not the exact answer</h3>
-            <p class="small">Select a class to see what it means.</p>
-            <div class="classes" id="classes" role="group" aria-label="The classes of the cases"></div>
+            <h3>The classes of the float-wrong tests of highways</h3>
+            <p class="small">Each bar is the share of the tests of its set, and the number is their count. Select a class to see what it means.</p>
+            <div class="class-legend" id="class-legend" role="group" aria-label="The classes"></div>
+            <div class="class-chart" id="classes" role="group" aria-label="The share of each class in each set"></div>
             <div class="class-detail" id="class-detail" aria-live="polite"></div>
-            <p class="result">
-              Exact signs fix no error that a user sees on these inputs. A count of 0 ranks item A5, the exact
-              predicates, lower.
-            </p>
           </div>
           <div>
             <h3>Real float-wrong inputs</h3>
@@ -241,6 +217,11 @@
             </div>
           </div>
         </div>
+        <details class="class-table">
+          <summary>The table of the counts</summary>
+          <div class="table-box scroll-cue" id="class-table" role="region" aria-label="The counts of each set" tabindex="0"></div>
+        </details>
+        <p class="result" id="census-result"></p>
       </section>
 
       <section id="packages" class="wrap block small-block" aria-labelledby="packages-title">
