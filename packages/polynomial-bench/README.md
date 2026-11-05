@@ -46,6 +46,20 @@ The method is the method of `@mark1russell7/rigor-bench` and of `packages/evalua
 
 The time of a claim record is one sample. It is a fact of the record, not a verdict.
 
+## The read plan
+
+This plan tells which rows of a run decide A8. It comes before the first run, so the result does not set the rule.
+
+1. Read the field `wrong`. Each check that disagrees is a bug. If `wrong` is more than 0, A8 stays open until a fix and a new start of the workflow.
+2. Read the field `skipped`. The roadmap names each family with a skipped case as a limit of the verbs at the default limits.
+3. Read the outcome of each pair and each family. An outcome of `cannot decide` gives no claim.
+4. Read the field `points` of each row of `breakEven`. The roadmap states the break-even count of points for each family.
+5. If a family has the value `null`, the form does not pay for evaluation in that family. The roadmap then states that the verb is for equality and simplification there.
+6. Read the pair `equal`. If the compare of the keys is `faster`, the roadmap states that a proof of equality by the key costs less than 64 points.
+7. Read the pair `solve`. Its median ratio is the cost of 48 more bits of each interval. The roadmap states it.
+
+After these steps, the raw records go to `results/<date>/`, and A8 closes.
+
 ## A run
 
 ```sh
