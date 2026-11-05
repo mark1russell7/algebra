@@ -113,6 +113,34 @@ With `--out report.json`, the command writes each record as one line of `report.
 - `corpus/highways` and `corpus/packing`: the real inputs. The sessions of highways and packing send them.
 - `corpus/packing/smoke-v1-sample.jsonl`: five complete cases of the smoke-v1 dump of packing at the commit `d718b54`. The tests examine the counts and the exact answers of these lines.
 
+## The results
+
+`results/2026-11-05-highways/` keeps census run 41943849500 of the highways dump run 41647717024, at `b7196ba`. It keeps the report, the time log and the float-wrong records of each set. The complete records are too large for the repository. They stay in the artifact of the run for 90 days.
+
+| Set | Tests | Undecided | Float-wrong | Class 1 | Class 2 | Class 3 | Class 4 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `exact-v1` | 206,265,687 | 315,842 | 8 | 0 | 0 | 3 | 5 |
+| `exact-v1-bounds` | 2,597,972,328 | 3,303,590 | 121 | 0 | 2 | 59 | 60 |
+| `fixtures` | 156,763,576,730 | 4,338,238 | 94 | 0 | 0 | 12 | 82 |
+| `fixtures-large` | 3,234,175,115 | 33,781 | 104 | 0 | 2 | 0 | 102 |
+| `screen-v1` | 1,539,279,577 | 1,371,492 | 602 | 0 | 226 | 354 | 22 |
+| `screen-v2` | 6,573,015,403 | 4,977,287 | 13,749 | 0 | 13,202 | 468 | 79 |
+| `screen-v3` | 12,317,181,901 | 10,032,303 | 21,187 | 0 | 20,383 | 639 | 165 |
+| All | 183,231,466,741 | 24,372,533 | 35,865 | 0 | 33,815 | 1,535 | 515 |
+
+The classes:
+
+- Class 1 is a float sign that differs from an exact sign that the bound fixes. Each set has 0.
+- Class 2 has a sign near zero, so rounding decides the answer. The site `physics.outOf` has 31,253 of these tests, in `screen-v2` and `screen-v3` only. So the share of class 2 is not the same in each set: `fixtures` has 0 of 94.
+- Class 3 is a class 2 segment pair in a crossing measure of the bench.
+- Class 4 has clear signs and correct float signs, but the answer of the sender differs from the rule. Each of its 315 records is an exact tie. The part in the box has a length of exactly `eps`, and rounding of `(t1 - t0) * len` makes it larger. A test examines this claim on the kept records.
+
+The sums count a board again if two sets have it. The report has `dirty: true` because the workflow put the tree of highways in the work folder. The workflow excludes that tree at this time.
+
+The census prints a warning for the copies of the rules of `physics.outOf` and `mesh.crossing`. These copies are out of date, but `copyUses` is empty in each report, because each line of this dump has its own rule.
+
+`results/2026-11-04-packing/` keeps census run 41897600161 of the packing dump run 41716950631: 19,752,878,890 tests, with 0 undecided and 0 float-wrong.
+
 ## The tests
 
 `pnpm --filter @mark1russell7/predicate-census test` starts the tests. The property tests use 1000 cases. Set `PROPERTY_RUNS` to change the count.
