@@ -1,9 +1,10 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { siteKpi } from "@mark1russell7/site-pages/vite";
+import { siteKpi, siteStamps } from "@mark1russell7/site-pages/vite";
 import { defineConfig } from "vite";
 import { parseRoadmap, type PackageInfo } from "./src/index.ts";
 import { siteKpiInput } from "./src/kpi.ts";
+import { siteDataStamps } from "./src/stamps.ts";
 
 // The Pages workflow sets SITE_BASE to "/algebra". A local build uses the root.
 const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
@@ -30,7 +31,15 @@ const packages: PackageInfo[] = readdirSync(fileURLToPath(new URL("packages/", r
 export default defineConfig({
   base,
   build: { target: "es2022" },
-  plugins: [siteKpi(() => siteKpiInput(fileURLToPath(new URL("packages/evaluator-bench/results/", root))))],
+  plugins: [
+    siteKpi(() => siteKpiInput(fileURLToPath(new URL("packages/evaluator-bench/results/", root)))),
+    siteStamps(() =>
+      siteDataStamps({
+        census: JSON.parse(readFileSync(new URL("packages/site/data/census-classes.json", root), "utf8")),
+        nearMisses: JSON.parse(readFileSync(new URL("packages/site/data/near-misses.json", root), "utf8")),
+      }),
+    ),
+  ],
   define: {
     __ROADMAP__: JSON.stringify(roadmap),
     __PACKAGES__: JSON.stringify(packages),
