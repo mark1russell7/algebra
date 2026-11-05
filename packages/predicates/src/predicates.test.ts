@@ -7,6 +7,7 @@ import { random } from "@mark1russell7/expression";
 import {
   dyadic as D,
   INCIRCLE_BOUND,
+  INCIRCLE_UNDERFLOW_TERM,
   incircle,
   incircleExact,
   incircleSign,
@@ -41,6 +42,16 @@ describe("the constants", () => {
     expect(ORIENT_BOUND).toBeGreaterThan((3 + 16 * u) * u);
     expect(INCIRCLE_BOUND).toBeGreaterThan((10 + 96 * u) * u);
     expect(UNDERFLOW_TERM).toBe(32 * Number.MIN_VALUE);
+  });
+
+  it("keeps the product of the in-circle filter normal, because a subnormal product is slow", () => {
+    expect(INCIRCLE_UNDERFLOW_TERM).toBe(2 ** -1022);
+  });
+
+  it("has the value of the literal of the in-circle filter on each side of the line", () => {
+    const at = (t: number): ReturnType<typeof incircle> => incircle(0, 0, 2 * t, 0, 0, 2 * t, t, t);
+    expect(at(2 ** -240)).toEqual({ sign: 1, stage: "filter" });
+    expect(at(2 ** -260)).toEqual({ sign: 1, stage: "exact" });
   });
 });
 

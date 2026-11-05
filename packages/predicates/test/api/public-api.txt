@@ -4,10 +4,11 @@
 # and private members. The command `api-report check` compares this file with the built .d.ts files.
 # To accept a change of the API, start the build, then `api-report update`, and review the diff.
 
-## . (build/index.d.ts): 18 names
+## . (build/index.d.ts): 19 names
 
 type Dyadic: build/index.d.ts#Dyadic
 INCIRCLE_BOUND: build/index.d.ts#INCIRCLE_BOUND
+INCIRCLE_UNDERFLOW_TERM: build/index.d.ts#INCIRCLE_UNDERFLOW_TERM
 ORIENT_BOUND: build/index.d.ts#ORIENT_BOUND
 type SegmentIntersection: build/index.d.ts#SegmentIntersection
 type SegmentRelation: build/index.d.ts#SegmentRelation
@@ -35,6 +36,9 @@ interface Dyadic {
 
 ### build/index.d.ts#INCIRCLE_BOUND
 export declare const INCIRCLE_BOUND: number;
+
+### build/index.d.ts#INCIRCLE_UNDERFLOW_TERM
+export declare const INCIRCLE_UNDERFLOW_TERM: number;
 
 ### build/index.d.ts#ORIENT_BOUND
 export declare const ORIENT_BOUND: number;

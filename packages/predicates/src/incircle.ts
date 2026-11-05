@@ -28,11 +28,23 @@ const U = UNIT_ROUNDOFF;
  *
  * In one term, the inner products add at most `2^-1074` times a lift. The squares of a lift add at most `2^-1074` times
  * the inner difference. The inner difference is at most half the sum of the two other lifts. Thus `2^-1073 (alift + blift + clift)`, plus `2^-1073` for
- * the outer products, bounds all underflow errors. The filter adds `UNDERFLOW_TERM (alift + blift + clift + 1)`, which
- * is 16 times more. An overflow gives `Infinity` or `NaN` in the bound or in the determinant, and the filter then does
+ * the outer products, bounds all underflow errors. The filter adds `INCIRCLE_UNDERFLOW_TERM (alift + blift + clift + 1)`,
+ * which is more than `2^-1073 (alift + blift + clift + 1)`. An overflow gives `Infinity` or `NaN` in the bound or in the determinant, and the filter then does
  * not decide.
  */
 export const INCIRCLE_BOUND: number = (10 + 128 * U) * U;
+
+/**
+ * The factor of the underflow term of the in-circle filter: `2^-1022`, the smallest normal float.
+ *
+ * The filter multiplies this factor by `alift + blift + clift + 1` at each call. That sum is at least 1, so the product
+ * is a normal float. A product with a subnormal result costs many cycles on some processors. With the factor `2^-1069`,
+ * run 41896000324 on an Intel Xeon measured approximately 37 ns more than `robust-predicates` at each call.
+ *
+ * A larger factor makes the bound larger, so the filter stays sound. The filter decides fewer inputs only when the
+ * determinant is near `2^-1022` or smaller, so the differences of the points are near `2^-255` or smaller.
+ */
+export const INCIRCLE_UNDERFLOW_TERM: number = 2 ** -1022;
 
 /**
  * The relative bound of stage B of the adaptive stage: `(4 + 128u) u`.
@@ -186,7 +198,7 @@ export function incircleAdaptive(ax: number, ay: number, bx: number, by: number,
 /**
  * This function is the in-circle filter, as a code.
  *
- * The numbers in the bound are the values of `INCIRCLE_BOUND` and `UNDERFLOW_TERM` as literals. The engine folds a
+ * The numbers in the bound are the values of `INCIRCLE_BOUND` and `INCIRCLE_UNDERFLOW_TERM` as literals. The engine folds a
  * literal, so the hot path has no load of a module cell. Change them together with the two constants. The bytecode of
  * this function must stay below 460 bytes, the limit of the engine for an inlined function. Above it, each call boxes 8
  * floats.
@@ -212,7 +224,7 @@ export function incircleCode(ax: number, ay: number, bx: number, by: number, cx:
   const det = alift * (bdxcdy - cdxbdy) + blift * (cdxady - adxcdy) + clift * (adxbdy - bdxady);
   const permanent =
     (Math.abs(bdxcdy) + Math.abs(cdxbdy)) * alift + (Math.abs(cdxady) + Math.abs(adxcdy)) * blift + (Math.abs(adxbdy) + Math.abs(bdxady)) * clift;
-  const bound = ((10 + 128 * 2 ** -53) * 2 ** -53) * permanent + 2 ** -1069 * (alift + blift + clift + 1);
+  const bound = ((10 + 128 * 2 ** -53) * 2 ** -53) * permanent + 2 ** -1022 * (alift + blift + clift + 1);
   if (det > bound) return 1;
   if (-det > bound) return -1;
   return incircleSlow(ax, ay, bx, by, cx, cy, dx, dy);
