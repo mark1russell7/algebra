@@ -1,10 +1,11 @@
 import { checkWorld } from "@mark1russell7/coeval";
 import { describe, expect, it } from "vitest";
-import { compileFloat, compileTape, type Document, type Expression, expressionMachine, type FloatFunction, random, TAPE } from "./index.ts";
+import { compileClosures, compileFloat, compileTape, type Document, type Expression, expressionMachine, type FloatFunction, nodesOf, random, summarize, TAPE, TAPE_ABOVE } from "./index.ts";
 import { docs, POINTS, randomPoint, RUNS, VARS } from "./oracle.test-helper.ts";
 
 const pair = (doc: Document): readonly [FloatFunction, FloatFunction] => {
-  const f = compileFloat(doc, { variables: VARS });
+  // The closures, by name: compileFloat gives the tape to a large document, and a tape against a tape tests nothing.
+  const f = compileClosures(doc, { variables: VARS });
   const t = compileTape(doc, { variables: VARS });
   if (!f.ok || !t.ok) throw new Error("The document does not compile.");
   return [f.value, t.value];
@@ -23,12 +24,52 @@ const x: Expression = { type: "var", value: VARS[0] as string };
 const y: Expression = { type: "var", value: VARS[1] as string };
 const num = (value: number): Expression => ({ type: "num", value });
 
+describe("the choice of compileFloat", () => {
+  const sumOf = (count: number): Expression => ({ type: "add", value: [x, x, ...Array.from({ length: count - 2 }, () => x)] });
+  const nodes = (doc: Expression): number => {
+    const s = summarize(doc);
+    if (!s.ok) throw new Error(s.error.reason);
+    return nodesOf(s.value);
+  };
+  const made = (doc: Expression): FloatFunction => {
+    const f = compileFloat(doc, { variables: VARS });
+    if (!f.ok) throw new Error(f.error.reason);
+    return f.value;
+  };
+
+  it("uses the closures up to TAPE_ABOVE nodes, and the tape above", () => {
+    const sizes = Array.from({ length: 29 }, (_, i) => sumOf(i + 2)).map((doc) => ({ doc, size: nodes(doc) }));
+    expect(sizes.map((s) => s.size)).toEqual(expect.arrayContaining([TAPE_ABOVE, TAPE_ABOVE + 1]));
+    for (const { doc, size } of sizes) expect(made(doc).engine, `${size} nodes`).toBe(size > TAPE_ABOVE ? "tape" : "closures");
+  });
+
+  it("gives the value and the bound of the closures on each side of the line", () => {
+    for (const count of [2, 5, 9, 10, 20]) {
+      const doc = sumOf(count);
+      const closures = compileClosures(doc, { variables: VARS });
+      if (!closures.ok) throw new Error(closures.error.reason);
+      same(doc, [closures.value, made(doc)], VARS.map((_, i) => 0.1 * (i + 1)));
+    }
+  });
+
+  it("names the form of each compile", () => {
+    const closures = compileClosures(sumOf(2), { variables: VARS });
+    const tape = compileTape(sumOf(2), { variables: VARS });
+    expect(closures.ok && closures.value.engine).toBe("closures");
+    expect(tape.ok && tape.value.engine).toBe("tape");
+  });
+
+  it("refuses a variable with no position on each side of the line", () => {
+    for (const doc of [sumOf(2), sumOf(20)]) expect(compileFloat(doc, { variables: [] }).ok).toBe(false);
+  });
+});
+
 describe("the verb tape", () => {
   it("has an evaluator of each kind", () => {
     expect(checkWorld(expressionMachine, [TAPE])).toEqual([]);
   });
 
-  it("gives the value and the bound of compileFloat on random documents", () => {
+  it("gives the value and the bound of the closures on random documents", () => {
     const r = random(202);
     for (const doc of docs(29, RUNS)) {
       const fns = pair(doc);
@@ -62,7 +103,7 @@ describe("the verb tape", () => {
     { type: "eq", value: [x, y] },
   ];
 
-  it("gives the value and the bound of compileFloat at the values with no real result", () => {
+  it("gives the value and the bound of the closures at the values with no real result", () => {
     for (const doc of shapes) {
       const fns = pair(doc);
       for (const a of special) {

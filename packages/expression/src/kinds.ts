@@ -207,12 +207,34 @@ export interface CompileFloatOptions {
   readonly variables?: readonly string[];
 }
 
+/** The form of a compiled document: a tree of closures, or a flat tape of instructions. */
+export type FloatEngine = "closures" | "tape";
+
+/**
+ * The largest count of nodes for which `compileFloat` uses the closures. The runs 41912567142 and 41912596070 gave this
+ * value. In those runs, the closures win at 7 nodes or fewer, and the tape wins at 15 nodes or more. The sizes between
+ * are a tie.
+ */
+export const TAPE_ABOVE = 10;
+
+/**
+ * This function gives the count of the nodes of a document, from the cost of its summary.
+ *
+ * @param summary - The summary of the document.
+ * @returns The count of the nodes, the root included.
+ */
+export function nodesOf(summary: Summary): number {
+  return Object.values(summary.cost).reduce((a, b) => a + b, 0);
+}
+
 /** A compiled document: the order of its variables and the function of their values. */
 export interface FloatFunction {
   /** The names of the variables, in the order of the values of `evaluate`. */
   readonly variables: readonly string[];
+  /** The form of the compiled document. The value and the bound do not depend on the form. */
+  readonly engine: FloatEngine;
   /**
-   * This function gives the float value and the bound of its error at one point. It uses only the closures of the
+   * This function gives the float value and the bound of its error at one point. It uses only the result of the
    * compilation. It has no `eval`, and it does not use coeval.
    *
    * @param values - The value of each variable, in the order of `variables`.
@@ -225,8 +247,7 @@ export interface FloatFunction {
  * This function compiles a document one time with a compiled verb of coeval. It gives the order of the variables and
  * the cell of the root.
  */
-function compileWith<C>(verb: string, doc: Document, options: CompileFloatOptions): Result<{ variables: string[]; root: C }> {
-  const summary = summarize(doc);
+function compileWith<C>(verb: string, doc: Document, options: CompileFloatOptions, summary: Result<Summary> = summarize(doc)): Result<{ variables: string[]; root: C }> {
   if (!summary.ok) return summary;
   const variables = options.variables ?? summary.value.free;
   const missing = summary.value.free.filter((name) => !variables.includes(name));
@@ -244,20 +265,41 @@ function checkCount(values: ArrayLike<unknown>, count: number): void {
 }
 
 /**
- * This function compiles a document one time with the verb `float` of coeval. The result is a tree of closures, one
- * closure for each node. Each call gives a value and a bound of its error. A result is not a value alone at any time.
+ * This function compiles a document one time for float evaluation. Each call gives a value and a bound of its error. A
+ * result is not a value alone at any time. A document with more than `TAPE_ABOVE` nodes gets the tape, and a smaller
+ * document gets the closures. The two forms give the same value and the same bound.
  *
  * @param doc - The document. Use `documentSchema` to check a document from outside.
  * @param options - The order of the variables.
  * @returns The compiled function, or the error of coeval.
  */
 export function compileFloat(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
-  const made = compileWith<FloatCell>(FLOAT, doc, options);
+  const summary = summarize(doc);
+  if (!summary.ok) return summary;
+  return nodesOf(summary.value) > TAPE_ABOVE ? tapeFunction(doc, options, summary) : closureFunction(doc, options, summary);
+}
+
+/**
+ * This function compiles a document one time with the verb `float` of coeval. The result is a tree of closures, one
+ * closure for each node. It gives the value and the bound of `compileFloat`.
+ *
+ * @param doc - The document. Use `documentSchema` to check a document from outside.
+ * @param options - The order of the variables.
+ * @returns The compiled function, or the error of coeval.
+ */
+export function compileClosures(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
+  return closureFunction(doc, options, summarize(doc));
+}
+
+/** This function gives the closures of a document with a known summary. */
+function closureFunction(doc: Document, options: CompileFloatOptions, summary: Result<Summary>): Result<FloatFunction> {
+  const made = compileWith<FloatCell>(FLOAT, doc, options, summary);
   if (!made.ok) return made;
   const { variables, root } = made.value;
   const run = root.run;
   return ok({
     variables,
+    engine: "closures",
     evaluate(values) {
       checkCount(values, variables.length);
       const value = run(values);
@@ -275,12 +317,18 @@ export function compileFloat(doc: Document, options: CompileFloatOptions = {}): 
  * @returns The compiled function, or the error of coeval.
  */
 export function compileTape(doc: Document, options: CompileFloatOptions = {}): Result<FloatFunction> {
-  const made = compileWith<TapeTree>(TAPE, doc, options);
+  return tapeFunction(doc, options, summarize(doc));
+}
+
+/** This function gives the tape of a document with a known summary. */
+function tapeFunction(doc: Document, options: CompileFloatOptions, summary: Result<Summary>): Result<FloatFunction> {
+  const made = compileWith<TapeTree>(TAPE, doc, options, summary);
   if (!made.ok) return made;
   const { variables, root } = made.value;
   const run = tapeOf(root);
   return ok({
     variables,
+    engine: "tape",
     evaluate(values) {
       checkCount(values, variables.length);
       return run(values);

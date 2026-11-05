@@ -7,7 +7,7 @@ import { compileFloat, compileTape, random, randomExpression, rootError, summari
 import type { Expression } from "@mark1russell7/expression";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { BOUND_LIMIT, caseOf, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, writtenModule } from "./index.ts";
+import { BOUND_LIMIT, caseOf, type CompileFacts, compileRatio, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, writtenModule } from "./index.ts";
 
 /** This function writes a module of written functions to a new folder, and imports it. */
 async function load(cases: readonly { name: string; document: Expression; variables: readonly string[] }[]): Promise<Record<string, Evaluate>> {
@@ -128,5 +128,19 @@ describe("the report", () => {
     expect(seedsOf("1,3,9-11")).toEqual([1, 3, 9, 10, 11]);
     expect(() => seedsOf("5-2")).toThrow(RangeError);
     expect(() => seedsOf("x")).toThrow(RangeError);
+  });
+});
+
+describe("the compile ratio", () => {
+  it("gives the median over the cases of the median of each case, and ignores a process with no compile time", () => {
+    const meta: readonly CompileFacts[] = [
+      { case: "a", compile: { closures: 1, tape: 2 } },
+      { case: "a", compile: { closures: 1, tape: 4 } },
+      { case: "b", compile: { closures: 2, tape: 1 } },
+      { case: "c", compile: { closures: 1, tape: 1 } },
+      { case: "d" },
+    ];
+    expect(compileRatio(meta)).toBe(1);
+    expect(compileRatio([{ case: "d" }])).toBeNull();
   });
 });

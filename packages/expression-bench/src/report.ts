@@ -131,6 +131,33 @@ export function sizeMarkdown(rows: readonly SizeRow[]): string {
   ].join("\n");
 }
 
+/** The facts of a process that `compileRatio` reads. */
+export interface CompileFacts {
+  readonly case: string;
+  readonly compile?: { readonly closures: number; readonly tape: number };
+}
+
+/**
+ * This function gives the median, over the cases, of the compile time of the tape over the compile time of the closures.
+ * The ratio of a case is the median of its processes.
+ *
+ * @param meta - The facts of the processes. A process without the field `compile` does not count.
+ * @returns The median ratio, or null with no process that has the field.
+ */
+export function compileRatio(meta: readonly CompileFacts[]): number | null {
+  const byCase = new Map<string, number[]>();
+  for (const m of meta) {
+    if (m.compile === undefined) continue;
+    byCase.set(m.case, [...(byCase.get(m.case) ?? []), m.compile.tape / m.compile.closures]);
+  }
+  return byCase.size === 0 ? null : median([...byCase.values()].map((ratios) => median(ratios)));
+}
+
+/** This function gives the compile ratio as Markdown. */
+export function compileMarkdown(ratio: number | null): string {
+  return ratio === null ? "This run has no compile times.\n" : `The compile time of the tape over the compile time of the closures has a median of ${ratio.toFixed(3)}.\n`;
+}
+
 /** This function gives a time verdict as Markdown. */
 export function speedMarkdown(s: Speed, title: string): string {
   const f = (x: number): string => x.toFixed(3);

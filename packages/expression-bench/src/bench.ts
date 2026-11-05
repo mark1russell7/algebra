@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { corpus, FAMILIES, nodeCount, SEEDS } from "@algebra/expression-corpus";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
 import { type PairName, PAIRS, seedsOf } from "./cases.ts";
-import { BOUND_LIMIT, LIMIT, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown } from "./report.ts";
+import { BOUND_LIMIT, type CompileFacts, compileMarkdown, compileRatio, LIMIT, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown } from "./report.ts";
 import { writtenModule } from "./source.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>] [--seeds <1,2,9-24>] [--families <name,name>]";
@@ -72,8 +72,9 @@ for (const p of pairs) {
   if (p === "ft") {
     const s = speed(records[p], aa);
     const sizes = speedBySize(records[p], aa, (name) => nodes.get(name) ?? 0);
-    results[p] = { ...s, sizes };
-    parts.push(speedMarkdown(s, `The time of ${b} over the time of ${a}`), sizeMarkdown(sizes));
+    const compile = compileRatio(meta as CompileFacts[]);
+    results[p] = { ...s, sizes, compile };
+    parts.push(speedMarkdown(s, `The time of ${b} over the time of ${a}`), sizeMarkdown(sizes), compileMarkdown(compile));
   } else {
     const r = report(records[p], aa, a === "bound" ? BOUND_LIMIT : LIMIT);
     results[p] = r;
