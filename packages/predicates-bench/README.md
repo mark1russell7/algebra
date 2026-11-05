@@ -48,6 +48,8 @@ gh workflow run bench-predicates.yml -R mark1russell7/algebra --ref main
 
 The artifact `a5-bench` has `records-ab.jsonl`, `records-aa.jsonl`, `meta.jsonl`, `machine.txt`, `report.json` and `report.md`. The workflow keeps it for 90 days.
 
+The inputs `cases` and `repeat` of the workflow start the same cases many times, with each process fresh. A value of `repeat` above 1 writes each start to a folder `r1`, `r2` and so on. Use them to examine a state that only some processes have.
+
 To examine only the format of the records, start a small run: `node src/bench.ts --out <folder> --rounds 3 --ms 1 --cases <2 names>`.
 
 ## The results

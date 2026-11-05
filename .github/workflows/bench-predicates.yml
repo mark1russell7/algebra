@@ -12,6 +12,12 @@ on:
       ms:
         description: The time in milliseconds of one batch of the arm a
         default: "10"
+      cases:
+        description: The names of the cases, with commas. Empty means each case.
+        default: ""
+      repeat:
+        description: The number of times to start the bench. Above 1, each start writes to a folder r1, r2 and so on.
+        default: "1"
 
 permissions:
   contents: read
@@ -30,6 +36,8 @@ jobs:
     env:
       ROUNDS: ${{ inputs.rounds }}
       MS: ${{ inputs.ms }}
+      CASES: ${{ inputs.cases }}
+      REPEAT: ${{ inputs.repeat }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -47,7 +55,15 @@ jobs:
           cat "$RUNNER_TEMP/out/machine.txt"
       - name: Bench
         working-directory: packages/predicates-bench
-        run: node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS"
+        run: |
+          if [ "${REPEAT:-1}" -le 1 ]; then
+            node src/bench.ts --out "$RUNNER_TEMP/out" --rounds "$ROUNDS" --ms "$MS" ${CASES:+--cases "$CASES"}
+          else
+            for i in $(seq 1 "$REPEAT"); do
+              mkdir -p "$RUNNER_TEMP/out/r$i"
+              node src/bench.ts --out "$RUNNER_TEMP/out/r$i" --rounds "$ROUNDS" --ms "$MS" ${CASES:+--cases "$CASES"}
+            done
+          fi
       - name: Summary
         if: always()
         run: cat "$RUNNER_TEMP/out/report.md" >> "$GITHUB_STEP_SUMMARY" || true
