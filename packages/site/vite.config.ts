@@ -37,6 +37,7 @@ export default defineConfig({
       siteDataStamps({
         census: JSON.parse(readFileSync(new URL("packages/site/data/census-classes.json", root), "utf8")),
         nearMisses: JSON.parse(readFileSync(new URL("packages/site/data/near-misses.json", root), "utf8")),
+        kept: JSON.parse(readFileSync(new URL("packages/site/data/kept-runs.json", root), "utf8")),
       }),
     ),
   ],

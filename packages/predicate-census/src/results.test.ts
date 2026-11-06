@@ -1,11 +1,14 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { wrongClassOf } from "./census.ts";
 import type { Classified, WrongClass } from "./census.ts";
 import { clippedLengthIsEps } from "./oracle.test-helper.ts";
 
-const FOLDER = new URL("../results/2026-11-05-highways/", import.meta.url);
+// The monthly study keeps one census of highways, in a folder named by its day.
+const RESULTS = new URL("../results/", import.meta.url);
+const HIGHWAYS = readdirSync(RESULTS).filter((name) => /^\d{4}-\d{2}-\d{2}-highways$/.test(name));
+const FOLDER = new URL(`${HIGHWAYS.sort().at(-1) ?? "none"}/`, RESULTS);
 const SETS = ["exact-v1", "exact-v1-bounds", "fixtures", "fixtures-large", "screen-v1", "screen-v2", "screen-v3"];
 
 interface Kept extends Pick<Classified, "predicate" | "signs"> {
@@ -33,6 +36,10 @@ function reported(set: string): Counts {
 }
 
 describe("the kept float-wrong records of the census", () => {
+  it("are in one folder of highways", () => {
+    expect(HIGHWAYS).toHaveLength(1);
+  });
+
   it.each(SETS)("give the classes of the report of %s", (set) => {
     const counts: Counts = {
       "1": { tests: 0, records: 0 },

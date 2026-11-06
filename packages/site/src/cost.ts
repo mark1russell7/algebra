@@ -26,6 +26,8 @@ export interface PairVerdict {
 export interface CostReport {
   readonly model: CostModel;
   readonly pairs: readonly PairVerdict[];
+  /** The count of the wrong answers of the stitched plan in the run. */
+  readonly stitchedFailures: number;
   readonly selections: readonly (Selection & { readonly question: string })[];
 }
 
@@ -40,6 +42,26 @@ export interface StageRow {
   readonly inPlan: boolean;
   /** The part of the points that reach the stage in the plan, from 0 to 1. A stage out of the plan has `null`. */
   readonly reach: number | null;
+}
+
+/**
+ * This function gives the verdict of the stitched plan against fixed `exact` over all the cases of the run, in plain words.
+ *
+ * @throws {Error} The report has no pair with the stage `exact`.
+ */
+export function overallText(report: Pick<CostReport, "pairs" | "stitchedFailures">): string {
+  const exact = report.pairs.find((p) => p.stage === "exact");
+  if (!exact) throw new Error("The report has no pair with the stage exact.");
+  const wrong = report.stitchedFailures === 1 ? "1 wrong answer" : `${report.stitchedFailures} wrong answers`;
+  return `All cases together in that run: ${exact.outcome}, median × ${exact.medianRatio.toPrecision(3)}. The plan gave ${wrong}.`;
+}
+
+/** This function gives the address of the kept folder of a run of the bench, and the text of its link. */
+export function rawRecordsLink(bench: { readonly run: string; readonly folder: string }): { readonly href: string; readonly text: string } {
+  return {
+    href: `https://github.com/mark1russell7/algebra/tree/main/packages/evaluator-bench/results/${bench.folder}`,
+    text: `The raw records of run ${bench.run}`,
+  };
 }
 
 /** This function gives each question of the model, in the order of the model. */

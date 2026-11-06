@@ -48,7 +48,14 @@ describe("the report", () => {
 });
 
 describe("the kept results", () => {
-  const kept = (file: string): unknown => JSON.parse(fs.readFileSync(new URL(`../results/2026-11-03/${file}`, import.meta.url), "utf8"));
+  // The monthly study keeps one run, in a folder named by its day.
+  const results = new URL("../results/", import.meta.url);
+  const days = fs.readdirSync(results).filter((name) => /^\d{4}-\d{2}-\d{2}$/.test(name));
+  const kept = (file: string): unknown => JSON.parse(fs.readFileSync(new URL(`${days[0] ?? "none"}/${file}`, results), "utf8"));
+
+  it("are one run", () => {
+    expect(days).toHaveLength(1);
+  });
 
   it("give the plans of the report from the kept cost model", () => {
     const model = kept("model.json") as CostModel;

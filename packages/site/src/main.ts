@@ -2,6 +2,7 @@ import "./style.css";
 import costReport from "../data/a6-report.json";
 import censusJson from "../data/census-classes.json";
 import nearMissJson from "../data/near-misses.json";
+import keptRuns from "../data/kept-runs.json";
 import { startClasses, startRecords } from "./census-view.ts";
 import type { CensusFile } from "./census-view.ts";
 import type { CostReport } from "./cost.ts";
@@ -36,7 +37,7 @@ const asked = new URLSearchParams(window.location.search).get("preset");
 if (asked) explorer.load(asked);
 
 startPlayground();
-startCost(costReport as unknown as CostReport);
+startCost(costReport as unknown as CostReport, keptRuns.bench);
 startClasses(censusJson as CensusFile);
 startRecords(file, (index) => {
   explorer.load(`record-${index}`);

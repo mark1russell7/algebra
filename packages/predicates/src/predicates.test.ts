@@ -170,15 +170,15 @@ describe("classifySegments", () => {
   });
 });
 
-describe("the 42 real records of the A13 census", () => {
+describe("the real records of the A13 census", () => {
   // The site keeps the records in packages/site/data/near-misses.json.
   const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../site/data/near-misses.json");
   const records = (JSON.parse(fs.readFileSync(file, "utf8")) as { records: C.NearMiss[] }).records;
   const v = (x: unknown): [number, number] => x as [number, number];
 
-  it("are 42: 33 segment pairs, 6 segment-box tests and 3 point sides", () => {
-    expect(records).toHaveLength(42);
-    expect(records.filter((r) => r.predicate === "segmentPair")).toHaveLength(33);
+  // The monthly study selects the records again (packages/site/src/study.ts), so the test checks the kinds and not a count.
+  it("are segment pairs, segment-box tests and point sides, with one of each kind at least", () => {
+    expect(new Set(records.map((r) => r.predicate))).toEqual(new Set(["segmentPair", "segmentBox", "pointSide"]));
   });
 
   it("get the exact answer of the census", () => {

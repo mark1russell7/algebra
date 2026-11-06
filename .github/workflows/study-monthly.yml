@@ -1,0 +1,337 @@
+# The monthly study of the site. On day 4 of each month, this workflow measures the data of the site again with the
+# code of main: the census of the newest predicate dumps of highways and packing (census.yml), and the bench of A6
+# (bench-select.yml). The page states a cost of the current code, so its data has an age limit of 33 days
+# (packages/site/src/stamps.ts). highways makes its dumps on day 1 of each month.
+#   gh workflow run study-monthly.yml -R mark1russell7/algebra [--ref <branch>]
+#
+# The job "refresh" runs the code of the repository, so it gets only read permissions. It does the checks of the
+# site itself. The jobs after it run no code of the repository, and each gets only its own permission:
+#   branch   commits the data on the branch study/<YYYY-MM> and pushes it                  contents: write
+#   issue    opens or updates one issue with the label study-refresh and the compare link  issues: write
+#   report   opens an issue when a job of the run fails                                    issues: write
+# The workflow opens no pull request. A pull request that the token of GitHub Actions opens starts no workflow, so its
+# required checks never run. A person opens the pull request from the branch, and CI then runs on it.
+# The workflow never pushes to main. The next steps are in CLAUDE.md, section "The monthly study".
+name: Study each month
+
+on:
+  schedule:
+    # 06:48 UTC on day 4 of each month. The minute comes from the rule runner-budget.
+    - cron: "48 6 4 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+# One study at a time.
+concurrency:
+  group: study-monthly
+  cancel-in-progress: false
+
+# The size of one run, for the watch of the runners. The measured runs of 2026-11 took 30 job-minutes for the
+# bench, 41 for the census of highways (the longest set 20) and 1 for packing.
+env:
+  STATED_JOBS: "13"
+  STATED_JOB_MINUTES: "100"
+  STATED_LONGEST_MIN: "40"
+  STATED_REASON: "The monthly study: the census of 7 sets of highways and 1 of packing, the A6 bench, and the checks of the site."
+  HIGHWAYS_SETS: '["exact-v1","exact-v1-bounds","fixtures","fixtures-large","screen-v1","screen-v2","screen-v3"]'
+  PACKING_SET: pack-select-v2
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  plan:
+    name: Find the newest dumps
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      highways: ${{ steps.find.outputs.highways }}
+      packing: ${{ steps.find.outputs.packing }}
+      sets: ${{ steps.find.outputs.sets }}
+      packing-sets: ${{ steps.find.outputs.packing-sets }}
+    steps:
+      # The newest green run on main of each dump workflow whose artifacts have not expired. With no such run, the
+      # study stops, and the job "report" opens an issue.
+      - name: Find the dump runs
+        id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          newest() {
+            local repo=$1 workflow=$2; shift 2
+            for id in $(gh run list -R "$repo" -w "$workflow" -b main -s success -L 20 --json databaseId -q '.[].databaseId'); do
+              names=$(gh api "repos/$repo/actions/runs/$id/artifacts?per_page=100" -q '.artifacts[] | select(.expired == false) | .name')
+              ok=1
+              for name in "$@"; do grep -qx "$name" <<< "$names" || ok=0; done
+              if [ "$ok" = 1 ]; then echo "$id"; return 0; fi
+            done
+            echo "::error::$repo has no green run of $workflow on main with the artifacts $*." >&2
+            return 1
+          }
+          mapfile -t dumps < <(jq -r '.[] | "predicate-dump-" + .' <<< "$HIGHWAYS_SETS")
+          highways=$(newest mark1russell7/highways predicate-dump.yml "${dumps[@]}")
+          packing=$(newest mark1russell7/packing predicates.yml "predicates-$PACKING_SET")
+          {
+            echo "highways=$highways"
+            echo "packing=$packing"
+            echo "sets=$(jq -c . <<< "$HIGHWAYS_SETS")"
+            echo "packing-sets=$(jq -cn --arg s "$PACKING_SET" '[$s]')"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "- The dump of highways: https://github.com/mark1russell7/highways/actions/runs/$highways"
+            echo "- The dump of packing: https://github.com/mark1russell7/packing/actions/runs/$packing"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  census-highways:
+    name: Census of highways
+    needs: plan
+    permissions:
+      contents: read
+    uses: ./.github/workflows/census.yml
+    with:
+      repo: mark1russell7/highways
+      run: ${{ needs.plan.outputs.highways }}
+      sets: ${{ needs.plan.outputs.sets }}
+      prefix: predicate-dump-
+
+  census-packing:
+    name: Census of packing
+    needs: plan
+    permissions:
+      contents: read
+    uses: ./.github/workflows/census.yml
+    with:
+      repo: mark1russell7/packing
+      run: ${{ needs.plan.outputs.packing }}
+      sets: ${{ needs.plan.outputs.packing-sets }}
+      prefix: predicates-
+
+  bench:
+    name: Bench of A6
+    needs: plan
+    permissions:
+      contents: read
+    uses: ./.github/workflows/bench-select.yml
+    with:
+      rounds: "31"
+      ms: "10"
+
+  refresh:
+    name: Write the data and check the site
+    needs: [plan, census-highways, census-packing, bench]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # The step "The start of the run" reads the time of the run.
+      actions: read
+    outputs:
+      day: ${{ steps.data.outputs.day }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: census-kept-*
+          path: ${{ runner.temp }}/artifacts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: a6-bench
+          path: ${{ runner.temp }}/artifacts/a6-bench
+      - name: The start of the run
+        id: run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "started=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" -q .run_started_at)" >> "$GITHUB_OUTPUT"
+      # The refresh writes the data files of the site and the kept folders, and removes the kept folders of the last
+      # run. It stops when a report is not of the commit of this run.
+      - name: Write the data
+        env:
+          STARTED: ${{ steps.run.outputs.started }}
+          HIGHWAYS: ${{ needs.plan.outputs.highways }}
+          PACKING: ${{ needs.plan.outputs.packing }}
+        run: >-
+          node packages/site/src/study-cli.ts refresh --artifacts "$RUNNER_TEMP/artifacts" --run "$GITHUB_RUN_ID"
+          --started "$STARTED" --commit "$GITHUB_SHA" --highways-dump "$HIGHWAYS" --sets "$HIGHWAYS_SETS"
+          --packing-dump "$PACKING" --packing-set "$PACKING_SET"
+      # The checks of the packages whose tests read the data, and the build of the site, as in ci.yml and pages.yml.
+      - name: Typecheck the site
+        run: pnpm --filter @algebra/site run typecheck
+      - name: Test the packages that read the data
+        run: |
+          for p in @algebra/site @mark1russell7/predicates @mark1russell7/predicate-census @algebra/evaluator-bench; do
+            pnpm --filter "$p" run test
+          done
+      - name: Build the site
+        run: pnpm --filter @algebra/site run build
+        env:
+          SITE_BASE: /algebra
+      # The change has only the data of the site and the kept folders. A change to another file stays out of the
+      # change, and the log names it.
+      - name: Make the change and the summary of the run
+        id: data
+        env:
+          STARTED: ${{ steps.run.outputs.started }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          HIGHWAYS: ${{ needs.plan.outputs.highways }}
+          PACKING: ${{ needs.plan.outputs.packing }}
+        run: |
+          git add -A -- packages/site/data packages/predicate-census/results packages/evaluator-bench/results
+          other=$(git status --porcelain=v1 --untracked-files=all | grep -v '^[AMDR]  ' || true)
+          if [ -n "$other" ]; then
+            echo "::warning::The run changed files outside the data of the study. The change does not include them."
+            echo "$other"
+          fi
+          if git diff --cached --quiet; then
+            echo "::error::The run changed no file of the study."
+            exit 1
+          fi
+          day=${STARTED:0:10}
+          mkdir -p "$RUNNER_TEMP/out"
+          git diff --cached --binary > "$RUNNER_TEMP/out/study.patch"
+          git diff --cached --stat
+          {
+            echo "The workflow study-monthly.yml measured the data of the site again at the commit $GITHUB_SHA."
+            echo
+            echo "- The run: $RUN_URL"
+            echo "- The census of the highways dump https://github.com/mark1russell7/highways/actions/runs/$HIGHWAYS and the packing dump https://github.com/mark1russell7/packing/actions/runs/$PACKING"
+            node -e '
+              const fs = require("node:fs");
+              const c = JSON.parse(fs.readFileSync("packages/site/data/census-classes.json", "utf8"));
+              const n = JSON.parse(fs.readFileSync("packages/site/data/near-misses.json", "utf8"));
+              const r = JSON.parse(fs.readFileSync("packages/site/data/a6-report.json", "utf8"));
+              const e = r.pairs.find((p) => p.stage === "exact");
+              const fw = c.highways.sets.reduce((s, x) => s + x.floatWrong, 0);
+              console.log(`- highways: ${fw} float-wrong tests over ${c.highways.sets.length} sets. packing: ${c.packing.floatWrong} float-wrong tests.`);
+              console.log(`- The explorer: ${n.records.length} near misses.`);
+              console.log(`- The bench: the stitched plan against exact is ${e.outcome}, median x ${e.medianRatio.toPrecision(3)}, with ${r.stitchedFailures} wrong answers.`);
+            '
+            echo
+            echo "The checks of the run: the typecheck of the site, the tests of the site, predicates, predicate-census and evaluator-bench, and the build of the site."
+            echo
+            echo "A failing cell of the census is a finding: write it in docs/ROADMAP.md."
+          } > "$RUNNER_TEMP/out/body.md"
+          cat "$RUNNER_TEMP/out/body.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "day=$day" >> "$GITHUB_OUTPUT"
+      - name: Upload the change
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: study-data
+          path: ${{ runner.temp }}/out/
+          if-no-files-found: error
+          retention-days: 30
+
+  branch:
+    name: Push the branch
+    needs: refresh
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      branch: ${{ steps.push.outputs.branch }}
+    steps:
+      # This job runs no code of the repository. The checkout keeps its token, for the push.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: study-data
+          path: ${{ runner.temp }}/study-data
+      - name: Commit the data and push the branch
+        id: push
+        env:
+          DAY: ${{ needs.refresh.outputs.day }}
+          PATCH: ${{ runner.temp }}/study-data/study.patch
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if ! [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::The day is not a day: $DAY"
+            exit 1
+          fi
+          # The patch can change only the data of the site and the kept folders.
+          git apply --numstat "$PATCH" | cut -f3 > "$RUNNER_TEMP/paths.txt"
+          if grep -Ev '^packages/(site/data/|predicate-census/results/|evaluator-bench/results/)' "$RUNNER_TEMP/paths.txt"; then
+            echo "::error::The patch changes a file outside the data of the study."
+            exit 1
+          fi
+          git apply --index "$PATCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          branch="study/${DAY:0:7}"
+          git switch -c "$branch"
+          git commit -q -m "study: the run of $DAY" -m "The workflow study-monthly.yml measured the data of the site again: $RUN_URL"
+          # The branch belongs to this workflow: a second run in the same month replaces it.
+          git push --force origin "$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+  issue:
+    name: Open or update the issue of the refresh
+    needs: [refresh, branch]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: study-data
+          path: ${{ runner.temp }}/study-data
+      # One open issue with the label study-refresh at a time: a second run updates it.
+      - name: Open or update the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BASE: ${{ github.ref_name }}
+          HEAD: ${{ needs.branch.outputs.branch }}
+          DAY: ${{ needs.refresh.outputs.day }}
+        run: |
+          compare="https://github.com/$REPO/compare/$BASE...$HEAD?expand=1"
+          {
+            echo "The branch \`$HEAD\` has the data of the run of $DAY. Open the pull request from it: $compare"
+            echo
+            echo "Open it with a token of a person, so CI starts on it. Read the change, wait for the checks, and merge it by hand. Then close this issue."
+            echo
+            cat "$RUNNER_TEMP/study-data/body.md"
+          } > "$RUNNER_TEMP/issue.md"
+          gh label create study-refresh -R "$REPO" --color 0E8A16 --description "The monthly study has new data on a branch" --force
+          number=$(gh issue list -R "$REPO" --label study-refresh --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" -R "$REPO" --title "study: the data of $DAY is on $HEAD" --body-file "$RUNNER_TEMP/issue.md"
+            echo "The run updated the issue #$number: $compare" >> "$GITHUB_STEP_SUMMARY"
+          else
+            url=$(gh issue create -R "$REPO" --label study-refresh --title "study: the data of $DAY is on $HEAD" --body-file "$RUNNER_TEMP/issue.md")
+            echo "The run opened the issue $url: $compare" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # The freshness gate stops the deploys of the site when the data is more than 33 days old. This issue tells a
+  # person about a failed run on the same day, so the deploys do not stop first.
+  report:
+    name: Report a failed run
+    needs: [plan, census-highways, census-packing, bench, refresh, branch, issue]
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open an issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue create -R "$REPO" --title "The monthly study failed" \
+            --body "The run $RUN_URL failed. The deploys of the site stop when the data is more than 33 days old. Start the run again, or correct the failure. A failing cell of the census is a finding: write it in docs/ROADMAP.md."
