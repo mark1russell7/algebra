@@ -43,6 +43,10 @@ concurrency:
   group: census-${{ inputs.run }}
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   census:
     runs-on: ubuntu-latest
