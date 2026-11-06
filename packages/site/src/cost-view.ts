@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 import type { Question } from "@algebra/evaluator-select";
-import { logPlace, planAt, questionName, questionsOf, scaleExact, stageRows } from "./cost.ts";
+import { logPlace, overallText, planAt, questionName, questionsOf, rawRecordsLink, scaleExact, stageRows } from "./cost.ts";
 import type { CostReport } from "./cost.ts";
 
 const LABELS: Readonly<Record<string, string>> = {
@@ -58,8 +58,13 @@ function renderFamilies(report: CostReport): void {
     .join("");
 }
 
-/** This function starts the cost section on the page. */
-export function startCost(report: CostReport): void {
+/** This function starts the cost section on the page. The bench names the run of the report and its kept folder. */
+export function startCost(report: CostReport, bench: { readonly run: string; readonly folder: string }): void {
+  byId("cost-overall").textContent = overallText(report);
+  const link = rawRecordsLink(bench);
+  const raw = byId<HTMLAnchorElement>("cost-raw");
+  raw.href = link.href;
+  raw.textContent = link.text;
   const questions = questionsOf(report.model);
   const chips = byId("cost-questions");
   const factorInput = byId<HTMLInputElement>("cost-factor");

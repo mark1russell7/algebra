@@ -42,3 +42,14 @@ Write all prose of this repository in the style of ASD-STE100 Simplified Technic
 - Each evaluator states its error. A result without an error bound is not a result.
 - Keep each measured result, the losers too, with its raw records.
 - Benches and long property runs operate in CI, not on the local machine.
+
+## The monthly study
+
+- The workflow `study-monthly.yml` measures the data of the site again on day 4 of each month. It starts `census.yml` and `bench-select.yml` at one commit.
+- The data has an age limit of 33 days. After the limit, the freshness gate stops the deploys of the site.
+- The run opens a pull request from the branch `study/<YYYY-MM>`. Read the change, wait for the checks, and merge it by hand.
+- GitHub refuses that pull request while "Allow GitHub Actions to create and approve pull requests" is off. The summary of the run then gives the compare link.
+- `packages/site/src/study.ts` writes the data files and the kept folders. `data/kept-runs.json` names the run of each kept folder.
+- The explorer keeps one float-wrong record for each set and source line of the call. It keeps the record with the most tests, and the lowest line on a tie.
+- A failing cell of the census is a finding. Write it in `docs/ROADMAP.md`. Do not make the band wider because of it.
+- When a run fails, the job `report` opens an issue. Correct the cause, then start the run again with `workflow_dispatch`.

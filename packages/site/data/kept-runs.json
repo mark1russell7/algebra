@@ -1,0 +1,33 @@
+{
+  "bench": {
+    "run": "41716746074",
+    "folder": "2026-11-03"
+  },
+  "census": {
+    "highways": "2026-11-05-highways",
+    "packing": "2026-11-04-packing"
+  },
+  "runs": {
+    "41716746074": {
+      "date": "2026-11-03T20:53:42Z",
+      "commit": "0895e02ca2aa0aca1082a67f24d520464001a49c",
+      "engines": {
+        "@algebra/evaluator-select": "0.1.0"
+      }
+    },
+    "41943849500": {
+      "date": "2026-11-05T00:46:49Z",
+      "commit": "b7196ba8758105c23247256f6f3b7e1c46e3942e",
+      "engines": {
+        "@mark1russell7/predicate-census": "0.2.0"
+      }
+    },
+    "41897600161": {
+      "date": "2026-11-04T19:30:35Z",
+      "commit": "61f3f12c72a16fe64edae4eb0b97adacb51a5a13",
+      "engines": {
+        "@mark1russell7/predicate-census": "0.2.0"
+      }
+    }
+  }
+}

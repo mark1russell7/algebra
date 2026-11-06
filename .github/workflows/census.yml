@@ -2,9 +2,24 @@
 # starts packages/predicate-census on each set and keeps each report as an artifact.
 # Start it with: gh workflow run census.yml -R mark1russell7/algebra -f run=<run id>
 # For packing: -f repo=mark1russell7/packing -f prefix=predicates- -f sets='["pack-select-v2"]'
+# The monthly study (study-monthly.yml) calls it too.
 name: Census
 
 on:
+  workflow_call:
+    inputs:
+      repo:
+        type: string
+        default: mark1russell7/highways
+      run:
+        type: string
+        required: true
+      sets:
+        type: string
+        default: '["exact-v1","exact-v1-bounds","fixtures","fixtures-large","screen-v1","screen-v2","screen-v3"]'
+      prefix:
+        type: string
+        default: predicate-dump-
   workflow_dispatch:
     inputs:
       repo:
@@ -93,6 +108,20 @@ jobs:
           if [ -d "$GITHUB_WORKSPACE/highways-tree" ]; then rules=(--highways "$GITHUB_WORKSPACE/highways-tree"); fi
           /usr/bin/time -v node --max-old-space-size=12288 src/cli.ts "$RUNNER_TEMP/in" "${rules[@]}" --out "$RUNNER_TEMP/out/report-$SET.json" 2> "$RUNNER_TEMP/out/time-$SET.txt"
           tail -n 25 "$RUNNER_TEMP/out/time-$SET.txt"
+      # The kept part: the files that the repository keeps in packages/predicate-census/results/. The monthly study reads
+      # this small artifact, not the raw records. The float-wrong records are a small part of all the records.
+      - name: The kept part
+        run: |
+          mkdir -p "$RUNNER_TEMP/kept"
+          node packages/site/src/study-cli.ts float-wrong "$RUNNER_TEMP/out/report-$SET.records.jsonl" "$RUNNER_TEMP/kept/float-wrong-$SET.jsonl.gz"
+          cp "$RUNNER_TEMP/out/report-$SET.json" "$RUNNER_TEMP/out/time-$SET.txt" "$RUNNER_TEMP/kept/"
+          cp "$RUNNER_TEMP"/out/*.md "$RUNNER_TEMP/kept/" || true
+          ls -la "$RUNNER_TEMP/kept"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: census-kept-${{ matrix.set }}
+          path: ${{ runner.temp }}/kept
+          retention-days: 90
       # The raw records: the records of the census and the input dump, kept 90 days (highways keeps its own 30 days).
       - name: Keep the raw records
         if: always()

@@ -102,7 +102,9 @@ describe("the A5 predicates on the grid", () => {
   }
 
   it("gives the exact sign, and its filter decides no float-wrong cell", () => {
+    // The monthly study selects the records again, so the test asks for staged signs of both kinds, not a count.
     let staged = 0;
+    let stagedRecords = 0;
     for (const preset of [...CLASSROOM, ...INCIRCLE, ...records]) {
       for (const { choice, counts } of grids(preset)) {
         const form = buildForm(choice.form);
@@ -111,9 +113,11 @@ describe("the A5 predicates on the grid", () => {
         expect(counts.a5Wrong, `${preset.id} ${choice.label}`).toBe(0);
         expect(counts.wrongButFiltered, `${preset.id} ${choice.label}`).toBe(0);
         staged++;
+        if (records.includes(preset)) stagedRecords++;
       }
     }
-    expect(staged).toBeGreaterThan(30);
+    expect(stagedRecords).toBeGreaterThan(0);
+    expect(staged).toBeGreaterThan(stagedRecords);
   });
 
   it("has no A5 predicate for a sign of the segment-box test", () => {

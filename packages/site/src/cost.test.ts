@@ -2,15 +2,17 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { logPlace, planAt, questionName, questionsOf, scaleExact, stageRows } from "./cost.ts";
 import type { CostReport } from "./cost.ts";
+import type { KeptRuns } from "./study.ts";
 
 const text = (url: string): string => readFileSync(new URL(url, import.meta.url), "utf8");
+const kept = JSON.parse(text("../data/kept-runs.json")) as KeptRuns;
 const report = JSON.parse(text("../data/a6-report.json")) as CostReport;
 const questions = questionsOf(report.model);
 const sign = questions.find((q) => q.kind === "sign")!;
 
 describe("the cost section", () => {
   it("reads a copy of the kept report, with no change", () => {
-    expect(text("../data/a6-report.json")).toBe(text("../../evaluator-bench/results/2026-11-03/report.json"));
+    expect(text("../data/a6-report.json")).toBe(text(`../../evaluator-bench/results/${kept.bench.folder}/report.json`));
   });
 
   it("gives the plan and the cost of the kept report at factor 1", () => {

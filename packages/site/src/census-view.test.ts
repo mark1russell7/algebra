@@ -3,9 +3,11 @@ import { gunzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { sharePercent, sumOfSets } from "./census-view.ts";
 import type { CensusFile, ClassId } from "./census-view.ts";
+import type { KeptRuns } from "./study.ts";
 
 const results = new URL("../../predicate-census/results/", import.meta.url);
 const file = JSON.parse(readFileSync(new URL("../data/census-classes.json", import.meta.url), "utf8")) as CensusFile;
+const kept = JSON.parse(readFileSync(new URL("../data/kept-runs.json", import.meta.url), "utf8")) as KeptRuns;
 
 interface Report {
   readonly totals: { readonly total: number; readonly undecided: number; readonly floatWrong: number };
@@ -13,7 +15,7 @@ interface Report {
   readonly floatWrongSites: Record<string, number>;
 }
 
-const report = (set: string): Report => JSON.parse(readFileSync(new URL(`2026-11-05-highways/report-${set}.json`, results), "utf8")) as Report;
+const report = (set: string): Report => JSON.parse(readFileSync(new URL(`${kept.census.highways}/report-${set}.json`, results), "utf8")) as Report;
 
 describe("the data of the census section", () => {
   it("has the seven sets", () => {
@@ -36,7 +38,7 @@ describe("the data of the census section", () => {
   });
 
   it("gives the numbers of the kept report of packing", () => {
-    const r = JSON.parse(gunzipSync(readFileSync(new URL(`2026-11-04-packing/report-${file.packing.set}.json.gz`, results))).toString("utf8")) as Report;
+    const r = JSON.parse(gunzipSync(readFileSync(new URL(`${kept.census.packing}/report-${file.packing.set}.json.gz`, results))).toString("utf8")) as Report;
     expect({ tests: file.packing.tests, undecided: file.packing.undecided, floatWrong: file.packing.floatWrong }).toEqual({ tests: r.totals.total, undecided: r.totals.undecided, floatWrong: r.totals.floatWrong });
   });
 });
@@ -46,12 +48,13 @@ describe("the sum and the shares", () => {
 
   it("has class counts that give the float-wrong count", () => {
     expect(all.classes[1] + all.classes[2] + all.classes[3] + all.classes[4]).toBe(all.floatWrong);
-    expect(all.floatWrong).toBe(35865);
+    expect(all.floatWrong).toBe(file.highways.sets.reduce((sum, s) => sum + s.floatWrong, 0));
   });
 
   it("gives a share in percent, and 0 for an empty set", () => {
     expect(sharePercent(all, 1)).toBe(0);
-    expect(sharePercent(all, 2)).toBeCloseTo((33815 / 35865) * 100, 10);
+    expect(sharePercent(all, 2)).toBeCloseTo((all.classes[2] / all.floatWrong) * 100, 10);
+    expect(sharePercent({ set: "two", tests: 8, undecided: 0, floatWrong: 4, classes: { 1: 0, 2: 3, 3: 1, 4: 0 } }, 2)).toBe(75);
     expect(sharePercent({ set: "none", tests: 0, undecided: 0, floatWrong: 0, classes: { 1: 0, 2: 0, 3: 0, 4: 0 } }, 2)).toBe(0);
   });
 });
