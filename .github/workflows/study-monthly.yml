@@ -4,14 +4,14 @@
 # (packages/site/src/stamps.ts). highways makes its dumps on day 1 of each month.
 #   gh workflow run study-monthly.yml -R mark1russell7/algebra [--ref <branch>]
 #
-# A pull request that the token of GitHub Actions opens starts no workflow, so the job "refresh" does the checks
-# itself. It runs the code of the repository, so it gets only read permissions. The jobs after it run no code of the
-# repository, and each gets only its own permission:
-#   branch        commits the data on the branch study/<YYYY-MM> and pushes it    contents: write
-#   pull-request  opens the pull request into the branch of the run             pull-requests: write
-#   ci            starts ci.yml on the branch                                   actions: write
-#   report        opens an issue when a job of the run fails                    issues: write
-# The workflow never pushes to main. The steps after the merge are in CLAUDE.md, section "The monthly study".
+# The job "refresh" runs the code of the repository, so it gets only read permissions. It does the checks of the
+# site itself. The jobs after it run no code of the repository, and each gets only its own permission:
+#   branch   commits the data on the branch study/<YYYY-MM> and pushes it                  contents: write
+#   issue    opens or updates one issue with the label study-refresh and the compare link  issues: write
+#   report   opens an issue when a job of the run fails                                    issues: write
+# The workflow opens no pull request. A pull request that the token of GitHub Actions opens starts no workflow, so its
+# required checks never run. A person opens the pull request from the branch, and CI then runs on it.
+# The workflow never pushes to main. The next steps are in CLAUDE.md, section "The monthly study".
 name: Study each month
 
 on:
@@ -30,7 +30,7 @@ concurrency:
 # The size of one run, for the watch of the runners. The measured runs of 2026-11 took 30 job-minutes for the
 # bench, 41 for the census of highways (the longest set 20) and 1 for packing.
 env:
-  STATED_JOBS: "14"
+  STATED_JOBS: "13"
   STATED_JOB_MINUTES: "100"
   STATED_LONGEST_MIN: "40"
   STATED_REASON: "The monthly study: the census of 7 sets of highways and 1 of packing, the A6 bench, and the checks of the site."
@@ -179,7 +179,7 @@ jobs:
           SITE_BASE: /algebra
       # The change has only the data of the site and the kept folders. A change to another file stays out of the
       # change, and the log names it.
-      - name: Make the change and the text of the pull request
+      - name: Make the change and the summary of the run
         id: data
         env:
           STARTED: ${{ steps.run.outputs.started }}
@@ -220,7 +220,6 @@ jobs:
             echo
             echo "The checks of the run: the typecheck of the site, the tests of the site, predicates, predicate-census and evaluator-bench, and the build of the site."
             echo
-            echo "This pull request starts no workflow by itself. The job \`ci\` of the run starts \`ci.yml\` on its branch."
             echo "A failing cell of the census is a finding: write it in docs/ROADMAP.md."
           } > "$RUNNER_TEMP/out/body.md"
           cat "$RUNNER_TEMP/out/body.md" >> "$GITHUB_STEP_SUMMARY"
@@ -278,76 +277,50 @@ jobs:
           git push --force origin "$branch"
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
 
-  pull-request:
-    name: Open the pull request
+  issue:
+    name: Open or update the issue of the refresh
     needs: [refresh, branch]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read
-      pull-requests: write
+      issues: write
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: study-data
           path: ${{ runner.temp }}/study-data
-      # GitHub refuses the pull request when "Allow GitHub Actions to create and approve pull requests" is off
-      # (Settings > Actions > General). The branch is then on GitHub, and the summary gives the address to open the
-      # pull request by hand.
-      - name: Open or update the pull request
+      # One open issue with the label study-refresh at a time: a second run updates it.
+      - name: Open or update the issue
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           BASE: ${{ github.ref_name }}
           HEAD: ${{ needs.branch.outputs.branch }}
           DAY: ${{ needs.refresh.outputs.day }}
-          BODY: ${{ runner.temp }}/study-data/body.md
         run: |
-          number=$(gh pr list -R "$REPO" --head "$HEAD" --base "$BASE" --state open --json number --jq '.[0].number // empty')
-          if [ -n "$number" ]; then
-            gh pr edit "$number" -R "$REPO" --body-file "$BODY"
-            echo "The run updated the pull request #$number." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          if url=$(gh pr create -R "$REPO" --base "$BASE" --head "$HEAD" --title "study: the run of $DAY" --body-file "$BODY" 2> "$RUNNER_TEMP/error.txt"); then
-            echo "The run opened the pull request $url." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          cat "$RUNNER_TEMP/error.txt"
+          compare="https://github.com/$REPO/compare/$BASE...$HEAD?expand=1"
           {
-            echo "## The pull request is not open"
+            echo "The branch \`$HEAD\` has the data of the run of $DAY. Open the pull request from it: $compare"
             echo
-            echo "GitHub refused it: $(head -c 400 "$RUNNER_TEMP/error.txt")"
+            echo "Open it with a token of a person, so CI starts on it. Read the change, wait for the checks, and merge it by hand. Then close this issue."
             echo
-            echo 'When the error says that GitHub Actions cannot create pull requests, the owner turns on "Allow GitHub Actions to create and approve pull requests" in Settings > Actions > General.'
-            echo
-            echo "The branch is on GitHub. Open the pull request by hand: https://github.com/$REPO/compare/$BASE...$HEAD?expand=1"
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit 1
-
-  ci:
-    name: Start CI on the branch
-    needs: branch
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      actions: write
-    steps:
-      # A push of the token of GitHub Actions starts no workflow, but a workflow_dispatch does.
-      - name: Start ci.yml on the branch
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          HEAD: ${{ needs.branch.outputs.branch }}
-        run: |
-          gh workflow run ci.yml -R "$REPO" --ref "$HEAD"
-          echo "The run started ci.yml on $HEAD: https://github.com/$REPO/actions/workflows/ci.yml" >> "$GITHUB_STEP_SUMMARY"
+            cat "$RUNNER_TEMP/study-data/body.md"
+          } > "$RUNNER_TEMP/issue.md"
+          gh label create study-refresh -R "$REPO" --color 0E8A16 --description "The monthly study has new data on a branch" --force
+          number=$(gh issue list -R "$REPO" --label study-refresh --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" -R "$REPO" --title "study: the data of $DAY is on $HEAD" --body-file "$RUNNER_TEMP/issue.md"
+            echo "The run updated the issue #$number: $compare" >> "$GITHUB_STEP_SUMMARY"
+          else
+            url=$(gh issue create -R "$REPO" --label study-refresh --title "study: the data of $DAY is on $HEAD" --body-file "$RUNNER_TEMP/issue.md")
+            echo "The run opened the issue $url: $compare" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # The freshness gate stops the deploys of the site when the data is more than 33 days old. This issue tells a
   # person about a failed run on the same day, so the deploys do not stop first.
   report:
     name: Report a failed run
-    needs: [plan, census-highways, census-packing, bench, refresh, branch, pull-request, ci]
+    needs: [plan, census-highways, census-packing, bench, refresh, branch, issue]
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 5

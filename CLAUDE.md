@@ -47,8 +47,9 @@ Write all prose of this repository in the style of ASD-STE100 Simplified Technic
 
 - The workflow `study-monthly.yml` measures the data of the site again on day 4 of each month. It starts `census.yml` and `bench-select.yml` at one commit.
 - The data has an age limit of 33 days. After the limit, the freshness gate stops the deploys of the site.
-- The run opens a pull request from the branch `study/<YYYY-MM>`. Read the change, wait for the checks, and merge it by hand.
-- GitHub refuses that pull request while "Allow GitHub Actions to create and approve pull requests" is off. The summary of the run then gives the compare link.
+- The run pushes the branch `study/<YYYY-MM>`. It opens or updates one issue with the label `study-refresh` and the compare link.
+- Open the pull request from that branch with your own token, so CI starts on it. Read the change, wait for the checks, and merge it by hand.
+- The workflow opens no pull request. A pull request of the Actions token starts no workflow, so its necessary checks do not start.
 - `packages/site/src/study.ts` writes the data files and the kept folders. `data/kept-runs.json` names the run of each kept folder.
 - The explorer keeps one float-wrong record for each set and source line of the call. It keeps the record with the most tests, and the lowest line on a tie.
 - A failing cell of the census is a finding. Write it in `docs/ROADMAP.md`. Do not make the band wider because of it.
