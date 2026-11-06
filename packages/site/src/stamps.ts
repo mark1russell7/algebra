@@ -19,7 +19,7 @@ export const STUDY_LIMIT_DAYS = 33;
 export const STUDY_LIMIT_REASON = "The workflow study-monthly.yml measures the census and the bench again on day 4 of each month.";
 
 /** The review that accepted the limit. */
-export const STUDY_RULING = "https://github.com/mark1russell7/algebra/pull/STUDY_PR";
+export const STUDY_RULING = "https://github.com/mark1russell7/algebra/pull/112";
 
 /** The time at which the age rule starts: at most the last start that the freshness gate accepts. */
 export const STUDY_STARTS_AT = "2026-12-07T00:00:00Z";
