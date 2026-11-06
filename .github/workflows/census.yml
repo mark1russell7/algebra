@@ -70,20 +70,22 @@ jobs:
           node-version: 26
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # The census examines the lines of highways that its rules copy, at the commit of the dump run.
-      - name: The commit of the dump run
-        id: dump
+      # The census examines the lines of highways that its rules copy, at the commit of the dump run. It reads these
+      # files as text and starts no code of highways. Thus the job takes the tree as a tarball, not as a checkout of a
+      # commit of another repository (CodeQL actions/cache-poisoning). A start by hand can name any run, so the run
+      # must be a run of main that is not of a pull request.
+      - name: The tree of highways at the commit of the dump run
         if: inputs.repo == 'mark1russell7/highways'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo "sha=$(gh run view "$RUN" -R "$REPO" --json headSha -q .headSha)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: inputs.repo == 'mark1russell7/highways'
-        with:
-          repository: ${{ inputs.repo }}
-          ref: ${{ steps.dump.outputs.sha }}
-          path: highways-tree
-          persist-credentials: false
+        run: |
+          set -o pipefail
+          read -r branch event sha < <(gh run view "$RUN" -R "$REPO" --json headBranch,event,headSha -q '"\(.headBranch) \(.event) \(.headSha)"')
+          case "$event" in pull_request*) echo "::error::Run $RUN of $REPO is a run of a pull request ($event)."; exit 1 ;; esac
+          if [ "$branch" != main ]; then echo "::error::Run $RUN of $REPO is a run of $branch, not of main."; exit 1; fi
+          mkdir highways-tree
+          gh api "repos/$REPO/tarball/$sha" | tar -xz --strip-components=1 -C highways-tree
+          echo "The tree of $REPO at $sha ($event on $branch)"
       # The tree of highways is not a change of this repository, so the field dirty of the report stays correct.
       - name: Exclude the tree of highways from the status
         if: inputs.repo == 'mark1russell7/highways'
