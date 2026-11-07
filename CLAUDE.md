@@ -40,6 +40,7 @@ Write all prose of this repository in the style of ASD-STE100 Simplified Technic
 - The npm name `@mark1russell7/algebra` is the timer algebra of systems. Name each package here by its contents, for example `@mark1russell7/rational`.
 - An expression is a coeval document. Add an evaluator as a new answer of a kind. Do not change the documents.
 - Each evaluator states its error. A result without an error bound is not a result.
+- `packages/polynomial/src/evaluator-error.test.ts` has a law for each verb. Add a law with each new verb.
 - Keep each measured result, the losers too, with its raw records.
 - Benches and long property runs operate in CI, not on the local machine.
 
@@ -51,6 +52,8 @@ Write all prose of this repository in the style of ASD-STE100 Simplified Technic
 - Open the pull request from that branch with your own token, so CI starts on it. Read the change, wait for the checks, and merge it by hand.
 - The workflow opens no pull request. A pull request of the Actions token starts no workflow, so its necessary checks do not start.
 - `packages/site/src/study.ts` writes the data files and the kept folders. `data/kept-runs.json` names the run of each kept folder.
+- Each run replaces the kept folders of the last run. Git history keeps each earlier run, and `data/kept-runs.json` names its run.
 - The explorer keeps one float-wrong record for each set and source line of the call. It keeps the record with the most tests, and the lowest line on a tie.
 - A failing cell of the census is a finding. Write it in `docs/ROADMAP.md`. Do not make the band wider because of it.
 - When a run fails, the job `report` opens an issue. Correct the cause, then start the run again with `workflow_dispatch`.
+- `scripts/rules.test.ts` checks the rules of this file about the npm name, the pull requests and the job `report`.

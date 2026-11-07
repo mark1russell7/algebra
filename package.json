@@ -10,8 +10,9 @@
   "scripts": {
     "package": "template package",
     "template": "template repo",
-    "test": "pnpm -r run test && pnpm run test:actions",
+    "test": "pnpm -r run test && pnpm run test:actions && pnpm run test:rules",
     "test:actions": "node --test \".github/actions/*.test.ts\"",
+    "test:rules": "node --test \"scripts/*.test.ts\"",
     "typecheck": "pnpm -r run typecheck && pnpm run typecheck:scripts",
     "typecheck:scripts": "tsc -p tsconfig.scripts.json",
     "lint:ste": "ste-lint",
