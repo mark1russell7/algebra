@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@algebra/evaluator-select": "workspace:*",
-    "@mark1russell7/coeval": "^0.22.0",
+    "@mark1russell7/coeval": "^0.24.0",
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/predicate-census": "workspace:*",
     "@mark1russell7/predicates": "workspace:*",
