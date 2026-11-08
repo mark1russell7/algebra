@@ -15,7 +15,8 @@ import { fileURLToPath } from "node:url";
 import { corpus, FAMILIES, nodeCount, SEEDS } from "@algebra/expression-corpus";
 import { type CaseRead, gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
 import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
-import { type PairName, PAIRS, seedsOf } from "./cases.ts";
+import { seedsFrom } from "@mark1russell7/rigor-generators";
+import { type PairName, PAIRS } from "./cases.ts";
 import { BOUND_LIMIT, type CompileFacts, compileMarkdown, compileRatio, LIMIT, limitReads, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown, speedReads } from "./report.ts";
 import { writtenModule } from "./source.ts";
 
@@ -34,10 +35,10 @@ if (out === undefined) {
 }
 fs.mkdirSync(out, { recursive: true });
 
-const seeds = option("--seeds", SEEDS.join(","))!;
+const seeds = seedsFrom(option("--seeds"), SEEDS);
 const families = option("--families")?.split(",");
 for (const family of families ?? []) if (!(FAMILIES as readonly string[]).includes(family)) throw new Error(`The family ${family} does not exist.`);
-const cases = corpus(seedsOf(seeds)).filter((c) => families === undefined || families.includes(c.family));
+const cases = corpus(seeds).filter((c) => families === undefined || families.includes(c.family));
 const names = option("--cases")?.split(",") ?? cases.map((c) => c.name);
 const nodes = new Map(cases.map((c) => [c.name, nodeCount(c.document)]));
 const written = path.resolve(out, "written.mjs");

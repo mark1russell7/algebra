@@ -5,6 +5,6 @@
  *
  * @packageDocumentation
  */
-export { type ArmKind, type Case, caseOf, closed, COMPILE_ROUNDS, compiled, compileTimes, type CompileTimes, corpusCaseOf, type Evaluate, familyOf, type PairName, PAIRS, seedsOf, taped } from "./cases.ts";
+export { type ArmKind, type Case, caseOf, closed, COMPILE_ROUNDS, compiled, compileTimes, type CompileTimes, corpusCaseOf, type Evaluate, familyOf, type PairName, PAIRS, taped } from "./cases.ts";
 export { BOUND_LIMIT, type CompileFacts, compileMarkdown, compileRatio, LIMIT, limitReads, markdown, type Report, report, SIZE_GROUPS, sizeMarkdown, type SizeRow, type Speed, speed, speedBySize, speedMarkdown, speedReads, type Verdict } from "./report.ts";
 export { boundBody, type Written, writtenBody, writtenModule } from "./source.ts";
