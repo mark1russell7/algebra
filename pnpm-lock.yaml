@@ -213,8 +213,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -342,8 +342,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -375,6 +375,9 @@ importers:
       '@mark1russell7/rigor-bench':
         specifier: ^0.2.30
         version: 0.2.32(esbuild@0.28.2)
+      '@mark1russell7/rigor-generators':
+        specifier: ^0.1.8
+        version: 0.1.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
         version: 0.1.20
@@ -404,8 +407,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -442,8 +445,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -472,8 +475,8 @@ importers:
         specifier: ^0.2.30
         version: 0.2.32(esbuild@0.28.2)
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
         version: 0.1.20
@@ -577,8 +580,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -660,8 +663,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-generators':
-        specifier: ^0.1.1
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -894,6 +897,10 @@ packages:
 
   '@mark1russell7/rigor-generators@0.1.6':
     resolution: {integrity: sha512-eSuVS6nNd2H63dMrfleop+ffBtNd8Ua0/JrcUWUMxf2jHWw432fSwJ+aSa4ecAYq1Pa2ReCfwpqFUP4MII5+GA==}
+    engines: {node: '>=22'}
+
+  '@mark1russell7/rigor-generators@0.1.8':
+    resolution: {integrity: sha512-6AC/YQdSrMKs/1NcHesjmmxVjKrqTDXjzKaElE8N8TgsqgiApCbsnk5xRoGJfvIJZUX7vJHFB9F+w48OSdRtHQ==}
     engines: {node: '>=22'}
 
   '@mark1russell7/rigor-statistics@0.1.17':
@@ -2053,6 +2060,8 @@ snapshots:
       esbuild: 0.28.2
 
   '@mark1russell7/rigor-generators@0.1.6': {}
+
+  '@mark1russell7/rigor-generators@0.1.8': {}
 
   '@mark1russell7/rigor-statistics@0.1.17':
     dependencies:

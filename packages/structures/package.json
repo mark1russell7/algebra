@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/rigor-generators": "^0.1.1"
+    "@mark1russell7/rigor-generators": "^0.1.8"
   },
   "devDependencies": {
     "@mark1russell7/cue": "^2.1.1",

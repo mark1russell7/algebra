@@ -22,6 +22,6 @@
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/predicates": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/rigor-generators": "^0.1.1"
+    "@mark1russell7/rigor-generators": "^0.1.8"
   }
 }

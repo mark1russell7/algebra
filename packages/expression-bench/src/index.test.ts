@@ -2,12 +2,13 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { corpus } from "@algebra/expression-corpus";
+import { corpus, SEEDS } from "@algebra/expression-corpus";
 import { compileFloat, compileTape, random, randomExpression, rootError, summarize } from "@mark1russell7/expression";
 import type { Expression } from "@mark1russell7/expression";
 import { gateLine, type PairedTime } from "@mark1russell7/rigor-bench";
+import { seedsFrom } from "@mark1russell7/rigor-generators";
 import { describe, expect, it } from "vitest";
-import { BOUND_LIMIT, caseOf, type CompileFacts, compileRatio, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, limitReads, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, speedReads, writtenModule } from "./index.ts";
+import { BOUND_LIMIT, caseOf, type CompileFacts, compileRatio, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, limitReads, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown, speedReads, writtenModule } from "./index.ts";
 
 /** This function writes a module of written functions to a new folder, and imports it. */
 async function load(cases: readonly { name: string; document: Expression; variables: readonly string[] }[]): Promise<Record<string, Evaluate>> {
@@ -136,10 +137,19 @@ describe("the report", () => {
     expect(sizeMarkdown(rows)).toContain("| 8 to 14 nodes | faster |");
   });
 
-  it("reads a list of seeds with ranges", () => {
-    expect(seedsOf("1,3,9-11")).toEqual([1, 3, 9, 10, 11]);
-    expect(() => seedsOf("5-2")).toThrow(RangeError);
-    expect(() => seedsOf("x")).toThrow(RangeError);
+  it("reads each seed list of the kept runs as the old seed parser of this package did, byte for byte", () => {
+    // The texts are the default of bench-expression.yml, the default list of the corpus and the seeds of the kept runs.
+    // The JSON comes from the seed parser of this package before it used seedsFrom of rigor-generators.
+    const kept: readonly (readonly [string, string])[] = [
+      ["1-8", "[1,2,3,4,5,6,7,8]"],
+      ["1,2,3,4,5,6,7,8", "[1,2,3,4,5,6,7,8]"],
+      ["9-24", "[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]"],
+      ["25-72", "[25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72]"],
+      ["73-88", "[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]"],
+      ["89-136", "[89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136]"],
+    ];
+    for (const [text, json] of kept) expect(JSON.stringify(seedsFrom(text, [])), text).toBe(json);
+    expect(seedsFrom(undefined, SEEDS)).toEqual([...SEEDS]);
   });
 });
 
