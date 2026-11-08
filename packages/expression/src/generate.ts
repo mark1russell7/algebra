@@ -4,6 +4,7 @@
  *
  * @packageDocumentation
  */
+import { mulberry32 } from "@mark1russell7/rigor-generators";
 import type { Comparison, Expression } from "./schema.ts";
 
 /** A source of random numbers in `[0, 1)`. */
@@ -16,14 +17,7 @@ export type Random = () => number;
  * @returns The source.
  */
 export function random(seed: number): Random {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return mulberry32(seed);
 }
 
 /**

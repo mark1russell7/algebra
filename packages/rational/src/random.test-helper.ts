@@ -1,6 +1,7 @@
 /**
  * A seeded source of random values for the property tests. The same seed gives the same values on each run.
  */
+import { mulberry32 } from "@mark1russell7/rigor-generators";
 import { type Rational, rational } from "./index.ts";
 
 /** A source of random numbers in `[0, 1)`. */
@@ -8,14 +9,7 @@ export type Random = () => number;
 
 /** This function makes a seeded source of random numbers (mulberry32). */
 export function random(seed: number): Random {
-  let state = seed >>> 0;
-  return () => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return mulberry32(seed);
 }
 
 /** This function gives a random `bigint` of 0 to `bits` bits. */

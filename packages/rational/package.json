@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@mark1russell7/cue": "^2.1.1",
+    "@mark1russell7/rigor-generators": "^0.1.1",
     "@types/node": "^26.6.5",
     "tsdown": "^0.23.4",
     "typescript": "^7.0.2",
