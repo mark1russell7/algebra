@@ -177,13 +177,13 @@ importers:
         version: 0.38.1
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/ste-lint':
         specifier: ^0.3.0
         version: 0.3.0
       '@mark1russell7/template-cli':
         specifier: ^0.1.4
-        version: 0.1.5
+        version: 0.1.6
       '@swc/core':
         specifier: ^1.15.0
         version: 1.16.21
@@ -211,7 +211,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.8
         version: 0.1.8
@@ -250,11 +250,11 @@ importers:
         version: 0.2.32(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.20
+        version: 0.1.25
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -284,11 +284,11 @@ importers:
         version: 0.2.32(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.20
+        version: 0.1.25
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -316,7 +316,7 @@ importers:
         version: link:../expression-corpus
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/predicates':
         specifier: workspace:*
         version: link:../predicates
@@ -350,10 +350,10 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.20
+        version: 0.1.25
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -380,11 +380,11 @@ importers:
         version: 0.1.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.20
+        version: 0.1.25
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -412,10 +412,10 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
-        version: 0.1.20
+        version: 0.1.25
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -443,7 +443,7 @@ importers:
         version: link:../expression-corpus
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.8
         version: 0.1.8
@@ -479,11 +479,11 @@ importers:
         version: 0.1.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
-        version: 0.1.20
+        version: 0.1.25
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -511,7 +511,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -526,7 +526,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -563,7 +563,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -578,7 +578,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.8
         version: 0.1.8
@@ -606,7 +606,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -640,7 +640,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@mark1russell7/site-pages':
         specifier: ^0.4.1
         version: 0.4.1
@@ -668,7 +668,7 @@ importers:
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.1.2
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.6
@@ -880,8 +880,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/cue@2.1.1':
-    resolution: {integrity: sha512-0/L9nQwGqUTCLTnUPtYKJ/cvXTr/gJWFWASUzGUjKyj3LxNpYgAplLuTPNQe0g4kjcM+9JAb/D/IfYwBGvM/mA==}
+  '@mark1russell7/cue@2.1.2':
+    resolution: {integrity: sha512-PjEWeyq353cz3gZyNmYkv/rUChybd3h9BWRW3UWP+fs0s7/CwGeVRzCpYLnvLR4gyHC367G/PS3kqWJO9GEAkg==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -907,8 +907,8 @@ packages:
     resolution: {integrity: sha512-euqZuWFcX8ufU7/+pOPbTPWHqwzKDwuINf1I06FaFyqtD+Tn30TFUHUUmWkgQCVoJ86sZdjV/UnN1nBuWEcRWQ==}
     engines: {node: '>=22'}
 
-  '@mark1russell7/rigor-statistics@0.1.20':
-    resolution: {integrity: sha512-os4nsGfn6rbXq3zR38H0AikY+eOk1CQBzN32RdrgIPYJg6vha0f8e0gnCwo4bJExakoLI2/1+KFArKV9sTMCsA==}
+  '@mark1russell7/rigor-statistics@0.1.25':
+    resolution: {integrity: sha512-bdDOlHTDAz02QM40XG9fA//8J/FcfUhfXyUnlW6Dwwlnxd3fGQjAkIy6kn1iPRbKtk29mf4XdDN1VSKzMvc7RQ==}
     engines: {node: '>=22'}
 
   '@mark1russell7/site-pages@0.4.1':
@@ -921,8 +921,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/template-cli@0.1.5':
-    resolution: {integrity: sha512-OenwEgVEkrt6HjUtIsTgplkJJTBIZLwb0mxiPow533++mbrrJ8BvHK+MsMLFm6X5A8EJZlLgd6IXJspZy3L2og==}
+  '@mark1russell7/template-cli@0.1.6':
+    resolution: {integrity: sha512-aKHaoDxg8zutGQIlJ6H10TO0lCHFReNkGxBrZNS1O77TArms62FXA43wIc9wU29zra6uMgNIlUKpfN3rZJtWqA==}
     engines: {node: '>=22.12'}
     hasBin: true
 
@@ -2050,12 +2050,12 @@ snapshots:
     dependencies:
       yaml: 2.9.1
 
-  '@mark1russell7/cue@2.1.1': {}
+  '@mark1russell7/cue@2.1.2': {}
 
   '@mark1russell7/rigor-bench@0.2.32(esbuild@0.28.2)':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.6
-      '@mark1russell7/rigor-statistics': 0.1.17
+      '@mark1russell7/rigor-statistics': 0.1.25
     optionalDependencies:
       esbuild: 0.28.2
 
@@ -2067,9 +2067,9 @@ snapshots:
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.6
 
-  '@mark1russell7/rigor-statistics@0.1.20':
+  '@mark1russell7/rigor-statistics@0.1.25':
     dependencies:
-      '@mark1russell7/rigor-generators': 0.1.6
+      '@mark1russell7/rigor-generators': 0.1.8
 
   '@mark1russell7/site-pages@0.4.1':
     dependencies:
@@ -2079,7 +2079,7 @@ snapshots:
     dependencies:
       typescript: 6.0.3
 
-  '@mark1russell7/template-cli@0.1.5':
+  '@mark1russell7/template-cli@0.1.6':
     dependencies:
       '@clack/prompts': 1.8.1
 
