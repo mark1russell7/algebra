@@ -6,4 +6,4 @@
  */
 export { predicates, robust } from "./arms.ts";
 export { BATCH, type Case, casesFor, GROUPS, type Group, groupOf, SEEDS, type Signs } from "./cases.ts";
-export { type GroupReport, markdown, type Report, report } from "./report.ts";
+export { checkReads, type GroupReport, markdown, type Report, report } from "./report.ts";

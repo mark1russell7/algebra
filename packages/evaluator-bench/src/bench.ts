@@ -13,10 +13,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { corpus } from "@algebra/expression-corpus";
 import { STAGES } from "@algebra/evaluator-select";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
+import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
 import { corpusCaseOf } from "./arms.ts";
 import { type ErrorRecord, errorRecords } from "./errors.ts";
-import { markdown, type Meta, report } from "./report.ts";
+import { checkReads, markdown, type Meta, report } from "./report.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>]";
 const args = process.argv.slice(2);
@@ -67,3 +68,5 @@ fs.writeFileSync(path.join(out, "model.json"), JSON.stringify(result.model, null
 fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(result, null, 2) + "\n");
 fs.writeFileSync(path.join(out, "report.md"), markdown(result));
 console.log(markdown(result));
+// A no-read is not a pass: the check of the run shows each stage and family that cannot decide.
+writeGateLine(gateLine(checkReads(result), { title: "bench-select", models: jobModels([benchEnv()]) }));

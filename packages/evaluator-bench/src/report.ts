@@ -9,7 +9,7 @@ import { FAMILIES } from "@algebra/expression-corpus";
 import type { Family } from "@algebra/expression-corpus";
 import { select, STAGES } from "@algebra/evaluator-select";
 import type { CostModel, Stage } from "@algebra/evaluator-select";
-import { type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
+import { type CaseRead, type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
 import { median } from "@mark1russell7/rigor-statistics";
 import { ARMS, familyOf, QUESTIONS, questionName } from "./arms.ts";
 import { type ErrorRecord, shares, stitchedFails } from "./errors.ts";
@@ -108,6 +108,18 @@ export function report(records: Readonly<Record<string, readonly PairedTime[]>>,
     ? QUESTIONS.map((question) => ({ question: questionName(question), ...select(question, model) }))
     : [];
   return { pairs, model, errors: armErrors, stitchedFailures: errors.filter(stitchedFails).length, selections };
+}
+
+/**
+ * This function gives the reads of a report for the check line of `gateLine` of `@mark1russell7/rigor-bench`. The
+ * bench states no speed claim, so only `cannot decide` is a no-read. The other time outcomes are reads, not blocks.
+ *
+ * @param r - The report.
+ * @returns One read for each fixed stage and for each family of a stage.
+ */
+export function checkReads(r: Report): CaseRead[] {
+  const read = (name: string, outcome: TimeVerdict["outcome"]): CaseRead => ({ case: name, outcome: outcome === "cannot decide" ? outcome : "within" });
+  return r.pairs.flatMap((p) => [read(p.stage, p.outcome), ...p.families.map((f) => read(`${p.stage} ${f.family}`, f.outcome))]);
 }
 
 /** This function gives the report as Markdown, for the summary of a run. */

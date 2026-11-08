@@ -1,6 +1,6 @@
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, type PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { armsOf, benchCase, caseNames, claimRecords, crossing, familyOf, GENERATED, isRootFamily, line, markdown, type Meta, pairsOf, report, runOf, TIERS } from "./index.ts";
+import { armsOf, benchCase, caseNames, checkReads, claimRecords, crossing, familyOf, GENERATED, isRootFamily, line, markdown, type Meta, pairsOf, report, runOf, TIERS } from "./index.ts";
 
 describe("the cases", () => {
   it("name each family, and give one document for one name", () => {
@@ -92,5 +92,10 @@ describe("the report", () => {
     expect(r.checked).toBeGreaterThan(0);
     expect(r.claims).toHaveLength(TIERS.length * 2);
     expect(markdown(r)).toContain("| points-64 | faster |");
+    // No speed claim: a slower pair is a read, so the check line has nothing to show.
+    expect(checkReads(r).map((c) => c.outcome)).toEqual(["within", "within", "within", "within"]);
+    expect(gateLine(checkReads(r), { title: "bench-polynomial" })).toBeUndefined();
+    const short = report({ ...records, aa: records.aa.slice(0, 31) }, metas, claims, []);
+    expect(gateLine(checkReads(short), { title: "bench-polynomial" })).toMatchObject({ outcome: "no read", total: 4, noReads: { count: 4 } });
   });
 });

@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
+import { type CaseRead, type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
 import { median } from "@mark1russell7/rigor-statistics";
 import { familyOf } from "./cases.ts";
 import { PAIRS } from "./arms.ts";
@@ -153,6 +153,18 @@ export function report(records: Readonly<Record<string, readonly PairedTime[]>>,
   });
   const count = (key: "checked" | "wrong"): number => claims.reduce((all, c) => all + c[key], 0);
   return { pairs, breakEven: breakEvenOf(records, metas), claims: sharesOf(claims), wrong: count("wrong"), checked: count("checked"), skipped };
+}
+
+/**
+ * This function gives the reads of a report for the check line of `gateLine` of `@mark1russell7/rigor-bench`. The
+ * bench states no speed claim, so only `cannot decide` is a no-read. The other time outcomes are reads, not blocks.
+ *
+ * @param r - The report.
+ * @returns One read for each pair and for each family of a pair.
+ */
+export function checkReads(r: Report): CaseRead[] {
+  const read = (name: string, outcome: TimeVerdict["outcome"]): CaseRead => ({ case: name, outcome: outcome === "cannot decide" ? outcome : "within" });
+  return r.pairs.flatMap((p) => [read(p.pair, p.outcome), ...p.families.map((f) => read(`${p.pair} ${f.family}`, f.outcome))]);
 }
 
 /** This function gives the report as Markdown, for the summary of a run. */

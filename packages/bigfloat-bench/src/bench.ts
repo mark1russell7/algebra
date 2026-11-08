@@ -16,10 +16,11 @@ import { fileURLToPath } from "node:url";
 import { corpusCaseOf } from "@algebra/evaluator-bench";
 import type { Meta } from "@algebra/evaluator-bench";
 import { corpus } from "@algebra/expression-corpus";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
+import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
 import { LIMIT, pairNames, PRECISIONS } from "./arms.ts";
 import { stageRecords } from "./errors.ts";
-import { markdown, report } from "./report.ts";
+import { checkReads, markdown, report } from "./report.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>] [--precisions <bits,bits>] [--limit 4096]";
 const args = process.argv.slice(2);
@@ -77,4 +78,7 @@ for (const pair of pairs) {
   console.error(`${pair}: done`);
   writeReport();
 }
-console.log(markdown(report(records, metas, errors, limit)));
+const final = report(records, metas, errors, limit);
+console.log(markdown(final));
+// A no-read is not a pass: the check of the run shows each pair that cannot decide.
+writeGateLine(gateLine(checkReads(final), { title: "bench-bigfloat", models: jobModels([benchEnv()]) }));

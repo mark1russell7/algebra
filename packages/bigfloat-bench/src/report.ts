@@ -10,13 +10,10 @@ import type { Meta } from "@algebra/evaluator-bench";
 import type { ShareRow } from "@algebra/evaluator-select";
 import { FAMILIES } from "@algebra/expression-corpus";
 import type { Family } from "@algebra/expression-corpus";
-import { type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
+import { type CaseRead, type PairedTime, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
 import { median } from "@mark1russell7/rigor-statistics";
 import { AA, type ArmName, type Baseline, pairOf } from "./arms.ts";
 import { STAGE_QUESTIONS, type StageRecord, stageShares } from "./errors.ts";
-
-/** A verdict needs this count of A/A cases, as `aaBand` of `@mark1russell7/rigor-bench` does. */
-const MIN_CASES = 5;
 
 /** One time verdict. A ratio is the time of the baseline over the time of the arm with the verb `bigfloat`. */
 export interface PairVerdict {
@@ -68,15 +65,19 @@ export interface Report {
   readonly model: StageModel;
 }
 
-const ratioOf = (v: TimeVerdict): number => median(v.cases.map((c) => c.ratio));
 const caseCount = (records: readonly PairedTime[]): number => new Set(records.map((r) => r.case)).size;
 
-/** This function gives the verdict of records against the A/A records, or `undefined` with too few cases. */
+/**
+ * This function gives the verdict of records against the A/A records, or `undefined` with no records. With too few A/A
+ * cases, the verdict is `cannot decide`, so the report keeps the row and the check line shows it.
+ */
 function verdictOf(records: readonly PairedTime[], aa: readonly PairedTime[]): TimeVerdict | undefined {
-  return caseCount(records) === 0 || caseCount(aa) < MIN_CASES ? undefined : timeVerdict(records, aa);
+  return caseCount(records) === 0 ? undefined : timeVerdict(records, aa);
 }
 
-/** This function gives the verdict of a pair, with a verdict for each family that has enough cases. */
+const ratioOf = (v: TimeVerdict): number => median(v.cases.map((c) => c.ratio));
+
+/** This function gives the verdict of a pair, with a verdict for each family that has records. */
 function pairVerdict(pair: string, records: readonly PairedTime[], aa: readonly PairedTime[]): PairVerdict | undefined {
   const all = verdictOf(records, aa);
   if (all === undefined) return undefined;
@@ -135,6 +136,18 @@ export function report(records: Readonly<Record<string, readonly PairedTime[]>>,
   const costs = arms.map((arm) => ({ arm: String(arm), cost: armCost(arm, records, metas) })).sort((x, y) => x.cost - y.cost);
   const stage = STAGE_QUESTIONS.map((question) => stageErrors(errors, questionName(question)));
   return { pairs, costs, stage, model: { limit, bigfloat: armCost("stage", records, metas), shares: stageShares(errors) } };
+}
+
+/**
+ * This function gives the reads of a report for the check line of `gateLine` of `@mark1russell7/rigor-bench`. The
+ * bench states no speed claim, so only `cannot decide` is a no-read. The other time outcomes are reads, not blocks.
+ *
+ * @param r - The report.
+ * @returns One read for each pair and for each family of a pair.
+ */
+export function checkReads(r: Report): CaseRead[] {
+  const read = (name: string, outcome: TimeVerdict["outcome"]): CaseRead => ({ case: name, outcome: outcome === "cannot decide" ? outcome : "within" });
+  return r.pairs.flatMap((p) => [read(p.pair, p.outcome), ...p.families.map((f) => read(`${p.pair} ${f.family}`, f.outcome))]);
 }
 
 /** This function gives the report as Markdown, for the summary of a run. */

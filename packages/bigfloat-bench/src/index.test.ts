@@ -5,9 +5,9 @@ import { corpusCaseOf } from "@algebra/evaluator-bench";
 import { corpusCase } from "@algebra/expression-corpus";
 import { nodeCount } from "@algebra/expression-corpus";
 import type { PairedTime } from "@mark1russell7/rigor-bench";
-import { timeRounds } from "@mark1russell7/rigor-bench";
+import { gateLine, timeRounds } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { AA, AA_PRECISION, type ArmName, BASELINES, LIMIT, markdown, pairNames, pairOf, PRECISIONS, report, runOf, STAGE_QUESTIONS, stageRecords } from "./index.ts";
+import { AA, AA_PRECISION, type ArmName, BASELINES, checkReads, LIMIT, markdown, pairNames, pairOf, PRECISIONS, report, runOf, STAGE_QUESTIONS, stageRecords } from "./index.ts";
 
 describe("the pairs", () => {
   it("have each precision and the stage against each baseline, and one A/A pair first", () => {
@@ -96,7 +96,26 @@ describe("the report", () => {
     expect(Number.isNaN(r.model.bigfloat)).toBe(true);
     expect(report({ [AA]: [] }, [], [], LIMIT).pairs).toEqual([]);
     const few = metas.filter((m) => m.pair === "64-exact" || m.case === names[0]);
-    expect(report({ [AA]: series(1).slice(0, 8), "64-exact": series(1) }, few, [], LIMIT).pairs).toEqual([]);
+    const short = report({ [AA]: series(1).slice(0, 8), "64-exact": series(1) }, few, [], LIMIT);
+    expect(short.pairs).toEqual([
+      expect.objectContaining({ pair: "64-exact", outcome: "cannot decide", reason: "The A/A arm has 1 cases, and a band needs 5 or more.", medianRatio: expect.closeTo(1.0035, 3) }),
+    ]);
+    expect(short.pairs[0]?.families).toEqual([{ family: "small", outcome: "cannot decide", medianRatio: expect.closeTo(1.0035, 3) }]);
+  });
+
+  it("gives a no-read for each pair and family that cannot decide, and not for a slower baseline", () => {
+    const records = { [AA]: series(1), "64-exact": series(10) };
+    const metas: Meta[] = Object.keys(records).flatMap((pair) => names.map((n) => ({ case: n, pair, count: 10, nodes: 5, points: 64 })));
+    const decided = report(records, metas, [], LIMIT);
+    expect(checkReads(decided)).toEqual([
+      { case: "64-exact", outcome: "within" },
+      { case: "64-exact small", outcome: "within" },
+    ]);
+    expect(gateLine(checkReads(decided), { title: "bench-bigfloat" })).toBeUndefined();
+    const few = metas.filter((m) => m.pair === "64-exact" || m.case === names[0]);
+    const short = report({ [AA]: series(1).slice(0, 8), "64-exact": series(10) }, few, [], LIMIT);
+    const line = gateLine(checkReads(short), { title: "bench-bigfloat" });
+    expect(line).toMatchObject({ outcome: "no read", level: "warning", noReads: { count: 2, cases: ["64-exact", "64-exact small"] } });
   });
 });
 

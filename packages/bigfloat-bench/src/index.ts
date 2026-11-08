@@ -7,4 +7,4 @@
  */
 export { AA, AA_PRECISION, type ArmName, type Baseline, BASELINES, LIMIT, type Pair, pairNames, pairOf, PRECISIONS, runOf } from "./arms.ts";
 export { STAGE_QUESTIONS, type StageRecord, stageRecords, stageShares } from "./errors.ts";
-export { type ArmCost, markdown, type PairVerdict, type Report, report, type StageErrors, type StageModel } from "./report.ts";
+export { type ArmCost, checkReads, markdown, type PairVerdict, type Report, report, type StageErrors, type StageModel } from "./report.ts";

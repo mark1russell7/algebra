@@ -7,7 +7,7 @@
  */
 import { FAMILIES } from "@algebra/expression-corpus";
 import type { Family } from "@algebra/expression-corpus";
-import { type Band, type CaseLimit, type LimitOutcome, type PairedTime, limitVerdict, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
+import { type Band, type CaseLimit, type CaseRead, type LimitOutcome, type PairedTime, limitVerdict, timeVerdict, type TimeVerdict } from "@mark1russell7/rigor-bench";
 import { median } from "@mark1russell7/rigor-statistics";
 import { familyOf } from "./cases.ts";
 
@@ -169,6 +169,33 @@ export function speedMarkdown(s: Speed, title: string): string {
     ...s.families.map((g) => `| ${g.family} | ${g.outcome} | ${f(g.medianRatio)} |`),
     "",
   ].join("\n");
+}
+
+/**
+ * This function gives the reads of a limit report for the check line of `gateLine` of `@mark1russell7/rigor-bench`.
+ * Each case keeps its outcome, so `beyond` is a block and `cannot decide` is a no-read.
+ *
+ * @param pair - The name of the pair, the prefix of each read.
+ * @param r - The report of the pair.
+ * @returns One read for each case, or one read for the pair when the verdict has no cases.
+ */
+export function limitReads(pair: string, r: Report): CaseRead[] {
+  if (r.all.cases.length === 0) return [{ case: pair, outcome: r.all.outcome }];
+  return r.all.cases.map((c) => ({ case: `${pair} ${c.case}`, outcome: c.outcome }));
+}
+
+/**
+ * This function gives the reads of a time verdict for the check line. The time verdict has no claim, so only
+ * `cannot decide` is a no-read. The other time outcomes are reads, not blocks.
+ *
+ * @param pair - The name of the pair, the prefix of each read.
+ * @param s - The time verdict of the pair.
+ * @param sizes - The time verdict of each size group.
+ * @returns One read for the pair, for each family and for each size group.
+ */
+export function speedReads(pair: string, s: Speed, sizes: readonly SizeRow[] = []): CaseRead[] {
+  const read = (name: string, outcome: TimeVerdict["outcome"]): CaseRead => ({ case: name, outcome: outcome === "cannot decide" ? outcome : "within" });
+  return [read(pair, s.outcome), ...s.families.map((f) => read(`${pair} ${f.family}`, f.outcome)), ...sizes.map((g) => read(`${pair} ${g.label}`, g.outcome))];
 }
 
 /** This function gives the report as Markdown, for the summary of a run. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
-import { casesFor, GROUPS, markdown, predicates, report, robust, SEEDS } from "./index.ts";
+import { gateLine, type PairedTime } from "@mark1russell7/rigor-bench";
+import { casesFor, checkReads, GROUPS, markdown, predicates, report, robust, SEEDS } from "./index.ts";
 
 describe("the cases", () => {
   const a = casesFor(robust);
@@ -26,5 +26,10 @@ describe("the report", () => {
     expect(r.groups).toHaveLength(1);
     expect(r.groups[0]!.verdict.outcome).toBe("slower");
     expect(markdown(r)).toContain("## The group random");
+    // No speed claim: a slower group is a read, so the check line has nothing to show.
+    expect(checkReads(r)).toEqual([{ case: "random", outcome: "within" }]);
+    expect(gateLine(checkReads(r), { title: "bench-predicates" })).toBeUndefined();
+    const line = gateLine(checkReads(report(ab, aa.slice(0, 5))), { title: "bench-predicates" });
+    expect(line).toMatchObject({ outcome: "no read", noReads: { count: 1, cases: ["random"] } });
   });
 });

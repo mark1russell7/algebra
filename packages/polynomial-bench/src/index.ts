@@ -7,4 +7,4 @@
 export { type ArmName, armsOf, type DifferentPair, PAIRS, type PairName, pairsOf, rewriteOf, runOf } from "./arms.ts";
 export { type BenchCase, benchCase, caseNames, familyOf, GENERATED, isRootFamily, POINTS, type Shape } from "./cases.ts";
 export { type ClaimRecord, claimRecords, type Tier, TIERS, type Verb } from "./claims.ts";
-export { type BreakEven, type ClaimShare, crossing, line, markdown, type Meta, type PairVerdict, type Report, report } from "./report.ts";
+export { type BreakEven, checkReads, type ClaimShare, crossing, line, markdown, type Meta, type PairVerdict, type Report, report } from "./report.ts";
