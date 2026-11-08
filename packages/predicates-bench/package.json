@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@mark1russell7/predicates": "workspace:*",
-    "@mark1russell7/rigor-bench": "^0.2.2",
+    "@mark1russell7/rigor-bench": "^0.2.29",
     "robust-predicates": "^3.0.3"
   }
 }

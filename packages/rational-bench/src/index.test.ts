@@ -1,7 +1,7 @@
 import * as fresh from "@mark1russell7/rational";
-import { type PairedTime, firstArm } from "@mark1russell7/rigor-bench";
+import { type PairedTime, firstArm, gateLine } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { casesFor, markdown, report } from "./index.ts";
+import { casesFor, checkReads, markdown, report } from "./index.ts";
 import * as old from "./old-rational.ts";
 
 describe("the cases", () => {
@@ -47,6 +47,8 @@ describe("the report", () => {
     expect(r.verdict.outcome).toBe("faster");
     expect(r.cases.every((c) => c.low <= c.ratio && c.ratio <= c.high && c.bound >= c.high && c.outcome === "within")).toBe(true);
     expect(markdown(r)).toContain("**holds**");
+    expect(checkReads(r)).toHaveLength(7);
+    expect(gateLine(checkReads(r), { title: "bench (A2)" })).toBeUndefined();
   });
 
   it("refuses the claim when one case is above the limit", () => {
@@ -55,5 +57,7 @@ describe("the report", () => {
     expect(r.within).toBe(false);
     expect(r.claim.outcome).toBe("beyond");
     expect(r.cases.find((c) => c.case === "case-0")?.outcome).toBe("beyond");
+    const line = gateLine(checkReads(r), { title: "bench (A2)" });
+    expect(line).toMatchObject({ outcome: "block", level: "warning", total: 7, blocks: { count: 1, cases: ["case-0"] } });
   });
 });

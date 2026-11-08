@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import { type CostModel, select, type Selection } from "@algebra/evaluator-select";
 import { corpusCase } from "@algebra/expression-corpus";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, type PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { ARMS, corpusCaseOf, errorRecords, familyOf, markdown, type Meta, QUESTIONS, questionOf, report, runOf, stitchedFails } from "./index.ts";
+import { ARMS, checkReads, corpusCaseOf, errorRecords, familyOf, markdown, type Meta, QUESTIONS, questionOf, report, runOf, stitchedFails } from "./index.ts";
 
 describe("the arms", () => {
   it("give a finite sum for each arm, and the question of each family", () => {
@@ -44,6 +44,20 @@ describe("the report", () => {
     expect(r.stitchedFailures).toBe(0);
     expect(r.selections.length).toBe(QUESTIONS.length);
     expect(markdown(r)).toContain("| exact | faster |");
+    // No speed claim: a slower stage is a read, so the check line has nothing to show.
+    expect(checkReads(r)).toContainEqual({ case: "float", outcome: "within" });
+    expect(gateLine(checkReads(r), { title: "bench-select" })).toBeUndefined();
+  });
+
+  it("gives a no-read for each stage and family that cannot decide", () => {
+    const records = { exact: series(0.1), aa: series(1).slice(0, 8) };
+    const metas: Meta[] = ["exact", "aa"].flatMap((pair) => names.map((n) => ({ case: n, pair, count: 10, nodes: 5, points: 64 })));
+    const r = report(records, metas, []);
+    expect(checkReads(r)).toEqual([
+      { case: "exact", outcome: "cannot decide" },
+      { case: "exact well", outcome: "cannot decide" },
+    ]);
+    expect(gateLine(checkReads(r), { title: "bench-select" })).toMatchObject({ outcome: "no read", noReads: { count: 2 } });
   });
 });
 

@@ -13,10 +13,11 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
+import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
 import * as fresh from "@mark1russell7/rational";
 import { casesFor } from "./cases.ts";
-import { markdown, report } from "./report.ts";
+import { checkReads, markdown, report } from "./report.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>]";
 const args = process.argv.slice(2);
@@ -58,3 +59,5 @@ const result = report(records.ab, records.aa);
 fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(result, null, 2) + "\n");
 fs.writeFileSync(path.join(out, "report.md"), markdown(result));
 console.log(markdown(result));
+// A no-read is not a pass: the check of the run shows each case beyond the limit and each case that cannot decide.
+writeGateLine(gateLine(checkReads(result), { title: "bench (A2)", models: jobModels([benchEnv()]) }));

@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { type Band, type CaseLimit, type LimitOutcome, type PairedTime, type TimeVerdict, limitVerdict, timeVerdict } from "@mark1russell7/rigor-bench";
+import { type Band, type CaseLimit, type CaseRead, type LimitOutcome, type PairedTime, type TimeVerdict, limitVerdict, timeVerdict } from "@mark1russell7/rigor-bench";
 
 /** The report of a run of the bench. */
 export interface Report {
@@ -51,6 +51,19 @@ export function report(ab: readonly PairedTime[], aa: readonly PairedTime[], opt
     largest: largest.case,
     within: claim.outcome === "within",
   };
+}
+
+/**
+ * This function gives the reads of a report for the check line of `gateLine` of `@mark1russell7/rigor-bench`. Each
+ * case of the claim of A2 keeps its outcome, so `beyond` is a block. The time verdict has no claim, so only
+ * `cannot decide` is a no-read there.
+ *
+ * @param r - The report.
+ * @returns One read for each case of the claim, and one read for the time verdict.
+ */
+export function checkReads(r: Report): CaseRead[] {
+  const time = r.verdict.outcome === "cannot decide" ? r.verdict.outcome : "within";
+  return [...r.cases.map((c) => ({ case: c.case, outcome: c.outcome })), { case: "time verdict", outcome: time }];
 }
 
 /** This function gives the report as a Markdown table, for the summary of a run. */

@@ -12,12 +12,13 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
+import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
 import { pairsOf } from "./arms.ts";
 import type { PairName } from "./arms.ts";
 import { benchCase, caseNames, familyOf, isRootFamily } from "./cases.ts";
 import { claimRecords } from "./claims.ts";
-import { markdown, type Meta, report, type Report } from "./report.ts";
+import { checkReads, markdown, type Meta, report, type Report } from "./report.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>]";
 const args = process.argv.slice(2);
@@ -76,3 +77,5 @@ const result = report(records, metas, claims, skipped);
 fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(result, null, 2) + "\n");
 fs.writeFileSync(path.join(out, "report.md"), markdown(result));
 console.log(markdown(result));
+// A no-read is not a pass: the check of the run shows each pair and family that cannot decide.
+writeGateLine(gateLine(checkReads(result), { title: "bench-polynomial", models: jobModels([benchEnv()]) }));

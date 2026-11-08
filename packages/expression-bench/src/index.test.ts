@@ -5,9 +5,9 @@ import { pathToFileURL } from "node:url";
 import { corpus } from "@algebra/expression-corpus";
 import { compileFloat, compileTape, random, randomExpression, rootError, summarize } from "@mark1russell7/expression";
 import type { Expression } from "@mark1russell7/expression";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { gateLine, type PairedTime } from "@mark1russell7/rigor-bench";
 import { describe, expect, it } from "vitest";
-import { BOUND_LIMIT, caseOf, type CompileFacts, compileRatio, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, writtenModule } from "./index.ts";
+import { BOUND_LIMIT, caseOf, type CompileFacts, compileRatio, compiled, corpusCaseOf, type Evaluate, familyOf, LIMIT, limitReads, markdown, report, seedsOf, sizeMarkdown, speed, speedBySize, speedMarkdown, speedReads, writtenModule } from "./index.ts";
 
 /** This function writes a module of written functions to a new folder, and imports it. */
 async function load(cases: readonly { name: string; document: Expression; variables: readonly string[] }[]): Promise<Record<string, Evaluate>> {
@@ -106,6 +106,18 @@ describe("the report", () => {
     const fast = report(names.flatMap((n) => [0, 1, 2, 3, 4, 5, 6, 7].map((r) => rec(n, r, 1.1 + r * 0.001))), aa);
     expect(fast.all.outcome).toBe("within");
     expect(markdown(fast)).toContain("| well | within |");
+    const line = gateLine([...limitReads("tf", slow), ...limitReads("bt", fast)], { title: "bench-expression" });
+    expect(line).toMatchObject({ outcome: "block", total: 12, blocks: { count: 6, cases: names.map((n) => `tf ${n}`) }, noReads: { count: 0 } });
+  });
+
+  it("gives a no-read for a speed read that cannot decide, and not for a slower one", () => {
+    const slow = names.flatMap((n) => [0, 1, 2, 3, 4, 5, 6, 7].map((r) => rec(n, r, 3 + r * 0.001)));
+    const decided = speed(slow, aa);
+    expect(decided.outcome).toBe("slower");
+    expect(gateLine(speedReads("ft", decided, speedBySize(slow, aa, () => 9)), { title: "bench-expression" })).toBeUndefined();
+    const short = speed(slow, aa.slice(0, 8));
+    const line = gateLine(speedReads("ft", short), { title: "bench-expression" });
+    expect(line).toMatchObject({ outcome: "no read", noReads: { count: 2, cases: ["ft", "ft well"] } });
   });
 
   it("gives faster for a ratio of 0.5 and takes another limit", () => {

@@ -13,9 +13,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { corpus, FAMILIES, nodeCount, SEEDS } from "@algebra/expression-corpus";
-import type { PairedTime } from "@mark1russell7/rigor-bench";
+import { type CaseRead, gateLine, jobModels, type PairedTime, writeGateLine } from "@mark1russell7/rigor-bench";
+import { benchEnv } from "@mark1russell7/rigor-bench/fresh";
 import { type PairName, PAIRS, seedsOf } from "./cases.ts";
-import { BOUND_LIMIT, type CompileFacts, compileMarkdown, compileRatio, LIMIT, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown } from "./report.ts";
+import { BOUND_LIMIT, type CompileFacts, compileMarkdown, compileRatio, LIMIT, limitReads, markdown, report, sizeMarkdown, speed, speedBySize, speedMarkdown, speedReads } from "./report.ts";
 import { writtenModule } from "./source.ts";
 
 const USAGE = "Usage: node src/bench.ts --out <folder> [--rounds 31] [--ms 10] [--cases <name,name>] [--seeds <1,2,9-24>] [--families <name,name>]";
@@ -66,6 +67,7 @@ fs.writeFileSync(path.join(out, "meta.jsonl"), jsonl(meta));
 const aa = records.aa;
 const results: Record<string, unknown> = {};
 const parts: string[] = [];
+const reads: CaseRead[] = [];
 for (const p of pairs) {
   if (p === "aa") continue;
   const [a, b] = PAIRS[p];
@@ -74,13 +76,17 @@ for (const p of pairs) {
     const sizes = speedBySize(records[p], aa, (name) => nodes.get(name) ?? 0);
     const compile = compileRatio(meta as CompileFacts[]);
     results[p] = { ...s, sizes, compile };
+    reads.push(...speedReads(p, s, sizes));
     parts.push(speedMarkdown(s, `The time of ${b} over the time of ${a}`), sizeMarkdown(sizes), compileMarkdown(compile));
   } else {
     const r = report(records[p], aa, a === "bound" ? BOUND_LIMIT : LIMIT);
     results[p] = r;
+    reads.push(...limitReads(p, r));
     parts.push(markdown(r, `A ratio is the time of ${b} over the time of ${a}. The limit is ${r.limit}.`));
   }
 }
 fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(results, null, 2) + "\n");
 fs.writeFileSync(path.join(out, "report.md"), parts.join("\n"));
 console.log(parts.join("\n"));
+// A no-read is not a pass: the check of the run shows each case beyond its limit and each read that cannot decide.
+writeGateLine(gateLine(reads, { title: "bench-expression", models: jobModels([benchEnv()]) }));

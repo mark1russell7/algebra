@@ -20,6 +20,6 @@
   },
   "dependencies": {
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/rigor-bench": "^0.2.2"
+    "@mark1russell7/rigor-bench": "^0.2.29"
   }
 }

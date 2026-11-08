@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  */
-import { type Band, type CaseRatio, type PairedTime, type TimeVerdict, aaBand, caseRatios, timeVerdict } from "@mark1russell7/rigor-bench";
+import { type Band, type CaseRatio, type CaseRead, type PairedTime, type TimeVerdict, aaBand, caseRatios, timeVerdict } from "@mark1russell7/rigor-bench";
 import { GROUPS, type Group, groupOf } from "./cases.ts";
 
 /** The report of one group. A ratio is the time of `@mark1russell7/predicates` over the time of `robust-predicates`. */
@@ -45,6 +45,17 @@ export function report(ab: readonly PairedTime[], aa: readonly PairedTime[]): Re
     });
   }
   return { groups };
+}
+
+/**
+ * This function gives the reads of a report for the check line of `gateLine` of `@mark1russell7/rigor-bench`. The
+ * bench states no speed claim, so only `cannot decide` is a no-read. The other time outcomes are reads, not blocks.
+ *
+ * @param r - The report.
+ * @returns One read for each group.
+ */
+export function checkReads(r: Report): CaseRead[] {
+  return r.groups.map((g) => ({ case: g.group, outcome: g.verdict.outcome === "cannot decide" ? g.verdict.outcome : "within" }));
 }
 
 /** This function gives the report as Markdown, for the summary of a run. */
