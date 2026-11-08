@@ -246,8 +246,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
         version: 0.1.15
@@ -280,8 +280,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.5
         version: 0.1.15
@@ -370,8 +370,8 @@ importers:
         specifier: workspace:*
         version: link:../expression
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.1.2
         version: 0.1.15
@@ -466,8 +466,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.1
         version: 0.1.6
@@ -549,8 +549,8 @@ importers:
         specifier: workspace:*
         version: link:../predicates
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -592,8 +592,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/rigor-bench':
-        specifier: ^0.2.29
-        version: 0.2.29(esbuild@0.28.2)
+        specifier: ^0.2.30
+        version: 0.2.30(esbuild@0.28.2)
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -876,8 +876,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/rigor-bench@0.2.29':
-    resolution: {integrity: sha512-lWsyf5bLz3u1jJWCgF2xiAShPu9pcLSK7zBmKKvj89rtfFCgsg7B9HLX3TBzOnirmpslWdeOCGD947PzRq/Skg==}
+  '@mark1russell7/rigor-bench@0.2.30':
+    resolution: {integrity: sha512-xfZI1oE2dH3wL81xHtiTxhkwgV+Wl5GuUEmSY9LCKEP0soweiUhzKlZYkUKEuVD6bTTt6XWGLdeP9ujdMyYjPw==}
     engines: {node: '>=22'}
     peerDependencies:
       esbuild: ^0.28.2
@@ -2036,7 +2036,7 @@ snapshots:
 
   '@mark1russell7/cue@2.1.1': {}
 
-  '@mark1russell7/rigor-bench@0.2.29(esbuild@0.28.2)':
+  '@mark1russell7/rigor-bench@0.2.30(esbuild@0.28.2)':
     dependencies:
       '@mark1russell7/rigor-generators': 0.1.6
       '@mark1russell7/rigor-statistics': 0.1.17
