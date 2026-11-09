@@ -1,15 +1,87 @@
-# @algebra/structures
+# @mark1russell7/structures
 
-Monoid, group, ring, field, order and lattice as data instances, with law tests. This package is roadmap item A9.
+This package is the home of the algebraic structures for each repository (roadmap items A9 and A25). It has three entries.
 
-This package is private. It is the first input of the type graph, and the domains of vex use it later (A10).
+| Entry | Contents | Imports |
+| --- | --- | --- |
+| `@mark1russell7/structures` | The core: plain interfaces, standard instances and helpers | none |
+| `@mark1russell7/structures/laws` | The law checks of the interfaces of the core | `@mark1russell7/rigor-generators` |
+| `@mark1russell7/structures/catalog` | The structures as data, with their claims, their levels and their constructions | `@mark1russell7/rational`, `@mark1russell7/rigor-generators` |
+
+## The core
+
+An interface of the core has only its operations. A value of a repository is an instance with no adapter.
+
+| Interface | Operations | Laws |
+| --- | --- | --- |
+| `Semigroup<T>` | `combine(a, b)` | associativity |
+| `Monoid<T>` | `combine`, `empty` | associativity, left and right identity |
+| `Group<T>` | `combine`, `empty`, `invert(a)` | the laws of a monoid, left and right inverse |
+| `Order<T>` | `compare(a, b)`: only its sign has a meaning | a total order, an antisymmetric sign, zero only for equal values |
+| `Lattice<T>` | `meet(a, b)`, `join(a, b)` | each one commutative, associative and idempotent, and each one absorbs the other |
+| `BoundedLattice<T>` | `meet`, `join`, `top`, `bottom` | the laws of a lattice, and the identities of the meet and the join |
+| `Functor<F>` | `map(fa, f)` | identity and composition |
+| `Monad<F>` | `map`, `of(a)`, `flatMap(fa, f)` | left and right identity, associativity of `flatMap` |
+
+The instances:
+
+- Numbers: `sumMonoid`, `productMonoid`, `minMonoid`, `maxMonoid`, `numberOrder` and `numberLattice`.
+- Bigints: `bigintSum`, `bigintProduct` and `bigintOrder`.
+- Booleans: `allMonoid`, `anyMonoid`, `xorGroup`, `booleanOrder` and `booleanLattice`.
+- Strings: `stringMonoid` and `stringOrder`.
+- Lists: `arrayMonoid()`, `sortedUnionMonoid(order)`, `sortedSetLattice(order)` and `arrayMonad`.
+- Any type: `firstSemigroup()` and `lastSemigroup()`.
+
+The number instances are exact on the safe integers only. On other doubles, the rounding of `+` and `*` breaks the associativity. A test of the laws finds this.
+
+The helpers are `fold`, `foldMap`, `pairMonoid`, `structMonoid`, `recordMonoid`, `dualSemigroup`, `dualMonoid`, `orderingOf`, `reverseOrder`, `orderBy`, `thenOrder`, `minSemigroup`, `maxSemigroup` and `latticeOfOrder`.
+
+```ts
+import { fold, recordMonoid, sumMonoid } from "@mark1russell7/structures";
+
+fold(recordMonoid(sumMonoid), [{ add: 2 }, { add: 1, mul: 4 }]);
+// { add: 3, mul: 4 }
+```
+
+### Functor and monad
+
+TypeScript has no type parameter of a higher kind. Thus a type constructor has a name in the registry `Kinds`. The registry has `Array`. A package adds its own constructor with an augmentation:
+
+```ts
+import type { Functor } from "@mark1russell7/structures";
+
+declare module "@mark1russell7/structures" {
+  interface Kinds<A> {
+    readonly Optional: Optional<A>;
+  }
+}
+
+export const optionalFunctor: Functor<"Optional"> = { map };
+```
+
+## The law checks
+
+A check tests each law of an instance on seeded samples, and gives one report for each law. The same seed gives the same samples on each platform. `assertLaws` throws with the law, the seed and the first failing values.
+
+```ts
+import { sumMonoid } from "@mark1russell7/structures";
+import { assertLaws, checkMonoid } from "@mark1russell7/structures/laws";
+
+assertLaws(checkMonoid(sumMonoid, { sample: (random) => random.int(-1000, 1000) }, { commutative: true }));
+```
+
+The checks are `checkSemigroup`, `checkMonoid`, `checkGroup`, `checkOrder`, `checkLattice`, `checkBoundedLattice`, `checkFunctor` and `checkMonad`. Each check uses the runner of the catalog. A small finite set, given in `elements`, gets each tuple and not samples.
+
+## The catalog
+
+The rest of this file tells the entry `@mark1russell7/structures/catalog`.
 
 ## A structure is data
 
 A structure names its carrier, its operations and the laws that it claims. A consumer lists them with no call of an operation.
 
 ```ts
-import { describe, DOUBLE_ADD } from "@algebra/structures";
+import { describe, DOUBLE_ADD } from "@mark1russell7/structures/catalog";
 
 describe(DOUBLE_ADD);
 // { name: "double (+)", level: "unital-magma", claims: ["closed", "commutative", "leftIdentity", "rightIdentity"],
@@ -56,7 +128,7 @@ An instance claims only the laws that hold. The doubles show this:
 A law is data: `LAWS` gives its name, its arity, its statement and its check. One runner tests each claimed law of each instance.
 
 ```ts
-import { checkClaims, primeField } from "@algebra/structures";
+import { checkClaims, primeField } from "@mark1russell7/structures/catalog";
 
 const reports = checkClaims(primeField(7n), { seed: 1, samples: 500 });
 reports.filter((report) => report.failure !== null); // []
@@ -83,7 +155,7 @@ A construction claims a law only when the laws of its inputs give that law. A ca
 An ideal or a normal subgroup is data. It has a test of membership and a map to the canonical representative of a coset. Its carrier is the whole input, so the laws of congruence get all values and not only the representatives.
 
 ```ts
-import { checkClaims, integerIdeal, listedIdeal, quotientRing, integersMod } from "@algebra/structures";
+import { checkClaims, integerIdeal, listedIdeal, quotientRing, integersMod } from "@mark1russell7/structures/catalog";
 
 quotientRing(integerIdeal(6n)); // agrees with integersMod(6n)
 quotientRing(listedIdeal(integersMod(12n), [0n, 4n, 8n])); // agrees with integersMod(4n)

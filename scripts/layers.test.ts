@@ -36,10 +36,10 @@ describe("the layers of the packages", () => {
   });
 
   it("fails when a runtime import goes to a higher layer", () => {
-    const up = changed("@algebra/bigfloat", (m) => ({ ...m, dependencies: { ...m.dependencies, "@algebra/structures": "workspace:*" } }));
+    const up = changed("@algebra/bigfloat", (m) => ({ ...m, dependencies: { ...m.dependencies, "@mark1russell7/structures": "workspace:*" } }));
     const findings = layerFindings(up);
     assert.equal(findings.length, 1);
-    assert.match(findings[0]!, /bigfloat \(layer 1\) imports @algebra\/structures \(layer 3\)/);
+    assert.match(findings[0]!, /bigfloat \(layer 1\) imports @mark1russell7\/structures \(layer 3\)/);
     // This import also makes a cycle, and rational is published and expression is private: 3 findings.
     const all = layerFindings(changed("@mark1russell7/rational", (m) => ({ ...m, dependencies: { ...m.dependencies, "@mark1russell7/expression": "workspace:*" } })));
     assert.equal(all.length, 3);
@@ -50,7 +50,7 @@ describe("the layers of the packages", () => {
     const findings = layerFindings(testUp);
     assert.equal(findings.length, 1);
     assert.match(findings[0]!, /^The imports make a cycle: .*@mark1russell7\/rational/);
-    const noCycle = changed("@algebra/structures", (m) => ({ ...m, devDependencies: { ...m.devDependencies, "@algebra/polynomial": "workspace:*" } }));
+    const noCycle = changed("@mark1russell7/structures", (m) => ({ ...m, devDependencies: { ...m.devDependencies, "@algebra/polynomial": "workspace:*" } }));
     assert.deepEqual(layerFindings(noCycle), []);
   });
 

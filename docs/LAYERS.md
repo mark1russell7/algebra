@@ -22,7 +22,7 @@ The lowest layer is first.
 | --- | --- | --- | --- | --- |
 | 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat` | `@mark1russell7/quantity`, from systems | A21: intervals and balls |
 | 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, from rigor | none |
-| 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces |
+| 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces, in the entry `.` with no imports |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
 | 5 statistics | Quantiles, means, tests, bootstrap intervals and calibration. | none | `@mark1russell7/rigor-statistics`, from rigor | A20: summaries as monoids. A22: results with error bounds. |
 | 6 expressions | Expression documents, the evaluators and the cost and error model. | `@mark1russell7/expression`, `@algebra/polynomial`, `@algebra/evaluator-select` | none | none |
@@ -33,7 +33,7 @@ The lowest layer is first.
 
 The order of the strategist is numbers, structures, expressions, geometry checks, probability and statistics. This plan changes the order in 3 places. The imports of today are the reason.
 
-- Random is a layer of its own, below structures. `@algebra/structures` draws the values of its law tests with `Random` of rigor-generators. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the strategist, these imports go up.
+- Random is a layer of its own, below structures. The entries `./laws` and `./catalog` of `@mark1russell7/structures` draw the values of their law tests with `Random` of rigor-generators. The core entry imports no package. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the strategist, these imports go up.
 - Probability and statistics are below expressions. Then the cost and error model of `@algebra/evaluator-select` can use statistics at run time, for example the median of a cost. Statistics does not use expressions.
 - Intervals and balls are in `@mark1russell7/expression` at this time. Statistics with error bounds (A22) needs them. So A21 moves them to the layer numbers first.
 
@@ -55,7 +55,7 @@ Each runtime import between the packages goes to the same layer or to a lower la
 | `@algebra/bigfloat` | 1 | rational (1) |
 | `@mark1russell7/quantity` | 1 | rational (1) |
 | `@mark1russell7/rigor-generators` | 2 | none |
-| `@algebra/structures` | 3 | rational (1), rigor-generators (2) |
+| `@mark1russell7/structures` | 3 | the core: none. `./laws`: rigor-generators (2). `./catalog`: rational (1), rigor-generators (2) |
 | `@mark1russell7/rigor-statistics` | 5 | rigor-generators (2) |
 | `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), rigor-generators (2) |
 | `@algebra/polynomial` | 6 | rational (1), expression (6) |

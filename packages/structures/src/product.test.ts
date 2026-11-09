@@ -21,8 +21,8 @@ import {
   integersMod,
   primeField,
   product,
-} from "./index.ts";
-import type { AnyStructure, BoundedLattice, Group, Lattice, Magma, Monoid, Order, Pair, Ring, Semigroup, UnitalMagma } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, BoundedLattice, Group, Lattice, Magma, Monoid, Order, Pair, Ring, Semigroup, UnitalMagma } from "./catalog-entry.ts";
 
 const passes = (structure: AnyStructure): void => {
   expect(conforms(structure)).toEqual([]);

@@ -1,0 +1,1084 @@
+# The public API of @mark1russell7/structures
+#
+# The names of each entry of the exports field, and the declaration of each name, without comments
+# and private members. The command `api-report check` compares this file with the built .d.ts files.
+# To accept a change of the API, start the build, then `api-report update`, and review the diff.
+
+## . (build/index.d.ts): names
+
+type BoundedLattice: build/interfaces.chunk.d.ts#BoundedLattice
+type Functor: build/interfaces.chunk.d.ts#Functor
+type Group: build/interfaces.chunk.d.ts#Group
+type Kind: build/interfaces.chunk.d.ts#Kind
+type KindName: build/interfaces.chunk.d.ts#KindName
+type Kinds: build/interfaces.chunk.d.ts#Kinds
+type Lattice: build/interfaces.chunk.d.ts#Lattice
+type Monad: build/interfaces.chunk.d.ts#Monad
+type Monoid: build/interfaces.chunk.d.ts#Monoid
+type Order: build/interfaces.chunk.d.ts#Order
+type Ordering: build/interfaces.chunk.d.ts#Ordering
+type Semigroup: build/interfaces.chunk.d.ts#Semigroup
+allMonoid: build/index.d.ts#allMonoid
+anyMonoid: build/index.d.ts#anyMonoid
+arrayMonad: build/index.d.ts#arrayMonad
+arrayMonoid: build/index.d.ts#arrayMonoid
+bigintOrder: build/index.d.ts#bigintOrder
+bigintProduct: build/index.d.ts#bigintProduct
+bigintSum: build/index.d.ts#bigintSum
+booleanLattice: build/index.d.ts#booleanLattice
+booleanOrder: build/index.d.ts#booleanOrder
+dualMonoid: build/index.d.ts#dualMonoid
+dualSemigroup: build/index.d.ts#dualSemigroup
+firstSemigroup: build/index.d.ts#firstSemigroup
+fold: build/index.d.ts#fold
+foldMap: build/index.d.ts#foldMap
+lastSemigroup: build/index.d.ts#lastSemigroup
+latticeOfOrder: build/index.d.ts#latticeOfOrder
+maxMonoid: build/index.d.ts#maxMonoid
+maxSemigroup: build/index.d.ts#maxSemigroup
+minMonoid: build/index.d.ts#minMonoid
+minSemigroup: build/index.d.ts#minSemigroup
+numberLattice: build/index.d.ts#numberLattice
+numberOrder: build/index.d.ts#numberOrder
+orderBy: build/index.d.ts#orderBy
+orderingOf: build/index.d.ts#orderingOf
+pairMonoid: build/index.d.ts#pairMonoid
+productMonoid: build/index.d.ts#productMonoid
+recordMonoid: build/index.d.ts#recordMonoid
+reverseOrder: build/index.d.ts#reverseOrder
+sortedSetLattice: build/index.d.ts#sortedSetLattice
+sortedUnionMonoid: build/index.d.ts#sortedUnionMonoid
+stringMonoid: build/index.d.ts#stringMonoid
+stringOrder: build/index.d.ts#stringOrder
+structMonoid: build/index.d.ts#structMonoid
+sumMonoid: build/index.d.ts#sumMonoid
+thenOrder: build/index.d.ts#thenOrder
+xorGroup: build/index.d.ts#xorGroup
+
+## ./laws (build/laws.d.ts): names
+
+Arbitrary: build/laws.d.ts#Arbitrary
+CheckOptions: build/laws.d.ts#CheckOptions
+CompareLaw: build/laws.d.ts#CompareLaw
+DEFAULT_SAMPLES: build/runner.chunk.d.ts#DEFAULT_SAMPLES
+DEFAULT_SEED: build/runner.chunk.d.ts#DEFAULT_SEED
+FunctorArbitrary: build/laws.d.ts#FunctorArbitrary
+FunctorLaw: build/laws.d.ts#FunctorLaw
+type LawCheck: build/runner.chunk.d.ts#LawCheck
+type LawReport: build/runner.chunk.d.ts#LawReport
+type LawSource: build/runner.chunk.d.ts#LawSource
+MonadArbitrary: build/laws.d.ts#MonadArbitrary
+OperationClaims: build/laws.d.ts#OperationClaims
+type Random: @mark1russell7/rigor-generators#Random (external)
+type RunOptions: build/runner.chunk.d.ts#RunOptions
+assertLaws: build/laws.d.ts#assertLaws
+checkBoundedLattice: build/laws.d.ts#checkBoundedLattice
+checkFunctor: build/laws.d.ts#checkFunctor
+checkGroup: build/laws.d.ts#checkGroup
+checkLattice: build/laws.d.ts#checkLattice
+checkLaw: build/runner.chunk.d.ts#checkLaw
+checkMonad: build/laws.d.ts#checkMonad
+checkMonoid: build/laws.d.ts#checkMonoid
+checkOrder: build/laws.d.ts#checkOrder
+checkSemigroup: build/laws.d.ts#checkSemigroup
+lawFailures: build/laws.d.ts#lawFailures
+structuralEquals: build/laws.d.ts#structuralEquals
+
+## ./catalog (build/catalog.d.ts): names
+
+type AnyLaw: build/catalog.d.ts#AnyLaw
+type AnyStructure: build/runner.chunk.d.ts#AnyStructure
+type Arity: build/catalog.d.ts#Arity
+BOOLEANS: build/catalog.d.ts#BOOLEANS
+BOOLEAN_AND: build/catalog.d.ts#BOOLEAN_AND
+BOOLEAN_LATTICE: build/catalog.d.ts#BOOLEAN_LATTICE
+BOOLEAN_OR: build/catalog.d.ts#BOOLEAN_OR
+BOOLEAN_RING: build/catalog.d.ts#BOOLEAN_RING
+BOOLEAN_XOR: build/catalog.d.ts#BOOLEAN_XOR
+type Binary: build/runner.chunk.d.ts#Binary
+type BoundedLattice: build/runner.chunk.d.ts#BoundedLattice
+CATALOG: build/catalog.d.ts#CATALOG
+type Carrier: build/runner.chunk.d.ts#Carrier
+type Claims: build/runner.chunk.d.ts#Claims
+type Commutative: build/runner.chunk.d.ts#Commutative
+type CommutativeIdeal: build/runner.chunk.d.ts#CommutativeIdeal
+type CommutativeRing: build/runner.chunk.d.ts#CommutativeRing
+type Constant: build/runner.chunk.d.ts#Constant
+type Construction: build/runner.chunk.d.ts#Construction
+DEFAULT_SAMPLES: build/runner.chunk.d.ts#DEFAULT_SAMPLES
+DEFAULT_SEED: build/runner.chunk.d.ts#DEFAULT_SEED
+DOUBLES: build/catalog.d.ts#DOUBLES
+DOUBLE_ADD: build/catalog.d.ts#DOUBLE_ADD
+DOUBLE_LATTICE: build/catalog.d.ts#DOUBLE_LATTICE
+DOUBLE_MAX: build/catalog.d.ts#DOUBLE_MAX
+DOUBLE_MIN: build/catalog.d.ts#DOUBLE_MIN
+type Evidence: build/runner.chunk.d.ts#Evidence
+type Field: build/runner.chunk.d.ts#Field
+type Group: build/runner.chunk.d.ts#Group
+INTEGERS: build/catalog.d.ts#INTEGERS
+INTEGER_ADD: build/catalog.d.ts#INTEGER_ADD
+INTEGER_COSETS: build/catalog.d.ts#INTEGER_COSETS
+INTEGER_MUL: build/catalog.d.ts#INTEGER_MUL
+INTEGER_RING: build/catalog.d.ts#INTEGER_RING
+type Ideal: build/runner.chunk.d.ts#Ideal
+LAWS: build/catalog.d.ts#LAWS
+LAW_NAMES: build/catalog.d.ts#LAW_NAMES
+LEVELS: build/catalog.d.ts#LEVELS
+type Lattice: build/runner.chunk.d.ts#Lattice
+type Law: build/catalog.d.ts#Law
+type LawArguments: build/catalog.d.ts#LawArguments
+type LawCheck: build/runner.chunk.d.ts#LawCheck
+type LawDescription: build/catalog.d.ts#LawDescription
+type LawName: build/runner.chunk.d.ts#LawName
+type LawReport: build/runner.chunk.d.ts#LawReport
+type LawSource: build/runner.chunk.d.ts#LawSource
+type Level: build/runner.chunk.d.ts#Level
+type LevelShapes: build/catalog.d.ts#LevelShapes
+type LevelSpecification: build/catalog.d.ts#LevelSpecification
+MAX_MODULUS: build/catalog.d.ts#MAX_MODULUS
+MAX_POINTS: build/catalog.d.ts#MAX_POINTS
+type Magma: build/runner.chunk.d.ts#Magma
+type Monoid: build/runner.chunk.d.ts#Monoid
+type NormalSubgroup: build/runner.chunk.d.ts#NormalSubgroup
+ORDERED_DOUBLES: build/catalog.d.ts#ORDERED_DOUBLES
+type OperationDescription: build/catalog.d.ts#OperationDescription
+type Order: build/runner.chunk.d.ts#Order
+type Pair: build/catalog.d.ts#Pair
+type PartSpecification: build/catalog.d.ts#PartSpecification
+type Permutation: build/catalog.d.ts#Permutation
+type Polynomial: build/catalog.d.ts#Polynomial
+type Predicate: build/runner.chunk.d.ts#Predicate
+RATIONALS: build/catalog.d.ts#RATIONALS
+RATIONALS_MOD_INTEGERS: build/catalog.d.ts#RATIONALS_MOD_INTEGERS
+RATIONAL_ADD: build/catalog.d.ts#RATIONAL_ADD
+RATIONAL_FIELD: build/catalog.d.ts#RATIONAL_FIELD
+RATIONAL_LATTICE: build/catalog.d.ts#RATIONAL_LATTICE
+RATIONAL_MAX: build/catalog.d.ts#RATIONAL_MAX
+RATIONAL_MIN: build/catalog.d.ts#RATIONAL_MIN
+RATIONAL_MUL: build/catalog.d.ts#RATIONAL_MUL
+RATIONAL_ORDER: build/catalog.d.ts#RATIONAL_ORDER
+RATIONAL_UNITS: build/catalog.d.ts#RATIONAL_UNITS
+ROOT_TEST_LIMIT: build/catalog.d.ts#ROOT_TEST_LIMIT
+type Refutation: build/runner.chunk.d.ts#Refutation
+type Relation: build/runner.chunk.d.ts#Relation
+type Ring: build/runner.chunk.d.ts#Ring
+type RootExtension: build/catalog.d.ts#RootExtension
+type RunOptions: build/runner.chunk.d.ts#RunOptions
+SAMPLE_DEGREE: build/catalog.d.ts#SAMPLE_DEGREE
+SEARCH_LIMIT: build/catalog.d.ts#SEARCH_LIMIT
+type Semigroup: build/runner.chunk.d.ts#Semigroup
+type Semilattice: build/runner.chunk.d.ts#Semilattice
+type Structure: build/runner.chunk.d.ts#Structure
+type StructureDescription: build/catalog.d.ts#StructureDescription
+type SubsetDefinition: build/catalog.d.ts#SubsetDefinition
+type Unary: build/runner.chunk.d.ts#Unary
+type UnitalMagma: build/runner.chunk.d.ts#UnitalMagma
+alternatingSubgroup: build/catalog.d.ts#alternatingSubgroup
+checkClaims: build/runner.chunk.d.ts#checkClaims
+checkLaw: build/runner.chunk.d.ts#checkLaw
+coefficientLists: build/catalog.d.ts#coefficientLists
+conforms: build/catalog.d.ts#conforms
+degree: build/catalog.d.ts#degree
+describe: build/catalog.d.ts#describe
+describeCatalog: build/catalog.d.ts#describeCatalog
+describeLaw: build/catalog.d.ts#describeLaw
+describeLaws: build/catalog.d.ts#describeLaws
+divideMonic: build/catalog.d.ts#divideMonic
+evaluate: build/catalog.d.ts#evaluate
+extendFinite: build/catalog.d.ts#extendFinite
+extendRationals: build/catalog.d.ts#extendRationals
+holdsAt: build/runner.chunk.d.ts#holdsAt
+idealOf: build/catalog.d.ts#idealOf
+inputsOf: build/catalog.d.ts#inputsOf
+integerIdeal: build/catalog.d.ts#integerIdeal
+integersMod: build/catalog.d.ts#integersMod
+isEven: build/catalog.d.ts#isEven
+isPrime: build/catalog.d.ts#isPrime
+levelsBelow: build/catalog.d.ts#levelsBelow
+listedIdeal: build/catalog.d.ts#listedIdeal
+listedNormalSubgroup: build/catalog.d.ts#listedNormalSubgroup
+normalSubgroupOf: build/catalog.d.ts#normalSubgroupOf
+operationFields: build/catalog.d.ts#operationFields
+partSpecifications: build/catalog.d.ts#partSpecifications
+partsOf: build/catalog.d.ts#partsOf
+polynomial: build/catalog.d.ts#polynomial
+polynomialIdeal: build/catalog.d.ts#polynomialIdeal
+polynomialRing: build/catalog.d.ts#polynomialRing
+primeField: build/catalog.d.ts#primeField
+product: build/catalog.d.ts#product
+quotientGroup: build/catalog.d.ts#quotientGroup
+quotientRing: build/catalog.d.ts#quotientRing
+requireExact: build/runner.chunk.d.ts#requireExact
+requiredLaws: build/catalog.d.ts#requiredLaws
+showPolynomial: build/catalog.d.ts#showPolynomial
+symmetricGroup: build/catalog.d.ts#symmetricGroup
+withoutZero: build/runner.chunk.d.ts#withoutZero
+
+## Declarations
+
+### build/catalog.d.ts#AnyLaw
+interface AnyLaw {
+  readonly name: LawName;
+  readonly level: Level;
+  readonly arity: Arity;
+  readonly statement: string;
+  readonly preservedByProduct: boolean;
+  readonly preservedByQuotient: boolean;
+  readonly check: (structure: never, values: never) => boolean;
+}
+
+### build/catalog.d.ts#Arity
+type Arity = 0 | 1 | 2 | 3;
+
+### build/catalog.d.ts#BOOLEANS
+export declare const BOOLEANS: Carrier<boolean>;
+
+### build/catalog.d.ts#BOOLEAN_AND
+export declare const BOOLEAN_AND: Semilattice<Monoid<boolean>>;
+
+### build/catalog.d.ts#BOOLEAN_LATTICE
+export declare const BOOLEAN_LATTICE: BoundedLattice<boolean>;
+
+### build/catalog.d.ts#BOOLEAN_OR
+export declare const BOOLEAN_OR: Semilattice<Monoid<boolean>>;
+
+### build/catalog.d.ts#BOOLEAN_RING
+export declare const BOOLEAN_RING: Ring<boolean>;
+
+### build/catalog.d.ts#BOOLEAN_XOR
+export declare const BOOLEAN_XOR: Commutative<Group<boolean>>;
+
+### build/catalog.d.ts#CATALOG
+export declare const CATALOG: readonly AnyStructure[];
+
+### build/catalog.d.ts#DOUBLES
+export declare const DOUBLES: Carrier<number>;
+
+### build/catalog.d.ts#DOUBLE_ADD
+export declare const DOUBLE_ADD: UnitalMagma<number>;
+
+### build/catalog.d.ts#DOUBLE_LATTICE
+export declare const DOUBLE_LATTICE: BoundedLattice<number>;
+
+### build/catalog.d.ts#DOUBLE_MAX
+export declare const DOUBLE_MAX: Semilattice<Monoid<number>>;
+
+### build/catalog.d.ts#DOUBLE_MIN
+export declare const DOUBLE_MIN: Semilattice<Monoid<number>>;
+
+### build/catalog.d.ts#INTEGERS
+export declare const INTEGERS: Carrier<bigint>;
+
+### build/catalog.d.ts#INTEGER_ADD
+export declare const INTEGER_ADD: Commutative<Group<bigint>>;
+
+### build/catalog.d.ts#INTEGER_COSETS
+export declare const INTEGER_COSETS: SubsetDefinition<Rational>;
+
+### build/catalog.d.ts#INTEGER_MUL
+export declare const INTEGER_MUL: Commutative<Monoid<bigint>>;
+
+### build/catalog.d.ts#INTEGER_RING
+export declare const INTEGER_RING: CommutativeRing<bigint>;
+
+### build/catalog.d.ts#LAWS
+export declare const LAWS: Readonly<Record<LawName, AnyLaw>>;
+
+### build/catalog.d.ts#LAW_NAMES
+export declare const LAW_NAMES: readonly LawName[];
+
+### build/catalog.d.ts#LEVELS
+export declare const LEVELS: Readonly<Record<Level, LevelSpecification>>;
+
+### build/catalog.d.ts#Law
+interface Law<L extends Level, N extends Arity> {
+  readonly name: LawName;
+  readonly level: L;
+  readonly arity: N;
+  readonly statement: string;
+  readonly preservedByProduct: boolean;
+  readonly preservedByQuotient: boolean;
+  readonly check: <T>(structure: LevelShapes<T>[L], values: LawArguments<T, N>) => boolean;
+}
+
+### build/catalog.d.ts#LawArguments
+type LawArguments<T, N extends Arity> = N extends 0 ? readonly [] : N extends 1 ? readonly [T] : N extends 2 ? readonly [T, T] : readonly [T, T, T];
+
+### build/catalog.d.ts#LawDescription
+interface LawDescription {
+  readonly name: LawName;
+  readonly level: Level;
+  readonly arity: number;
+  readonly statement: string;
+  readonly preservedByProduct: boolean;
+  readonly preservedByQuotient: boolean;
+}
+
+### build/catalog.d.ts#LevelShapes
+interface LevelShapes<T> {
+  readonly magma: Magma<T>;
+  readonly semigroup: Semigroup<T>;
+  readonly "unital-magma": UnitalMagma<T>;
+  readonly monoid: Monoid<T>;
+  readonly group: Group<T>;
+  readonly ring: Ring<T>;
+  readonly field: Field<T>;
+  readonly order: Order<T>;
+  readonly lattice: Lattice<T>;
+  readonly "bounded-lattice": BoundedLattice<T>;
+  readonly "normal-subgroup": NormalSubgroup<T>;
+  readonly ideal: Ideal<T>;
+}
+
+### build/catalog.d.ts#LevelSpecification
+interface LevelSpecification {
+  readonly level: Level;
+  readonly below: readonly Level[];
+  readonly operations: readonly string[];
+  readonly parts: readonly PartSpecification[];
+  readonly laws: readonly LawName[];
+}
+
+### build/catalog.d.ts#MAX_MODULUS
+export declare const MAX_MODULUS: bigint;
+
+### build/catalog.d.ts#MAX_POINTS
+export declare const MAX_POINTS = 5;
+
+### build/catalog.d.ts#ORDERED_DOUBLES
+export declare const ORDERED_DOUBLES: Carrier<number>;
+
+### build/catalog.d.ts#OperationDescription
+interface OperationDescription {
+  readonly field: string;
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: number;
+}
+
+### build/catalog.d.ts#Pair
+type Pair<A, B> = readonly [A, B];
+
+### build/catalog.d.ts#PartSpecification
+interface PartSpecification {
+  readonly field: string;
+  readonly level: Level;
+  readonly laws: readonly LawName[];
+  readonly ownCarrier?: true;
+}
+
+### build/catalog.d.ts#Permutation
+type Permutation = readonly number[];
+
+### build/catalog.d.ts#Polynomial
+type Polynomial<T> = readonly T[];
+
+### build/catalog.d.ts#RATIONALS
+export declare const RATIONALS: Carrier<Rational>;
+
+### build/catalog.d.ts#RATIONALS_MOD_INTEGERS
+export declare const RATIONALS_MOD_INTEGERS: Group<Rational>;
+
+### build/catalog.d.ts#RATIONAL_ADD
+export declare const RATIONAL_ADD: Commutative<Group<Rational>>;
+
+### build/catalog.d.ts#RATIONAL_FIELD
+export declare const RATIONAL_FIELD: Field<Rational>;
+
+### build/catalog.d.ts#RATIONAL_LATTICE
+export declare const RATIONAL_LATTICE: Lattice<Rational>;
+
+### build/catalog.d.ts#RATIONAL_MAX
+export declare const RATIONAL_MAX: Semilattice<Semigroup<Rational>>;
+
+### build/catalog.d.ts#RATIONAL_MIN
+export declare const RATIONAL_MIN: Semilattice<Semigroup<Rational>>;
+
+### build/catalog.d.ts#RATIONAL_MUL
+export declare const RATIONAL_MUL: Commutative<Monoid<Rational>>;
+
+### build/catalog.d.ts#RATIONAL_ORDER
+export declare const RATIONAL_ORDER: Order<Rational>;
+
+### build/catalog.d.ts#RATIONAL_UNITS
+export declare const RATIONAL_UNITS: Commutative<Group<Rational>>;
+
+### build/catalog.d.ts#ROOT_TEST_LIMIT
+export declare const ROOT_TEST_LIMIT: bigint;
+
+### build/catalog.d.ts#RootExtension
+interface RootExtension<T> {
+  readonly ring: CommutativeRing<Polynomial<T>>;
+  readonly field: Field<Polynomial<T>> | null;
+  readonly evidence: Evidence;
+}
+
+### build/catalog.d.ts#SAMPLE_DEGREE
+export declare const SAMPLE_DEGREE = 6;
+
+### build/catalog.d.ts#SEARCH_LIMIT
+export declare const SEARCH_LIMIT = 65536;
+
+### build/catalog.d.ts#StructureDescription
+interface StructureDescription {
+  readonly name: string;
+  readonly level: Level;
+  readonly carrier: {
+    readonly name: string;
+    readonly description: string;
+    readonly exact: boolean;
+    readonly size?: number;
+  };
+  readonly operations: readonly OperationDescription[];
+  readonly claims: readonly LawName[];
+  readonly refuted: readonly {
+    readonly law: LawName;
+    readonly note: string;
+  }[];
+  readonly parts: Readonly<Record<string, StructureDescription>>;
+  readonly construction?: {
+    readonly name: Construction["name"];
+    readonly inputs: Readonly<Record<string, StructureDescription>>;
+    readonly evidence?: Evidence;
+  };
+}
+
+### build/catalog.d.ts#SubsetDefinition
+interface SubsetDefinition<T> {
+  readonly name: string;
+  readonly member: (a: T) => boolean;
+  readonly reduce: (a: T) => T;
+  readonly representatives?: readonly T[];
+}
+
+### build/catalog.d.ts#alternatingSubgroup
+export declare const alternatingSubgroup: (group: Group<Permutation>) => NormalSubgroup<Permutation>;
+
+### build/catalog.d.ts#coefficientLists
+export declare const coefficientLists: <T>(values: readonly T[], length: number) => readonly (readonly T[])[];
+
+### build/catalog.d.ts#conforms
+export declare const conforms: (structure: AnyStructure) => readonly string[];
+
+### build/catalog.d.ts#degree
+export declare const degree: <T>(p: Polynomial<T>) => number;
+
+### build/catalog.d.ts#describe
+export declare const describe: (structure: AnyStructure) => StructureDescription;
+
+### build/catalog.d.ts#describeCatalog
+export declare const describeCatalog: () => readonly StructureDescription[];
+
+### build/catalog.d.ts#describeLaw
+export declare const describeLaw: (name: LawName) => LawDescription;
+
+### build/catalog.d.ts#describeLaws
+export declare const describeLaws: () => readonly LawDescription[];
+
+### build/catalog.d.ts#divideMonic
+export declare const divideMonic: <T>(ring: Ring<T>, p: Polynomial<T>, monic: Polynomial<T>) => {
+  readonly quotient: Polynomial<T>;
+  readonly remainder: Polynomial<T>;
+};
+
+### build/catalog.d.ts#evaluate
+export declare const evaluate: <T>(ring: Ring<T>, p: Polynomial<T>, point: T) => T;
+
+### build/catalog.d.ts#extendFinite
+export declare const extendFinite: <T>(field: Field<T>, modulus: Polynomial<T>) => RootExtension<T>;
+
+### build/catalog.d.ts#extendRationals
+export declare const extendRationals: (modulus: Polynomial<Rational>, eisenstein?: bigint) => RootExtension<Rational>;
+
+### build/catalog.d.ts#idealOf
+export declare function idealOf<T>(ring: CommutativeRing<T>, definition: SubsetDefinition<T>): CommutativeIdeal<T>;
+export declare function idealOf<T>(ring: Ring<T>, definition: SubsetDefinition<T>): Ideal<T>;
+
+### build/catalog.d.ts#inputsOf
+export declare const inputsOf: (structure: AnyStructure) => readonly (readonly [string, AnyStructure])[];
+
+### build/catalog.d.ts#integerIdeal
+export declare const integerIdeal: (n: bigint) => CommutativeIdeal<bigint>;
+
+### build/catalog.d.ts#integersMod
+export declare const integersMod: (n: bigint) => CommutativeRing<bigint>;
+
+### build/catalog.d.ts#isEven
+export declare const isEven: (a: Permutation) => boolean;
+
+### build/catalog.d.ts#isPrime
+export declare const isPrime: (p: bigint) => boolean;
+
+### build/catalog.d.ts#levelsBelow
+export declare const levelsBelow: (level: Level) => readonly Level[];
+
+### build/catalog.d.ts#listedIdeal
+export declare const listedIdeal: <T>(ring: Ring<T>, members: readonly T[]) => Ideal<T>;
+
+### build/catalog.d.ts#listedNormalSubgroup
+export declare const listedNormalSubgroup: <T>(group: Group<T>, members: readonly T[]) => NormalSubgroup<T>;
+
+### build/catalog.d.ts#normalSubgroupOf
+export declare const normalSubgroupOf: <T>(group: Group<T>, definition: SubsetDefinition<T>) => NormalSubgroup<T>;
+
+### build/catalog.d.ts#operationFields
+export declare const operationFields: (level: Level) => readonly string[];
+
+### build/catalog.d.ts#partSpecifications
+export declare const partSpecifications: (level: Level) => readonly PartSpecification[];
+
+### build/catalog.d.ts#partsOf
+export declare const partsOf: (structure: AnyStructure) => readonly (readonly [string, AnyStructure])[];
+
+### build/catalog.d.ts#polynomial
+export declare const polynomial: <T>(ring: Ring<T>, coefficients: readonly T[]) => Polynomial<T>;
+
+### build/catalog.d.ts#polynomialIdeal
+export declare const polynomialIdeal: <T>(ring: CommutativeRing<T>, modulus: Polynomial<T>) => CommutativeIdeal<Polynomial<T>>;
+
+### build/catalog.d.ts#polynomialRing
+export declare function polynomialRing<T>(ring: CommutativeRing<T>): CommutativeRing<Polynomial<T>>;
+export declare function polynomialRing<T>(ring: Ring<T>): Ring<Polynomial<T>>;
+
+### build/catalog.d.ts#primeField
+export declare const primeField: (p: bigint) => Field<bigint>;
+
+### build/catalog.d.ts#product
+export declare function product<A, B>(a: BoundedLattice<A>, b: BoundedLattice<B>): BoundedLattice<Pair<A, B>>;
+export declare function product<A, B>(a: Lattice<A>, b: Lattice<B>): Lattice<Pair<A, B>>;
+export declare function product<A, B>(a: Order<A>, b: Order<B>): Order<Pair<A, B>>;
+export declare function product<A, B>(a: Ring<A>, b: Ring<B>): Ring<Pair<A, B>>;
+export declare function product<A, B>(a: Group<A>, b: Group<B>): Group<Pair<A, B>>;
+export declare function product<A, B>(a: Monoid<A>, b: Monoid<B>): Monoid<Pair<A, B>>;
+export declare function product<A, B>(a: Semigroup<A>, b: Semigroup<B>): Semigroup<Pair<A, B>>;
+export declare function product<A, B>(a: UnitalMagma<A>, b: UnitalMagma<B>): UnitalMagma<Pair<A, B>>;
+export declare function product<A, B>(a: Magma<A>, b: Magma<B>): Magma<Pair<A, B>>;
+
+### build/catalog.d.ts#quotientGroup
+export declare const quotientGroup: <T>(subset: NormalSubgroup<T>) => Group<T>;
+
+### build/catalog.d.ts#quotientRing
+export declare function quotientRing<T>(ideal: CommutativeIdeal<T>): CommutativeRing<T>;
+export declare function quotientRing<T>(ideal: Ideal<T>): Ring<T>;
+
+### build/catalog.d.ts#requiredLaws
+export declare const requiredLaws: (level: Level) => readonly LawName[];
+
+### build/catalog.d.ts#showPolynomial
+export declare const showPolynomial: <T>(ring: Ring<T>, p: Polynomial<T>) => string;
+
+### build/catalog.d.ts#symmetricGroup
+export declare const symmetricGroup: (n: number) => Group<Permutation>;
+
+### build/index.d.ts#allMonoid
+export declare const allMonoid: Monoid<boolean>;
+
+### build/index.d.ts#anyMonoid
+export declare const anyMonoid: Monoid<boolean>;
+
+### build/index.d.ts#arrayMonad
+export declare const arrayMonad: Monad<"Array">;
+
+### build/index.d.ts#arrayMonoid
+export declare const arrayMonoid: <T>() => Monoid<readonly T[]>;
+
+### build/index.d.ts#bigintOrder
+export declare const bigintOrder: Order<bigint>;
+
+### build/index.d.ts#bigintProduct
+export declare const bigintProduct: Monoid<bigint>;
+
+### build/index.d.ts#bigintSum
+export declare const bigintSum: Group<bigint>;
+
+### build/index.d.ts#booleanLattice
+export declare const booleanLattice: BoundedLattice<boolean>;
+
+### build/index.d.ts#booleanOrder
+export declare const booleanOrder: Order<boolean>;
+
+### build/index.d.ts#dualMonoid
+export declare const dualMonoid: <T>(monoid: Monoid<T>) => Monoid<T>;
+
+### build/index.d.ts#dualSemigroup
+export declare const dualSemigroup: <T>(semigroup: Semigroup<T>) => Semigroup<T>;
+
+### build/index.d.ts#firstSemigroup
+export declare const firstSemigroup: <T>() => Semigroup<T>;
+
+### build/index.d.ts#fold
+export declare const fold: <T>(monoid: Monoid<T>, values: Iterable<T>) => T;
+
+### build/index.d.ts#foldMap
+export declare const foldMap: <A, T>(monoid: Monoid<T>, values: Iterable<A>, f: (value: A) => T) => T;
+
+### build/index.d.ts#lastSemigroup
+export declare const lastSemigroup: <T>() => Semigroup<T>;
+
+### build/index.d.ts#latticeOfOrder
+export declare const latticeOfOrder: <T>(order: Order<T>) => Lattice<T>;
+
+### build/index.d.ts#maxMonoid
+export declare const maxMonoid: Monoid<number>;
+
+### build/index.d.ts#maxSemigroup
+export declare const maxSemigroup: <T>(order: Order<T>) => Semigroup<T>;
+
+### build/index.d.ts#minMonoid
+export declare const minMonoid: Monoid<number>;
+
+### build/index.d.ts#minSemigroup
+export declare const minSemigroup: <T>(order: Order<T>) => Semigroup<T>;
+
+### build/index.d.ts#numberLattice
+export declare const numberLattice: BoundedLattice<number>;
+
+### build/index.d.ts#numberOrder
+export declare const numberOrder: Order<number>;
+
+### build/index.d.ts#orderBy
+export declare const orderBy: <A, K>(order: Order<K>, key: (value: A) => K) => Order<A>;
+
+### build/index.d.ts#orderingOf
+export declare const orderingOf: (compared: number) => Ordering;
+
+### build/index.d.ts#pairMonoid
+export declare const pairMonoid: <A, B>(first: Monoid<A>, second: Monoid<B>) => Monoid<readonly [A, B]>;
+
+### build/index.d.ts#productMonoid
+export declare const productMonoid: Monoid<number>;
+
+### build/index.d.ts#recordMonoid
+export declare const recordMonoid: <V>(values: Semigroup<V>) => Monoid<Readonly<Record<string, V>>>;
+
+### build/index.d.ts#reverseOrder
+export declare const reverseOrder: <T>(order: Order<T>) => Order<T>;
+
+### build/index.d.ts#sortedSetLattice
+export declare const sortedSetLattice: <T>(order: Order<T>) => Lattice<readonly T[]>;
+
+### build/index.d.ts#sortedUnionMonoid
+export declare const sortedUnionMonoid: <T>(order: Order<T>) => Monoid<readonly T[]>;
+
+### build/index.d.ts#stringMonoid
+export declare const stringMonoid: Monoid<string>;
+
+### build/index.d.ts#stringOrder
+export declare const stringOrder: Order<string>;
+
+### build/index.d.ts#structMonoid
+export declare const structMonoid: <R extends Readonly<Record<string, unknown>>>(monoids: { readonly [K in keyof R]: Monoid<R[K]>; }) => Monoid<R>;
+
+### build/index.d.ts#sumMonoid
+export declare const sumMonoid: Group<number>;
+
+### build/index.d.ts#thenOrder
+export declare const thenOrder: <T>(...orders: readonly Order<T>[]) => Order<T>;
+
+### build/index.d.ts#xorGroup
+export declare const xorGroup: Group<boolean>;
+
+### build/interfaces.chunk.d.ts#BoundedLattice
+interface BoundedLattice<T> extends Lattice<T> {
+  readonly top: T;
+  readonly bottom: T;
+}
+
+### build/interfaces.chunk.d.ts#Functor
+interface Functor<F extends KindName> {
+  readonly kind?: F;
+  readonly map: <A, B>(fa: Kind<F, A>, f: (a: A) => B) => Kind<F, B>;
+}
+
+### build/interfaces.chunk.d.ts#Group
+interface Group<T> extends Monoid<T> {
+  readonly invert: (a: T) => T;
+}
+
+### build/interfaces.chunk.d.ts#Kind
+type Kind<F extends KindName, A> = Kinds<A>[F];
+
+### build/interfaces.chunk.d.ts#KindName
+type KindName = keyof Kinds<unknown>;
+
+### build/interfaces.chunk.d.ts#Kinds
+interface Kinds<A> {
+  readonly Array: readonly A[];
+}
+
+### build/interfaces.chunk.d.ts#Lattice
+interface Lattice<T> {
+  readonly meet: (a: T, b: T) => T;
+  readonly join: (a: T, b: T) => T;
+}
+
+### build/interfaces.chunk.d.ts#Monad
+interface Monad<F extends KindName> extends Functor<F> {
+  readonly of: <A>(a: A) => Kind<F, A>;
+  readonly flatMap: <A, B>(fa: Kind<F, A>, f: (a: A) => Kind<F, B>) => Kind<F, B>;
+}
+
+### build/interfaces.chunk.d.ts#Monoid
+interface Monoid<T> extends Semigroup<T> {
+  readonly empty: T;
+}
+
+### build/interfaces.chunk.d.ts#Order
+interface Order<T> {
+  readonly compare: (a: T, b: T) => number;
+}
+
+### build/interfaces.chunk.d.ts#Ordering
+type Ordering = -1 | 0 | 1;
+
+### build/interfaces.chunk.d.ts#Semigroup
+interface Semigroup<T> {
+  readonly combine: (a: T, b: T) => T;
+}
+
+### build/laws.d.ts#Arbitrary
+export interface Arbitrary<T> {
+  readonly sample: (random: Random$1) => T;
+  readonly equals?: (a: T, b: T) => boolean;
+  readonly show?: (a: T) => string;
+  readonly contains?: (a: T) => boolean;
+  readonly elements?: readonly T[];
+}
+
+### build/laws.d.ts#CheckOptions
+export interface CheckOptions extends RunOptions {
+  readonly name?: string;
+}
+
+### build/laws.d.ts#CompareLaw
+export type CompareLaw = "signAntisymmetric" | "zeroIsEqual";
+
+### build/laws.d.ts#FunctorArbitrary
+export interface FunctorArbitrary<F extends KindName, A> {
+  readonly sample: (random: Random$1) => Kind<F, A>;
+  readonly equals?: (a: Kind<F, A>, b: Kind<F, A>) => boolean;
+  readonly show?: (a: Kind<F, A>) => string;
+  readonly functions: readonly ((a: A) => A)[];
+}
+
+### build/laws.d.ts#FunctorLaw
+export type FunctorLaw = "mapIdentity" | "mapComposition" | "leftIdentity" | "rightIdentity" | "flatMapAssociative" | "mapAgrees";
+
+### build/laws.d.ts#MonadArbitrary
+export interface MonadArbitrary<F extends KindName, A> extends FunctorArbitrary<F, A> {
+  readonly value: (random: Random$1) => A;
+  readonly kleisli: readonly ((a: A) => Kind<F, A>)[];
+}
+
+### build/laws.d.ts#OperationClaims
+export interface OperationClaims {
+  readonly commutative?: boolean;
+  readonly idempotent?: boolean;
+}
+
+### build/laws.d.ts#assertLaws
+export declare const assertLaws: <Name extends string>(reports: readonly LawReport<Name>[]) => void;
+
+### build/laws.d.ts#checkBoundedLattice
+export declare const checkBoundedLattice: <T>(lattice: BoundedLattice<T>, values: Arbitrary<T>, options?: CheckOptions & {
+  readonly distributive?: boolean;
+}) => readonly LawReport[];
+
+### build/laws.d.ts#checkFunctor
+export declare const checkFunctor: <F extends KindName, A>(functor: Functor<F>, values: FunctorArbitrary<NoInfer<F>, A>, options?: CheckOptions) => readonly LawReport<FunctorLaw>[];
+
+### build/laws.d.ts#checkGroup
+export declare const checkGroup: <T>(group: Group<T>, values: Arbitrary<T>, options?: CheckOptions & {
+  readonly commutative?: boolean;
+}) => readonly LawReport[];
+
+### build/laws.d.ts#checkLattice
+export declare const checkLattice: <T>(lattice: Lattice<T>, values: Arbitrary<T>, options?: CheckOptions & {
+  readonly distributive?: boolean;
+}) => readonly LawReport[];
+
+### build/laws.d.ts#checkMonad
+export declare const checkMonad: <F extends KindName, A>(monad: Monad<F>, values: MonadArbitrary<NoInfer<F>, A>, options?: CheckOptions) => readonly LawReport<FunctorLaw>[];
+
+### build/laws.d.ts#checkMonoid
+export declare const checkMonoid: <T>(monoid: Monoid<T>, values: Arbitrary<T>, options?: CheckOptions & OperationClaims) => readonly LawReport[];
+
+### build/laws.d.ts#checkOrder
+export declare const checkOrder: <T>(order: Order<T>, values: Arbitrary<T>, options?: CheckOptions) => readonly LawReport<string>[];
+
+### build/laws.d.ts#checkSemigroup
+export declare const checkSemigroup: <T>(semigroup: Semigroup<T>, values: Arbitrary<T>, options?: CheckOptions & OperationClaims) => readonly LawReport[];
+
+### build/laws.d.ts#lawFailures
+export declare const lawFailures: <Name extends string>(reports: readonly LawReport<Name>[]) => readonly LawReport<Name>[];
+
+### build/laws.d.ts#structuralEquals
+export declare const structuralEquals: (a: unknown, b: unknown) => boolean;
+
+### build/runner.chunk.d.ts#AnyStructure
+type AnyStructure = Structure<any>;
+
+### build/runner.chunk.d.ts#Binary
+interface Binary<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 2;
+  readonly apply: (a: T, b: T) => T;
+}
+
+### build/runner.chunk.d.ts#BoundedLattice
+interface BoundedLattice<T> extends Lattice<T> {
+  readonly level: "bounded-lattice";
+  readonly meet: Semilattice<Monoid<T>>;
+  readonly join: Semilattice<Monoid<T>>;
+}
+
+### build/runner.chunk.d.ts#Carrier
+interface Carrier<T> {
+  readonly name: string;
+  readonly description: string;
+  readonly exact: boolean;
+  readonly equals: (a: T, b: T) => boolean;
+  readonly contains: (a: T) => boolean;
+  readonly sample: (random: Random) => T;
+  readonly show: (a: T) => string;
+  readonly elements?: readonly T[];
+}
+
+### build/runner.chunk.d.ts#Claims
+type Claims<Required extends LawName, Optional extends LawName = never> = { readonly [K in Required]: true; } & { readonly [K in Optional]?: true; };
+
+### build/runner.chunk.d.ts#Commutative
+type Commutative<S> = S & {
+  readonly claims: {
+    readonly commutative: true;
+  };
+};
+
+### build/runner.chunk.d.ts#CommutativeIdeal
+type CommutativeIdeal<T> = Ideal<T> & {
+  readonly ring: CommutativeRing<T>;
+};
+
+### build/runner.chunk.d.ts#CommutativeRing
+type CommutativeRing<T> = Ring<T> & {
+  readonly multiplicative: Commutative<Monoid<T>>;
+};
+
+### build/runner.chunk.d.ts#Constant
+interface Constant<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 0;
+  readonly value: T;
+}
+
+### build/runner.chunk.d.ts#Construction
+interface Construction {
+  readonly name: "quotient" | "polynomial-ring" | "root-extension";
+  readonly inputs: Readonly<Record<string, AnyStructure>>;
+  readonly evidence?: Evidence;
+}
+
+### build/runner.chunk.d.ts#DEFAULT_SAMPLES
+declare const DEFAULT_SAMPLES = 500;
+
+### build/runner.chunk.d.ts#DEFAULT_SEED
+declare const DEFAULT_SEED = 1;
+
+### build/runner.chunk.d.ts#Evidence
+interface Evidence {
+  readonly verdict: "irreducible" | "reducible" | "unknown";
+  readonly method: "degree-one" | "trial-division" | "rational-root" | "eisenstein" | "none";
+  readonly note: string;
+}
+
+### build/runner.chunk.d.ts#Field
+interface Field<T> extends Ring<T> {
+  readonly level: "field";
+  readonly multiplicative: Commutative<Monoid<T>>;
+  readonly units: Commutative<Group<T>>;
+  readonly claims: Claims<"leftDistributive" | "rightDistributive" | "nontrivial" | "unitsAreNonzero" | "unitsAgree", "noZeroDivisors">;
+}
+
+### build/runner.chunk.d.ts#Group
+interface Group<T> extends Monoid<T> {
+  readonly level: "group";
+  readonly inverse: Unary<T>;
+  readonly claims: Claims<"closed" | "associative" | "leftIdentity" | "rightIdentity" | "inverseClosed" | "leftInverse" | "rightInverse", OptionalMagmaLaw>;
+}
+
+### build/runner.chunk.d.ts#Ideal
+interface Ideal<T> extends NormalSubgroup<T> {
+  readonly level: "ideal";
+  readonly group: Commutative<Group<T>>;
+  readonly ring: Ring<T>;
+  readonly claims: Claims<"reduceSettles" | "memberAgrees" | "congruentLeft" | "congruentRight" | "absorbsLeft" | "absorbsRight">;
+}
+
+### build/runner.chunk.d.ts#Lattice
+interface Lattice<T> extends Order<T> {
+  readonly level: "lattice" | "bounded-lattice";
+  readonly meet: Semilattice<Semigroup<T>>;
+  readonly join: Semilattice<Semigroup<T>>;
+  readonly claims: Claims<LatticeLaw, "total" | "distributive">;
+}
+
+### build/runner.chunk.d.ts#LawCheck
+interface LawCheck<T, Name extends string> {
+  readonly path: string;
+  readonly law: Name;
+  readonly arity: number;
+  readonly source: LawSource<T>;
+  readonly holds: (values: readonly T[]) => boolean;
+}
+
+### build/runner.chunk.d.ts#LawName
+type LawName = MagmaLaw | RingLaw | OrderLaw | CongruenceLaw;
+
+### build/runner.chunk.d.ts#LawReport
+interface LawReport<Name extends string = LawName> {
+  readonly path: string;
+  readonly law: Name;
+  readonly arity: number;
+  readonly seed: number;
+  readonly cases: number;
+  readonly exhaustive: boolean;
+  readonly failure: readonly string[] | null;
+}
+
+### build/runner.chunk.d.ts#LawSource
+type LawSource<T> = Pick<Carrier<T>, "sample" | "show" | "elements">;
+
+### build/runner.chunk.d.ts#Level
+type Level = "magma" | "semigroup" | "unital-magma" | "monoid" | "group" | "ring" | "field" | "order" | "lattice" | "bounded-lattice" | "normal-subgroup" | "ideal";
+
+### build/runner.chunk.d.ts#Magma
+interface Magma<T> {
+  readonly level: "magma" | "semigroup" | "unital-magma" | "monoid" | "group";
+  readonly name: string;
+  readonly carrier: Carrier<T>;
+  readonly op: Binary<T>;
+  readonly claims: Claims<"closed", OptionalMagmaLaw>;
+  readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
+}
+
+### build/runner.chunk.d.ts#Monoid
+interface Monoid<T> extends Semigroup<T>, UnitalMagma<T> {
+  readonly level: "monoid" | "group";
+  readonly claims: Claims<"closed" | "associative" | "leftIdentity" | "rightIdentity", OptionalMagmaLaw>;
+}
+
+### build/runner.chunk.d.ts#NormalSubgroup
+interface NormalSubgroup<T> {
+  readonly level: "normal-subgroup" | "ideal";
+  readonly name: string;
+  readonly carrier: Carrier<T>;
+  readonly group: Group<T>;
+  readonly member: Predicate<T>;
+  readonly reduce: Unary<T>;
+  readonly representatives?: readonly T[];
+  readonly claims: Claims<"reduceSettles" | "memberAgrees" | "congruentLeft" | "congruentRight">;
+  readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
+}
+
+### build/runner.chunk.d.ts#Order
+interface Order<T> {
+  readonly level: "order" | "lattice" | "bounded-lattice";
+  readonly name: string;
+  readonly carrier: Carrier<T>;
+  readonly leq: Relation<T>;
+  readonly claims: Claims<"reflexive" | "antisymmetric" | "transitive", "total">;
+  readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
+}
+
+### build/runner.chunk.d.ts#Predicate
+interface Predicate<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 1;
+  readonly apply: (a: T) => boolean;
+}
+
+### build/runner.chunk.d.ts#Refutation
+interface Refutation<T> {
+  readonly law: LawName;
+  readonly arguments: readonly T[];
+  readonly note: string;
+}
+
+### build/runner.chunk.d.ts#Relation
+interface Relation<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 2;
+  readonly apply: (a: T, b: T) => boolean;
+}
+
+### build/runner.chunk.d.ts#Ring
+interface Ring<T> {
+  readonly level: "ring" | "field";
+  readonly name: string;
+  readonly carrier: Carrier<T>;
+  readonly additive: Commutative<Group<T>>;
+  readonly multiplicative: Monoid<T>;
+  readonly claims: Claims<"leftDistributive" | "rightDistributive", "noZeroDivisors">;
+  readonly refuted?: readonly Refutation<T>[];
+  readonly construction?: Construction;
+}
+
+### build/runner.chunk.d.ts#RunOptions
+interface RunOptions {
+  readonly seed?: number;
+  readonly samples?: number;
+}
+
+### build/runner.chunk.d.ts#Semigroup
+interface Semigroup<T> extends Magma<T> {
+  readonly level: "semigroup" | "monoid" | "group";
+  readonly claims: Claims<"closed" | "associative", OptionalMagmaLaw>;
+}
+
+### build/runner.chunk.d.ts#Semilattice
+type Semilattice<S> = S & {
+  readonly claims: {
+    readonly commutative: true;
+    readonly idempotent: true;
+  };
+};
+
+### build/runner.chunk.d.ts#Structure
+type Structure<T> = Magma<T> | Ring<T> | Order<T> | NormalSubgroup<T>;
+
+### build/runner.chunk.d.ts#Unary
+interface Unary<T> {
+  readonly name: string;
+  readonly symbol: string;
+  readonly arity: 1;
+  readonly apply: (a: T) => T;
+}
+
+### build/runner.chunk.d.ts#UnitalMagma
+interface UnitalMagma<T> extends Magma<T> {
+  readonly level: "unital-magma" | "monoid" | "group";
+  readonly identity: Constant<T>;
+  readonly claims: Claims<"closed" | "leftIdentity" | "rightIdentity", OptionalMagmaLaw>;
+}
+
+### build/runner.chunk.d.ts#checkClaims
+declare const checkClaims: (structure: AnyStructure, options?: RunOptions) => readonly LawReport[];
+
+### build/runner.chunk.d.ts#checkLaw
+declare const checkLaw: <T, Name extends string>(check: LawCheck<T, Name>, options?: RunOptions) => LawReport<Name>;
+
+### build/runner.chunk.d.ts#holdsAt
+declare const holdsAt: (structure: AnyStructure, name: LawName, values: readonly unknown[]) => boolean;
+
+### build/runner.chunk.d.ts#requireExact
+declare const requireExact: <T>(carrier: Carrier<T>, construction: string) => void;
+
+### build/runner.chunk.d.ts#withoutZero
+declare const withoutZero: <T>(name: string, carrier: Carrier<T>, zero: T) => Carrier<T>;

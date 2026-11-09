@@ -15,8 +15,8 @@ import {
   polynomial,
   polynomialRing,
   primeField,
-} from "./index.ts";
-import type { AnyStructure, Carrier, Field, Polynomial, RootExtension } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, Carrier, Field, Polynomial, RootExtension } from "./catalog-entry.ts";
 
 const passes = (structure: AnyStructure): void => {
   expect(conforms(structure)).toEqual([]);

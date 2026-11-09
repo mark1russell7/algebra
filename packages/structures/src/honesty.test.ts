@@ -10,8 +10,8 @@ import {
   partsOf,
   primeField,
   withoutZero,
-} from "./index.ts";
-import type { AnyStructure, Commutative, Field, Group, LawReport, Magma, Refutation, UnitalMagma } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, Commutative, Field, Group, LawReport, Magma, Refutation, UnitalMagma } from "./catalog-entry.ts";
 
 const failuresOf = (reports: readonly LawReport[]): readonly LawReport[] => reports.filter((report) => report.failure !== null);
 
