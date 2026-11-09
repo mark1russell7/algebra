@@ -1,0 +1,946 @@
+{
+  "pairs": [
+    {
+      "pair": "stage-exact",
+      "baseline": "exact",
+      "arm": "stage",
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.2725, 0.3734]. The interval is below 1.",
+      "medianRatio": 0.2899076648825488,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.05635476554903321
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.28383617447500964
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 2.3233977935935988
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.22988717199959985
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.2877836109536278
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.2670214610719043
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.4589136240795043
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.9387728510107348
+        }
+      ]
+    },
+    {
+      "pair": "stage-interval",
+      "baseline": "interval",
+      "arm": "stage",
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0286, 0.0386]. The interval is below 1.",
+      "medianRatio": 0.03364658912488798,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.022738178569321713
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.12929240225606556
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.03427237231541422
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.0276692556808988
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.027553406297916496
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.02733299497077272
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.039091877145396525
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.04154996904612955
+        }
+      ]
+    },
+    {
+      "pair": "64-exact",
+      "baseline": "exact",
+      "arm": 64,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.3947, 0.504]. The interval is below 1.",
+      "medianRatio": 0.4431209354740493,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.09936436012280245
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.28145784381347205
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 2.820896913566177
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.614683064877701
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.4366441077818816
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.3762492347455595
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.49415583768167715
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "same",
+          "medianRatio": 1.0105504530727878
+        }
+      ]
+    },
+    {
+      "pair": "64-interval",
+      "baseline": "interval",
+      "arm": 64,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0421, 0.045]. The interval is below 1.",
+      "medianRatio": 0.043181882580083514,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.05712324455943264
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.1319514867574016
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.043155407401416976
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.07669842858651599
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.040099539696479246
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.037823621055861636
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.04161124901969425
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.043346471134063196
+        }
+      ]
+    },
+    {
+      "pair": "128-exact",
+      "baseline": "exact",
+      "arm": 128,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.4201, 0.5389]. The interval is below 1.",
+      "medianRatio": 0.4412450805330037,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.09209118449885265
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.26399790756983477
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 2.784525341134567
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.6374583476640026
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.43461987090988263
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.41037449954462557
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5289213588517647
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.0819643268111871
+        }
+      ]
+    },
+    {
+      "pair": "128-interval",
+      "baseline": "interval",
+      "arm": 128,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0432, 0.0499]. The interval is below 1.",
+      "medianRatio": 0.04493610355580983,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.05289557439551118
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.12223836373365919
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.04397897196246706
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.08247712771891699
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.03988831050155994
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.042521541662727244
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.04396941462065586
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.045884770298299495
+        }
+      ]
+    },
+    {
+      "pair": "256-exact",
+      "baseline": "exact",
+      "arm": 256,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.4185, 0.545]. The interval is below 1.",
+      "medianRatio": 0.4452643848365183,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.08184335119153473
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.2314886970869227
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 2.79765192794134
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.6413574750007911
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.43569249106648483
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.4083910964490236
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5287716607010119
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.1680434076529742
+        }
+      ]
+    },
+    {
+      "pair": "256-interval",
+      "baseline": "interval",
+      "arm": 256,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0432, 0.0513]. The interval is below 1.",
+      "medianRatio": 0.046080919232246664,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.048172787703849425
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.10660120921583778
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.04375287158669052
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.082775103234285
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.03940960861903805
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.04203424101989318
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.043822877421215815
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.05006828281002225
+        }
+      ]
+    },
+    {
+      "pair": "512-exact",
+      "baseline": "exact",
+      "arm": 512,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.4162, 0.5331]. The interval is below 1.",
+      "medianRatio": 0.4417808557653467,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.0790738463887248
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.17164973134352837
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 3.0083478080632746
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.6516349654495109
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.43206574743493453
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.40730635170616586
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5258349145486936
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.1617031806528755
+        }
+      ]
+    },
+    {
+      "pair": "512-interval",
+      "baseline": "interval",
+      "arm": 512,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0441, 0.0509]. The interval is below 1.",
+      "medianRatio": 0.049162171830425164,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.042053479884046445
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.07775100664589121
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.04535456801322127
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.08364492040199911
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.0398434450902794
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.04220020010504591
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.046318326820332635
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.04976230547036907
+        }
+      ]
+    },
+    {
+      "pair": "1024-exact",
+      "baseline": "exact",
+      "arm": 1024,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.4182, 0.5437]. The interval is below 1.",
+      "medianRatio": 0.46860569678032027,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.03515396824472572
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.09494019772605046
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 3.0383060757391673
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.6409908832601419
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.4328176727861258
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.4078153132315355
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5302319225753508
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.1825689210132757
+        }
+      ]
+    },
+    {
+      "pair": "1024-interval",
+      "baseline": "interval",
+      "arm": 1024,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0431, 0.0473]. The interval is below 1.",
+      "medianRatio": 0.044663406326625237,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.02274274086026324
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.0434288436967655
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.046439030552118815
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.07989675284955249
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.03983182460629754
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.04199914113294333
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.0467365629292585
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.05122459099933665
+        }
+      ]
+    },
+    {
+      "pair": "2048-exact",
+      "baseline": "exact",
+      "arm": 2048,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.4209, 0.5402]. The interval is below 1.",
+      "medianRatio": 0.45118730706116494,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.01613020483212864
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.04169111933551234
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 3.0335396149506577
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.640760558031763
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.4318880727895858
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.4072060254515879
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5270133785286906
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.162884402073062
+        }
+      ]
+    },
+    {
+      "pair": "2048-interval",
+      "baseline": "interval",
+      "arm": 2048,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0413, 0.0459]. The interval is below 1.",
+      "medianRatio": 0.04329007700446308,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.01012721375434934
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.018246422711010235
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.04552130077211472
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.08524526384270839
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.039365064809569424
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.0420288282803656
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.044640007612261584
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.051922362713379626
+        }
+      ]
+    },
+    {
+      "pair": "4096-exact",
+      "baseline": "exact",
+      "arm": 4096,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.417, 0.5417]. The interval is below 1.",
+      "medianRatio": 0.44186844214999155,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.014982352693585645
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.015711200008346318
+        },
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 3.0550989958575325
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.6454901663711601
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.43053704047620167
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.4061314425211283
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.5235215328844149
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 1.171373850848775
+        }
+      ]
+    },
+    {
+      "pair": "4096-interval",
+      "baseline": "interval",
+      "arm": 4096,
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.0413, 0.0459]. The interval is below 1.",
+      "medianRatio": 0.04291875823022606,
+      "families": [
+        {
+          "family": "small",
+          "outcome": "faster",
+          "medianRatio": 0.008348090263427269
+        },
+        {
+          "family": "large",
+          "outcome": "faster",
+          "medianRatio": 0.006802197510861778
+        },
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.046398343973269404
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.08214466905384947
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.039348250872239664
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.04146686402452591
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.04390464965783334
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.05083462499718337
+        }
+      ]
+    }
+  ],
+  "costs": [
+    {
+      "arm": "interval",
+      "cost": 84.7633154144539
+    },
+    {
+      "arm": "exact",
+      "cost": 792.7952977036682
+    },
+    {
+      "arm": "256",
+      "cost": 1768.5317581133972
+    },
+    {
+      "arm": "512",
+      "cost": 1795.2778361344413
+    },
+    {
+      "arm": "4096",
+      "cost": 1797.3643973214212
+    },
+    {
+      "arm": "1024",
+      "cost": 1801.1759125525261
+    },
+    {
+      "arm": "2048",
+      "cost": 1802.364988182769
+    },
+    {
+      "arm": "128",
+      "cost": 1813.7306657037796
+    },
+    {
+      "arm": "64",
+      "cost": 1928.62930114966
+    },
+    {
+      "arm": "stage",
+      "cost": 2460.3114908854186
+    }
+  ],
+  "stage": [
+    {
+      "question": "sign",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianPrecision": 64,
+      "maxPrecision": 512,
+      "medianBound": 1.0842021724855044e-19
+    },
+    {
+      "question": "abs 1e-9",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianPrecision": 64,
+      "maxPrecision": 128,
+      "medianBound": 2.710505431213761e-20
+    },
+    {
+      "question": "rel 1e-12",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianPrecision": 64,
+      "maxPrecision": 512,
+      "medianBound": 0
+    },
+    {
+      "question": "rel 0",
+      "met": 3884,
+      "records": 4096,
+      "wrong": 0,
+      "medianPrecision": 128,
+      "maxPrecision": 512,
+      "medianBound": 0
+    },
+    {
+      "question": "rel 1e-30",
+      "met": 4096,
+      "records": 4096,
+      "wrong": 0,
+      "medianPrecision": 128,
+      "maxPrecision": 512,
+      "medianBound": 0
+    }
+  ],
+  "model": {
+    "limit": 4096,
+    "bigfloat": 2460.3114908854186,
+    "shares": [
+      {
+        "question": {
+          "kind": "sign"
+        },
+        "stage": "bigfloat",
+        "share": 1
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "absolute": 1e-9
+          }
+        },
+        "stage": "bigfloat",
+        "share": 1
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-12
+          }
+        },
+        "stage": "bigfloat",
+        "share": 1
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 0
+          }
+        },
+        "stage": "bigfloat",
+        "share": 0.9482421875
+      },
+      {
+        "question": {
+          "kind": "value",
+          "tolerance": {
+            "relative": 1e-30
+          }
+        },
+        "stage": "bigfloat",
+        "share": 1
+      }
+    ]
+  }
+}

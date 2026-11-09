@@ -1,0 +1,53 @@
+{
+  "limit": 4096,
+  "bigfloat": 2460.3114908854186,
+  "shares": [
+    {
+      "question": {
+        "kind": "sign"
+      },
+      "stage": "bigfloat",
+      "share": 1
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "absolute": 1e-9
+        }
+      },
+      "stage": "bigfloat",
+      "share": 1
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-12
+        }
+      },
+      "stage": "bigfloat",
+      "share": 1
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 0
+        }
+      },
+      "stage": "bigfloat",
+      "share": 0.9482421875
+    },
+    {
+      "question": {
+        "kind": "value",
+        "tolerance": {
+          "relative": 1e-30
+        }
+      },
+      "stage": "bigfloat",
+      "share": 1
+    }
+  ]
+}
