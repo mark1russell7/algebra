@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/structures",
   "version": "0.1.0",
+  "private": true,
   "description": "Plain interfaces of semigroup, monoid, group, order, lattice, functor and monad, with standard instances, helpers and law checks. The catalog has the structures as data with their constructions.",
   "keywords": [
     "algebra",
