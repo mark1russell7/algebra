@@ -3,6 +3,10 @@
     "run": "41716746074",
     "folder": "2026-11-03"
   },
+  "bigfloat": {
+    "run": "42677738090",
+    "folder": "2026-11-09"
+  },
   "census": {
     "highways": "2026-11-05-highways",
     "packing": "2026-11-04-packing"
@@ -27,6 +31,14 @@
       "commit": "61f3f12c72a16fe64edae4eb0b97adacb51a5a13",
       "engines": {
         "@mark1russell7/predicate-census": "0.2.0"
+      }
+    },
+    "42677738090": {
+      "date": "2026-11-09T18:51:13Z",
+      "commit": "5b063d88b5daaa831206bb303ad6586c1f62c5d5",
+      "engines": {
+        "@algebra/bigfloat": "0.1.0",
+        "@algebra/evaluator-select": "0.1.0"
       }
     }
   }

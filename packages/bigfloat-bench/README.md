@@ -42,6 +42,8 @@ After steps 5 and 6, the raw records go to `results/<date>/`. The site gets a pa
 
 `results/2026-11-09/` keeps the records of the first start, run 42677738090 on `5b063d8`, on an AMD EPYC 7763. It has each file of the artifact, and `errors.jsonl` is compressed with gzip.
 
+The monthly study (`.github/workflows/study-monthly.yml`) starts the bench again each month, and the site shows its report. Each new start replaces the kept folder. Git history keeps each earlier start.
+
 The read plan gives these results:
 
 1. The field `wrong` is 0 in each row of `stage`.

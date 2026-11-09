@@ -56,10 +56,10 @@ export function overallText(report: Pick<CostReport, "pairs" | "stitchedFailures
   return `All cases together in that run: ${exact.outcome}, median × ${exact.medianRatio.toPrecision(3)}. The plan gave ${wrong}.`;
 }
 
-/** This function gives the address of the kept folder of a run of the bench, and the text of its link. */
-export function rawRecordsLink(bench: { readonly run: string; readonly folder: string }): { readonly href: string; readonly text: string } {
+/** This function gives the address of the kept folder of a run of a bench package, and the text of its link. */
+export function rawRecordsLink(bench: { readonly run: string; readonly folder: string }, pkg = "evaluator-bench"): { readonly href: string; readonly text: string } {
   return {
-    href: `https://github.com/mark1russell7/algebra/tree/main/packages/evaluator-bench/results/${bench.folder}`,
+    href: `https://github.com/mark1russell7/algebra/tree/main/packages/${pkg}/results/${bench.folder}`,
     text: `The raw records of run ${bench.run}`,
   };
 }
