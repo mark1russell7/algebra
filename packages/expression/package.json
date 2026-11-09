@@ -16,6 +16,7 @@
     "@mark1russell7/interval": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
     "@mark1russell7/rigor-generators": "^0.1.8",
+    "@mark1russell7/structures": "workspace:*",
     "zod": "^4.6.7"
   },
   "devDependencies": {

@@ -132,6 +132,45 @@ describe("the monoids", () => {
     }
   });
 
+  // The monoids of expression before A26. The monoids of the core must give the same values, key order included.
+  const localFree = (a: readonly string[], b: readonly string[]): string[] => {
+    const out: string[] = [];
+    let i = 0;
+    let j = 0;
+    while (i < a.length || j < b.length) {
+      const x = a[i];
+      const y = b[j];
+      if (y === undefined || (x !== undefined && x < y)) {
+        out.push(x as string);
+        i++;
+      } else if (x === undefined || y < x) {
+        out.push(y);
+        j++;
+      } else {
+        out.push(x);
+        i++;
+        j++;
+      }
+    }
+    return out;
+  };
+  const localCost = (a: Readonly<Record<string, number>>, b: Readonly<Record<string, number>>): Record<string, number> => {
+    const sum: Record<string, number> = { ...a };
+    for (const [k, n] of Object.entries(b)) sum[k] = (sum[k] ?? 0) + n;
+    return Object.fromEntries(Object.keys(sum).sort().map((k) => [k, sum[k] as number]));
+  };
+
+  it("free and cost give the values of the local monoids before A26", () => {
+    for (let i = 0; i < RUNS; i++) {
+      const [a, b] = [names(), names()];
+      expect(freeMonoid.combine(a, b)).toEqual(localFree(a, b));
+      const [x, y] = [costs(), costs()];
+      const sum = costMonoid.combine(x, y);
+      expect(sum).toEqual(localCost(x, y));
+      expect(Object.keys(sum)).toEqual(Object.keys(localCost(x, y)));
+    }
+  });
+
   it("cost: identity, associativity and commutativity", () => {
     for (let i = 0; i < RUNS; i++) {
       const [a, b, c] = [costs(), costs(), costs()];
