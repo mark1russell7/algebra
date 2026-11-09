@@ -9,6 +9,7 @@ import { NO_CLAIM } from "@mark1russell7/expression";
 import { approx, decisions, evaluateAll, formatFloat, variables, widthOf } from "./evaluate.ts";
 import type { Decision, Evaluation } from "./evaluate.ts";
 import { readExpression } from "./syntax.ts";
+import { escapeAttribute as esc } from "@mark1russell7/text";
 
 /** An example of the playground: a text and the values of its variables. */
 export interface Example {
@@ -56,10 +57,6 @@ function byId<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
   if (!element) throw new Error(`The page has no element #${id}.`);
   return element as T;
-}
-
-function esc(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 /** This function starts the playground on the page. */

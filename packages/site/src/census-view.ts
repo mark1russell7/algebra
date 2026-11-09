@@ -5,6 +5,7 @@
  * @packageDocumentation
  */
 import type { NearMiss, NearMissFile } from "./presets.ts";
+import { escapeAttribute as esc } from "@mark1russell7/text";
 
 /** The id of a class of the float-wrong tests. */
 export type ClassId = 1 | 2 | 3 | 4;
@@ -89,10 +90,6 @@ function byId<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
   if (!element) throw new Error(`The page has no element #${id}.`);
   return element as T;
-}
-
-function esc(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 const count = (n: number): string => n.toLocaleString("en-US");

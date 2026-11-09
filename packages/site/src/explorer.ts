@@ -14,6 +14,7 @@ import { buildForm, cellDetail, decode, dyadicToRational, exactLine, fillRows, t
 import type { CellDetail, CellSegment, Counts, GridJob, View } from "./grid.ts";
 import type { Preset, Scene, SignChoice } from "./presets.ts";
 import type { BandMessage, JobMessage } from "./grid.worker.ts";
+import { escapeAttribute as esc } from "@mark1russell7/text";
 
 type PanelName = "float" | "interval" | "exact" | "a5";
 const PANELS: readonly PanelName[] = ["float", "interval", "exact", "a5"];
@@ -61,10 +62,6 @@ function byId<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
   if (!element) throw new Error(`The page has no element #${id}.`);
   return element as T;
-}
-
-function esc(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 const signText = (s: -1 | 0 | 1 | null): string => (s === null ? "no sign" : s > 0 ? "+" : s < 0 ? "−" : "0");
