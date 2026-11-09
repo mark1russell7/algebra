@@ -1537,10 +1537,13 @@ button:disabled {
   background: var(--muted);
 }
 
-/* The tables of the precision section scroll inside their box, so the page does not scroll to the side. */
+/* The tables of the precision section scroll inside their box, so the page does not scroll to the side. The shadow
+   of the class scroll-cue shows that a table continues past a side. */
 .precision-scroll {
   overflow-x: auto;
   min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
 }
 
 .precision-table {
