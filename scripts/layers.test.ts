@@ -79,7 +79,7 @@ describe("the rules of dependency-cruiser", () => {
   it("has a rule for each layer with packages in the workspace, below the top layer", () => {
     assert.deepEqual(
       rules.map((r) => r.name),
-      ["layer-1-imports-up", "layer-3-imports-up", "layer-6-imports-up", "layer-7-imports-up"],
+      ["layer-1-imports-up", "layer-2-imports-up", "layer-3-imports-up", "layer-5-imports-up", "layer-6-imports-up", "layer-7-imports-up"],
     );
   });
 

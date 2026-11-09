@@ -18,13 +18,13 @@
     "benchmark",
     "fixtures"
   ],
-  "homepage": "https://github.com/mark1russell7/rigor/tree/main/packages/generators#readme",
+  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/generators#readme",
   "bugs": {
-    "url": "https://github.com/mark1russell7/rigor/issues"
+    "url": "https://github.com/mark1russell7/algebra/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mark1russell7/rigor.git",
+    "url": "git+https://github.com/mark1russell7/algebra.git",
     "directory": "packages/generators"
   },
   "license": "MIT",
