@@ -38,6 +38,34 @@ This plan tells which rows of a run decide A7. It comes before the first run, so
 
 After steps 5 and 6, the raw records go to `results/<date>/`. The site gets a page of the cost at each precision.
 
+## The results
+
+`results/2026-11-09/` keeps the records of the first start, run 42677738090 on `5b063d8`, on an AMD EPYC 7763. It has each file of the artifact, and `errors.jsonl` is compressed with gzip.
+
+The read plan gives these results:
+
+1. The field `wrong` is 0 in each row of `stage`.
+2. The 7 pairs `<precision>-exact` of the family `ill` are `cannot decide`. The warning of the check names them. They give no claim.
+3. The verb `interval` is faster than the verb `bigfloat` at 64 bits in each family. The verb `exact` is faster at 64 bits in the families `small`, `large`, `orient-random`, `orient-near` and `incircle-random`.
+4. The verb `exact` is not faster at any precision in the families `well` and `incircle-near`. In `well`, the verb `bigfloat` is faster (2.32 to 3.06).
+5. The cost of one node and one point: `interval` 84.76 ns, `exact` 792.8 ns, the verb `bigfloat` 1769 to 1929 ns, and the stage 2460 ns.
+6. With the cost of the stage and its shares, `select` gives no plan with the stage for the 5 questions of the run. So the stage stays out of `STAGES`, and it is a choice of the caller.
+
+| Question | Answered by the stage | Plan of `select` |
+| --- | --- | --- |
+| `sign` | 4096 of 4096 | `float`, `interval`, `exact` |
+| `abs 1e-9` | 4096 of 4096 | `float`, `interval`, `exact` |
+| `rel 1e-12` | 4096 of 4096 | `float`, `interval`, `exact` |
+| `rel 0` | 3884 of 4096 | `interval`, `exact` |
+| `rel 1e-30` | 4096 of 4096 | `exact` |
+
+The plans come from the costs and the shares of `packages/evaluator-bench/results/2026-11-03/model.json`, with the cost and the shares of the stage of this run. The two runs measure `interval` and `exact` at almost the same cost.
+
+### Two findings
+
+- At 103 of the 4096 points of each question, in the families `small` and `large`, `exact` gives no claim. The stage answers each of these points for `sign`, `abs 1e-9` and `rel 1e-12`, and 19 of them for `rel 0`. The bench has no exact value to check these answers. A plan of `select` always ends with `exact`, so no plan gets these answers.
+- For `rel 1e-30`, `select` takes only the rows of the largest bound that is not more than the tolerance. Only the stage has a row at 1e-30, so the other stages get the share 0. The plan is then `exact` alone, with the expected cost 858.9. The rows of A6 alone give `interval`, then `exact`, with the expected cost 750.5.
+
 ## The limits of the method
 
 - The cost of the stage holds only for the limit and the questions of the run.
