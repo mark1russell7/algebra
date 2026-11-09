@@ -4,8 +4,8 @@
  *
  * @packageDocumentation
  */
-import * as I from "./interval.ts";
-import type { Interval } from "./interval.ts";
+import { interval as I } from "@mark1russell7/interval";
+import type { Interval } from "@mark1russell7/interval";
 
 /** The name of each kind of an expression. */
 export type ExpressionKind = "num" | "var" | "add" | "sub" | "mul" | "div" | "neg" | "pow" | "root" | "min" | "max";

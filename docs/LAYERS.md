@@ -20,7 +20,7 @@ The lowest layer is first.
 
 | Layer | Contents | Packages on 2026-11-09 | Packages from 2026-11-21 | Later items |
 | --- | --- | --- | --- | --- |
-| 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat` | `@mark1russell7/quantity`, from systems | A21: intervals and balls |
+| 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat`, `@mark1russell7/interval` (A21) | `@mark1russell7/quantity`, from systems | none |
 | 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, from rigor | none |
 | 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces, in the entry `.` with no imports |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
@@ -35,7 +35,7 @@ The order of the strategist is numbers, structures, expressions, geometry checks
 
 - Random is a layer of its own, below structures. The entries `./laws` and `./catalog` of `@mark1russell7/structures` draw the values of their law tests with `Random` of rigor-generators. The core entry imports no package. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the strategist, these imports go up.
 - Probability and statistics are below expressions. Then the cost and error model of `@algebra/evaluator-select` can use statistics at run time, for example the median of a cost. Statistics does not use expressions.
-- Intervals and balls are in `@mark1russell7/expression` at this time. Statistics with error bounds (A22) needs them. So A21 moves them to the layer numbers first.
+- A21 moves the intervals and the balls from `@mark1russell7/expression` to `@mark1russell7/interval` in the layer numbers. Then statistics with error bounds (A22) can use them.
 
 ## The normal law
 
@@ -54,10 +54,11 @@ Each runtime import between the packages goes to the same layer or to a lower la
 | `@mark1russell7/rational` | 1 | none |
 | `@algebra/bigfloat` | 1 | rational (1) |
 | `@mark1russell7/quantity` | 1 | rational (1) |
+| `@mark1russell7/interval` | 1 | none |
 | `@mark1russell7/rigor-generators` | 2 | none |
 | `@mark1russell7/structures` | 3 | the core: none. `./laws`: rigor-generators (2). `./catalog`: rational (1), rigor-generators (2) |
 | `@mark1russell7/rigor-statistics` | 5 | rigor-generators (2) |
-| `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), rigor-generators (2) |
+| `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), interval (1), rigor-generators (2) |
 | `@algebra/polynomial` | 6 | rational (1), expression (6) |
 | `@algebra/evaluator-select` | 6 | rational (1), bigfloat (1), expression (6) |
 | `@mark1russell7/predicates` | 7 | none |
@@ -65,7 +66,7 @@ Each runtime import between the packages goes to the same layer or to a lower la
 | `@algebra/expression-corpus` | 8 | rational (1), rigor-generators (2), expression (6), predicates (7) |
 | The 6 bench packages and `@algebra/site` | 8 | packages of the layers 1 to 8 |
 
-Five test imports go up. `@mark1russell7/rational` and `@algebra/bigfloat` use rigor-generators in their tests. `@algebra/evaluator-select` uses the corpus and the predicates. `@algebra/polynomial` uses the corpus.
+Seven test imports go up. `@mark1russell7/rational` and `@algebra/bigfloat` use rigor-generators in their tests. `@mark1russell7/interval` uses rigor-generators and rigor-statistics in its tests. `@algebra/evaluator-select` uses the corpus and the predicates. `@algebra/polynomial` uses the corpus.
 
 ## The moves of 2026-11-21
 

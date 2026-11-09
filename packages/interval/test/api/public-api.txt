@@ -1,0 +1,77 @@
+# The public API of @mark1russell7/interval
+#
+# The names of each entry of the exports field, and the declaration of each name, without comments
+# and private members. The command `api-report check` compares this file with the built .d.ts files.
+# To accept a change of the API, start the build, then `api-report update`, and review the diff.
+
+## . (build/index.d.ts): names
+
+type Ball: build/index.d.ts#Ball
+type Interval: build/index.d.ts#Interval
+WHOLE: build/index.d.ts#WHOLE
+addUp: build/index.d.ts#addUp
+ball: build/index.d.ts#ball_d_exports
+divUp: build/index.d.ts#divUp
+floatRoot: build/index.d.ts#floatRoot
+interval: build/index.d.ts#interval_d_exports
+mulUp: build/index.d.ts#mulUp
+nextDown: build/index.d.ts#nextDown
+nextUp: build/index.d.ts#nextUp
+productError: build/index.d.ts#productError
+quotientIsExact: build/index.d.ts#quotientIsExact
+subDown: build/index.d.ts#subDown
+sumError: build/index.d.ts#sumError
+
+## Declarations
+
+### build/index.d.ts#Ball
+interface Ball {
+  readonly mid: number;
+  readonly rad: number;
+}
+
+### build/index.d.ts#Interval
+type Interval = readonly [number, number] | null;
+
+### build/index.d.ts#WHOLE
+export declare const WHOLE: readonly [number, number];
+
+### build/index.d.ts#addUp
+export declare function addUp(x: number, y: number): number;
+
+### build/index.d.ts#ball_d_exports
+declare namespace ball_d_exports {
+  export { Ball, NO_CLAIM, add, ball, claim, div, eq, extremeRadius, fromInterval, le, lt, max, min, mul, neg, pow, productRadius, quotientRadius, root, rootRadius, roundingBound, sub, sumRadius, toInterval };
+}
+
+### build/index.d.ts#divUp
+export declare function divUp(x: number, y: number): number;
+
+### build/index.d.ts#floatRoot
+export declare function floatRoot(r: number, k: number): number;
+
+### build/index.d.ts#interval_d_exports
+declare namespace interval_d_exports {
+  export { Interval, WHOLE, add$1 as add, div$1 as div, eq$1 as eq, le$1 as le, lt$1 as lt, max$1 as max, min$1 as min, mul$1 as mul, neg$1 as neg, nextDown, nextUp, pow$1 as pow, productError, quotientIsExact, root$1 as root, sub$1 as sub, sumError };
+}
+
+### build/index.d.ts#mulUp
+export declare function mulUp(x: number, y: number): number;
+
+### build/index.d.ts#nextDown
+export declare function nextDown(x: number): number;
+
+### build/index.d.ts#nextUp
+export declare function nextUp(x: number): number;
+
+### build/index.d.ts#productError
+export declare function productError(a: number, b: number, p: number): number;
+
+### build/index.d.ts#quotientIsExact
+export declare function quotientIsExact(a: number, b: number, q: number): boolean;
+
+### build/index.d.ts#subDown
+export declare function subDown(x: number, y: number): number;
+
+### build/index.d.ts#sumError
+export declare function sumError(a: number, b: number, s: number): number;
