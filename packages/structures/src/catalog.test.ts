@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG, DOUBLE_ADD, RATIONAL_FIELD, describe as describeStructure, describeCatalog, describeLaw, describeLaws, product } from "./index.ts";
-import type { AnyStructure } from "./index.ts";
+import { CATALOG, DOUBLE_ADD, RATIONAL_FIELD, describe as describeStructure, describeCatalog, describeLaw, describeLaws, product } from "./catalog-entry.ts";
+import type { AnyStructure } from "./catalog-entry.ts";
 
 /** This function copies a value, and it replaces each function with a function that throws. */
 const poisoned = <T>(value: T): T => {

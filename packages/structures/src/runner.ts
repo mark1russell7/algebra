@@ -24,11 +24,11 @@ export interface RunOptions {
   readonly samples?: number;
 }
 
-/** The result of one claimed law of one structure. */
-export interface LawReport {
+/** The result of one claimed law of one structure. The law names of the catalog are the default. */
+export interface LawReport<Name extends string = LawName> {
   /** The name of the structure, then the field of each part, separated by `/`. */
   readonly path: string;
-  readonly law: LawName;
+  readonly law: Name;
   readonly arity: number;
   /** The seed of the tuples of this law. */
   readonly seed: number;
@@ -52,8 +52,8 @@ function* allTuples<T>(elements: readonly T[], count: number): Generator<readonl
 }
 
 /** This function gives `samples` seeded tuples of `count` values. */
-function* sampledTuples<T>(carrier: Carrier<T>, count: number, samples: number, draw: Random): Generator<readonly T[]> {
-  for (let i = 0; i < samples; i += 1) yield Array.from({ length: count }, () => carrier.sample(draw));
+function* sampledTuples<T>(source: Pick<Carrier<T>, "sample">, count: number, samples: number, draw: Random): Generator<readonly T[]> {
+  for (let i = 0; i < samples; i += 1) yield Array.from({ length: count }, () => source.sample(draw));
 }
 
 /**
@@ -73,22 +73,51 @@ export const holdsAt = (structure: AnyStructure, name: LawName, values: readonly
   }
 };
 
-const checkOne = (structure: AnyStructure, path: string, name: LawName, options: Required<RunOptions>): LawReport => {
-  const { arity } = LAWS[name];
-  const { carrier } = structure;
-  const seed = deriveSeed(options.seed, `${path}/${name}`);
-  const count = carrier.elements?.length ?? 0;
-  const exhaustive = arity === 0 || (carrier.elements !== undefined && count ** arity <= options.samples);
-  const tuples = exhaustive ? allTuples(carrier.elements ?? [], arity) : sampledTuples(carrier, arity, options.samples, random(seed));
+/** The values that a law draws: a seeded sample, a text for a failure, and a list of the members of a small set. */
+export type LawSource<T> = Pick<Carrier<T>, "sample" | "show" | "elements">;
+
+/** One law to test on tuples of values. */
+export interface LawCheck<T, Name extends string> {
+  /** The name of the structure, then the field of each part, separated by `/`. */
+  readonly path: string;
+  readonly law: Name;
+  readonly arity: number;
+  readonly source: LawSource<T>;
+  /** This function tells if the law holds at one tuple. A throw is a failure. */
+  readonly holds: (values: readonly T[]) => boolean;
+}
+
+/**
+ * This function tests one law on tuples of values. A small finite source gets each tuple, and another source gets
+ * seeded samples. The seed of the law comes from the seed of the run, the path and the name of the law.
+ *
+ * @param check - The law.
+ * @param options - The seed and the count of samples.
+ * @returns The report of the law.
+ */
+export const checkLaw = <T, Name extends string>(check: LawCheck<T, Name>, options: RunOptions = {}): LawReport<Name> => {
+  const { path, law, arity, source } = check;
+  const samples = options.samples ?? DEFAULT_SAMPLES;
+  const seed = deriveSeed(options.seed ?? DEFAULT_SEED, `${path}/${law}`);
+  const count = source.elements?.length ?? 0;
+  const exhaustive = arity === 0 || (source.elements !== undefined && count ** arity <= samples);
+  const tuples = exhaustive ? allTuples(source.elements ?? [], arity) : sampledTuples(source, arity, samples, random(seed));
   let cases = 0;
   for (const values of tuples) {
     cases += 1;
-    if (!holdsAt(structure, name, values)) {
-      return { path, law: name, arity, seed, cases, exhaustive, failure: values.map((value) => carrier.show(value)) };
+    let holds: boolean;
+    try {
+      holds = check.holds(values);
+    } catch {
+      holds = false;
     }
+    if (!holds) return { path, law, arity, seed, cases, exhaustive, failure: values.map((value) => source.show(value)) };
   }
-  return { path, law: name, arity, seed, cases, exhaustive, failure: null };
+  return { path, law, arity, seed, cases, exhaustive, failure: null };
 };
+
+const checkOne = (structure: AnyStructure, path: string, name: LawName, options: Required<RunOptions>): LawReport =>
+  checkLaw({ path, law: name, arity: LAWS[name].arity, source: structure.carrier, holds: (values) => holdsAt(structure, name, values) }, options);
 
 /**
  * This function tests each law that a structure claims, and each law that its parts and its inputs claim. A quotient

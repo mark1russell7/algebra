@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@mark1russell7/interval",
+  "version": "0.1.0",
+  "description": "Float error bounds: outward-rounded intervals, midpoint-radius balls, nextUp and nextDown, and the error-free transforms of a sum and a product.",
+  "keywords": [
+    "interval-arithmetic",
+    "ball-arithmetic",
+    "midrad",
+    "error-bound",
+    "rounding",
+    "floating-point",
+    "twosum",
+    "twoproduct"
+  ],
+  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/interval#readme",
+  "bugs": {
+    "url": "https://github.com/mark1russell7/algebra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "directory": "packages/interval"
+  },
+  "license": "MIT",
+  "author": "Mark Russell (https://github.com/mark1russell7)",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "build",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-helper.ts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^2.1.1",
+    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rigor-generators": "workspace:*",
+    "@mark1russell7/rigor-statistics": "workspace:*",
+    "@types/node": "^26.6.5",
+    "fast-check": "^4.10.2",
+    "tsdown": "^0.23.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

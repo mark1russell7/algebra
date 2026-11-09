@@ -350,6 +350,9 @@ importers:
       '@mark1russell7/coeval':
         specifier: ^0.24.0
         version: 0.24.1
+      '@mark1russell7/interval':
+        specifier: workspace:*
+        version: link:../interval
       '@mark1russell7/rational':
         specifier: workspace:*
         version: link:../rational
@@ -460,6 +463,36 @@ importers:
         version: 0.28.2
       tsdown:
         specifier: ^0.23.1
+        version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/interval:
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: ^2.1.1
+        version: 2.1.2
+      '@mark1russell7/rational':
+        specifier: workspace:*
+        version: link:../rational
+      '@mark1russell7/rigor-generators':
+        specifier: workspace:*
+        version: link:../generators
+      '@mark1russell7/rigor-statistics':
+        specifier: workspace:*
+        version: link:../statistics
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      fast-check:
+        specifier: ^4.10.2
+        version: 4.10.2
+      tsdown:
+        specifier: ^0.23.4
         version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
       typescript:
         specifier: ^7.0.2
@@ -769,6 +802,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^5.0.5
         version: 5.0.5(vitest@5.0.5)
+      tsdown:
+        specifier: ^0.23.4
+        version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
       typescript:
         specifier: ^7.0.2
         version: 7.0.2

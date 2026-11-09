@@ -13,6 +13,7 @@
   "dependencies": {
     "@algebra/bigfloat": "workspace:*",
     "@mark1russell7/coeval": "^0.24.0",
+    "@mark1russell7/interval": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
     "@mark1russell7/rigor-generators": "workspace:*",
     "zod": "^4.6.7"

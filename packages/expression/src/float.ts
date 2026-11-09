@@ -13,7 +13,7 @@
  *
  * @packageDocumentation
  */
-import * as I from "./interval.ts";
+import { ball, floatRoot } from "@mark1russell7/interval";
 import type { KindName, NodeData } from "./summary.ts";
 
 /** The unit roundoff of a float: `2^-53`. */
@@ -283,19 +283,7 @@ function sqrtCell(radicand: FloatCell): FloatCell {
   return out;
 }
 
-/**
- * This function gives the float root of index `k` of a value. An odd index takes a negative value as `-root(-r)`.
- * This value is not correctly rounded. The bound of `rootCell` does not depend on its accuracy.
- *
- * @param r - The radicand.
- * @param k - The index, a whole number of 2 or more.
- * @returns The float root. An even root of a negative value gives `NaN`.
- */
-export function floatRoot(r: number, k: number): number {
-  if (k === 2) return Math.sqrt(r);
-  const f = (m: number): number => (k === 3 ? Math.cbrt(m) : Math.pow(m, 1 / k));
-  return k % 2 === 1 && r < 0 ? -f(-r) : f(r);
-}
+export { floatRoot };
 
 /**
  * This function gives the bound of a root of index 3 or more. The exact radicand is in `[r - er, r + er]`, and the
@@ -310,12 +298,7 @@ export function floatRoot(r: number, k: number): number {
  * @returns The bound of `|v - exact root|`, or `Infinity` when the radicand can be negative for an even index.
  */
 export function rootError(v: number, r: number, er: number, k: number): number {
-  if (!(er < Infinity) || !(v - v === 0)) return Infinity;
-  const span = I.add([r, r], [-er, er]) as readonly [number, number];
-  if (k % 2 === 0 && span[0] < 0) return Infinity;
-  const d = I.sub([v, v], I.root(span, k)) as readonly [number, number];
-  const e = Math.max(-d[0], d[1]);
-  return e <= Infinity ? e : Infinity;
+  return ball.rootRadius(v, r, er, k);
 }
 
 function rootCell(radicand: FloatCell, k: number): FloatCell {
