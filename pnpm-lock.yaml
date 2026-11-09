@@ -744,7 +744,7 @@ importers:
   packages/structures:
     dependencies:
       '@mark1russell7/rational':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rational
       '@mark1russell7/rigor-generators':
         specifier: ^0.1.8

@@ -33,19 +33,5 @@
     "publint": "^0.3.25",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
-  },
-  "apiReport": {
-    "packages": [
-      "packages/*",
-      "!packages/*-bench",
-      "!packages/bigfloat",
-      "!packages/evaluator-select",
-      "!packages/expression",
-      "!packages/expression-corpus",
-      "!packages/polynomial",
-      "!packages/predicate-census",
-      "!packages/site"
-    ],
-    "includePrivate": true
   }
 }
