@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/structures",
   "version": "0.1.0",
-  "private": true,
   "description": "Plain interfaces of semigroup, monoid, group, order, lattice, functor and monad, with standard instances, helpers and law checks. The catalog has the structures as data with their constructions.",
   "keywords": [
     "algebra",
@@ -16,13 +15,13 @@
     "laws",
     "property-testing"
   ],
-  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/structures#readme",
+  "homepage": "https://github.com/mark1russell7/math/tree/main/packages/structures#readme",
   "bugs": {
-    "url": "https://github.com/mark1russell7/algebra/issues"
+    "url": "https://github.com/mark1russell7/math/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "url": "git+https://github.com/mark1russell7/math.git",
     "directory": "packages/structures"
   },
   "license": "MIT",
@@ -72,7 +71,7 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@mark1russell7/rational": "workspace:*",
+    "@mark1russell7/rational": "workspace:^",
     "@mark1russell7/rigor-generators": "^0.1.8"
   },
   "devDependencies": {
