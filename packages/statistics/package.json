@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@mark1russell7/rigor-statistics",
+  "version": "0.1.28",
+  "description": "The statistics of measured work: quantiles, bootstrap intervals, the sign test, the paired permutation test, the sign-flip test of a weighted sum, the stratified bootstrap, the quantile and the distribution function of the standard normal law, Wilson intervals, the Holm correction, rank correlation, the comparison with a baseline beyond the noise, the Brier score and the log-loss, pairwise ratings (Elo, Glicko-2 and a Bradley-Terry fit with Davidson ties), fitted response records, and the Sobol indices of their models.",
+  "keywords": [
+    "statistics",
+    "bootstrap",
+    "quantile",
+    "median",
+    "sign-test",
+    "permutation-test",
+    "wilson",
+    "holm",
+    "spearman",
+    "kendall",
+    "brier",
+    "log-loss",
+    "elo",
+    "glicko-2",
+    "bradley-terry",
+    "pairwise-comparison",
+    "sobol",
+    "sensitivity-analysis",
+    "calibration",
+    "benchmark",
+    "effect-size"
+  ],
+  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/statistics#readme",
+  "bugs": {
+    "url": "https://github.com/mark1russell7/algebra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "directory": "packages/statistics"
+  },
+  "license": "MIT",
+  "author": "Mark Russell (https://github.com/mark1russell7)",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "files": [
+    "build"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./build/index.d.ts",
+        "import": "./build/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@mark1russell7/rigor-generators": "workspace:^"
+  },
+  "devDependencies": {
+    "@mark1russell7/cue": "^2.0.0",
+    "@types/node": "^26.6.5",
+    "fast-check": "^4.10.2",
+    "tsdown": "^0.23.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

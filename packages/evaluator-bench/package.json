@@ -25,6 +25,6 @@
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
     "@mark1russell7/rigor-bench": "^0.2.30",
-    "@mark1russell7/rigor-statistics": "^0.1.5"
+    "@mark1russell7/rigor-statistics": "workspace:*"
   }
 }

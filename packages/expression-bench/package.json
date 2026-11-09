@@ -23,7 +23,7 @@
     "@algebra/expression-corpus": "workspace:*",
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/rigor-bench": "^0.2.30",
-    "@mark1russell7/rigor-generators": "^0.1.8",
-    "@mark1russell7/rigor-statistics": "^0.1.2"
+    "@mark1russell7/rigor-generators": "workspace:*",
+    "@mark1russell7/rigor-statistics": "workspace:*"
   }
 }

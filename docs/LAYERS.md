@@ -21,10 +21,10 @@ The lowest layer is first.
 | Layer | Contents | Packages on 2026-11-09 | Packages from 2026-11-21 | Later items |
 | --- | --- | --- | --- | --- |
 | 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat`, `@mark1russell7/interval` (A21) | `@mark1russell7/quantity`, from systems | none |
-| 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, from rigor | none |
+| 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, moved from rigor (A19) | none |
 | 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces, in the entry `.` with no imports |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
-| 5 statistics | Quantiles, means, tests, bootstrap intervals and calibration. | none | `@mark1russell7/rigor-statistics`, from rigor | A20: summaries as monoids. A22: results with error bounds. |
+| 5 statistics | Quantiles, means, tests, bootstrap intervals and calibration. | none | `@mark1russell7/rigor-statistics`, moved from rigor (A19) | A20: summaries as monoids. A22: results with error bounds. |
 | 6 expressions | Expression documents, the evaluators and the cost and error model. | `@mark1russell7/expression`, `@algebra/polynomial`, `@algebra/evaluator-select` | none | none |
 | 7 geometry checks | Exact geometric predicates and the census of their real inputs. | `@mark1russell7/predicates`, `@mark1russell7/predicate-census` | none | none |
 | 8 tools | The corpus, the benches and the site. These packages are private. | `@algebra/expression-corpus`, the 6 bench packages, `@algebra/site` | none | none |

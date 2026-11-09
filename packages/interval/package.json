@@ -63,8 +63,8 @@
   "devDependencies": {
     "@mark1russell7/cue": "^2.1.1",
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/rigor-generators": "^0.1.8",
-    "@mark1russell7/rigor-statistics": "^0.1.2",
+    "@mark1russell7/rigor-generators": "workspace:*",
+    "@mark1russell7/rigor-statistics": "workspace:*",
     "@types/node": "^26.6.5",
     "fast-check": "^4.10.2",
     "tsdown": "^0.23.4",

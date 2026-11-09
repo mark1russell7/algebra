@@ -15,13 +15,13 @@
     "@mark1russell7/coeval": "^0.24.0",
     "@mark1russell7/interval": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/rigor-generators": "^0.1.8",
+    "@mark1russell7/rigor-generators": "workspace:*",
     "@mark1russell7/structures": "workspace:*",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@mark1russell7/cue": "^2.1.1",
-    "@mark1russell7/rigor-statistics": "^0.1.2",
+    "@mark1russell7/rigor-statistics": "workspace:*",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.5",
     "typescript": "^7.0.2",
