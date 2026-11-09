@@ -1,6 +1,6 @@
 # The layers of the math repository
 
-This file is the proposal of item A16. On 2026-11-21, the repository `algebra` gets the name `math`. The repository then has 8 layers. Each package keeps its npm name, its API and its version line.
+This file is the plan of item A16. On 2026-11-21, the repository `algebra` gets the name `math`. The repository then has 8 layers. Each package keeps its npm name, its API and its version line.
 
 ## The rule
 
@@ -9,7 +9,10 @@ This file is the proposal of item A16. On 2026-11-21, the repository `algebra` g
 - The runtime imports in one layer make no cycle.
 - A test import is an entry of `devDependencies`. It can go to a higher layer. The graph of all the imports makes no cycle.
 - A published package does not import a private package at run time.
-- The check of the boundaries examines the rule in CI. The second step of A16 adds the layers to the `forbidden` rules of `.dependency-cruiser.ts`.
+- `scripts/layers.ts` holds the table of the layers by npm name. CI examines the rule in two places:
+  - `pnpm check:boundaries` gets one `forbidden` rule for each layer. The rule stops an import from the source of a package to a higher layer.
+  - `scripts/layers.test.ts` examines the `package.json` files: the layer of each runtime dependency, the private packages and the cycles.
+- A new package goes into the table and into this file. The test fails on a package that is in no layer.
 
 ## The layers
 
@@ -28,7 +31,7 @@ The lowest layer is first.
 
 ## Why this order
 
-The order of the strategist is numbers, structures, expressions, geometry checks, probability and statistics. This proposal changes the order in 3 places. The imports of today are the reason.
+The order of the strategist is numbers, structures, expressions, geometry checks, probability and statistics. This plan changes the order in 3 places. The imports of today are the reason.
 
 - Random is a layer of its own, below structures. `@algebra/structures` draws the values of its law tests with `Random` of rigor-generators. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the strategist, these imports go up.
 - Probability and statistics are below expressions. Then the cost and error model of `@algebra/evaluator-select` can use statistics at run time, for example the median of a cost. Statistics does not use expressions.
@@ -85,7 +88,7 @@ After the gate, the old folder goes, with no copy. The role systems removes quan
 
 | ID | Item | Start | Done by |
 | --- | --- | --- | --- |
-| A16 | This proposal, then the check of the layers in `.dependency-cruiser.ts` | 2026-11-09 | 2026-11-12 |
+| A16 | This plan, then the check of the layers in CI | 2026-11-09 | 2026-11-12 |
 | A17 | The gate tool of a move | 2026-11-10 | 2026-11-14 |
 | A18 | Quantity moves from systems: the pull request is ready, and its merge is on 2026-11-21 | 2026-11-12 | 2026-11-21 |
 | A19 | Rigor-statistics and rigor-generators move from rigor: a trial first, the real pull request on 2026-11-20 | 2026-11-13 | 2026-11-21 |
