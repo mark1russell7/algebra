@@ -15,14 +15,14 @@
     "duration",
     "zod"
   ],
-  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/quantity#readme",
+  "homepage": "https://github.com/mark1russell7/math/tree/main/packages/quantity#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "url": "git+https://github.com/mark1russell7/math.git",
     "directory": "packages/quantity"
   },
   "bugs": {
-    "url": "https://github.com/mark1russell7/algebra/issues"
+    "url": "https://github.com/mark1russell7/math/issues"
   },
   "license": "MIT",
   "author": "Mark Russell (https://github.com/mark1russell7)",
