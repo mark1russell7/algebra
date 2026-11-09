@@ -20,7 +20,7 @@ The lowest layer is first.
 
 | Layer | Contents | Packages on 2026-11-09 | Packages from 2026-11-21 | Later items |
 | --- | --- | --- | --- | --- |
-| 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat`, `@mark1russell7/interval` (A21) | `@mark1russell7/quantity`, from systems | none |
+| 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat`, `@mark1russell7/interval` (A21) | `@mark1russell7/quantity`, moved from systems (A18) | none |
 | 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, from rigor | none |
 | 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces, in the entry `.` with no imports |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
