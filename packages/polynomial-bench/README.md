@@ -60,6 +60,32 @@ This plan tells which rows of a run decide A8. It comes before the first run, so
 
 After these steps, the raw records go to `results/<date>/`, and A8 closes.
 
+## The results
+
+`results/2026-11-09/` keeps the records of the first start, run 42677775596 on `5b063d8`, on an AMD EPYC 9V74. The folder has the raw records, the claim records and the report.
+
+| Pair | Verdict | Median ratio |
+| --- | --- | --- |
+| `verbs` | slower | 2.370 |
+| `points-1` | slower | 2.466 |
+| `points-64` | slower | 1.833 |
+| `equal` | faster | 0.1402 |
+| `solve` | slower | 1.197 |
+
+The read plan gives these results:
+
+1. The field `wrong` is 0 of 9602 checks.
+2. The field `skipped` names one case, `sum-v1-d3-t3/s1`. Its document has no value at any point, so it is not a limit of the verbs.
+3. Five cells are `cannot decide`. The warning of the check names them. They give no claim.
+4. The medians give a break-even count of points in 5 of 14 families: `ill` 22, `expand-v2-d4-t4` 36, `quotient-v1-d4-t3` 22, `quotient-v2-d3-t4` 56 and `quotient-v3-d3-t6` 387.
+5. The other 9 families have no crossing. There, the verb is for equality and simplification.
+6. The compare of the keys is faster. A proof of equality by the key costs 0.14 of a compare at 64 points.
+7. 48 more bits of each interval of `solve` cost 1.20 times the time.
+
+At 64 points, only `quotient-v1-d4-t3` is faster with the form (0.71). The families `ill`, `expand-v2-d4-t4` and `quotient-v2-d3-t4` are `cannot decide` there. So their gain at 64 points is in the noise. The count 387 is past the 64 points that the bench measures.
+
+The tier `products/256` of `solve` gives no claim for 8 of 8 cases of `mixed-roots-d24` and 7 of 8 cases of `dense-roots-d64`. The default limits give the roots of each case.
+
 ## A run
 
 ```sh

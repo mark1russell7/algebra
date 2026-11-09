@@ -23,7 +23,7 @@
   "devDependencies": {
     "@mark1russell7/api-report": "^0.4.1",
     "@mark1russell7/boundaries": "^0.2.0",
-    "@mark1russell7/conventions": "^0.38.1",
+    "@mark1russell7/conventions": "^0.40.4",
     "@mark1russell7/cue": "^2.1.1",
     "@mark1russell7/ste-lint": "^0.3.0",
     "@mark1russell7/template-cli": "^0.1.4",
@@ -33,5 +33,19 @@
     "publint": "^0.3.25",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "apiReport": {
+    "packages": [
+      "packages/*",
+      "!packages/*-bench",
+      "!packages/bigfloat",
+      "!packages/evaluator-select",
+      "!packages/expression",
+      "!packages/expression-corpus",
+      "!packages/polynomial",
+      "!packages/predicate-census",
+      "!packages/site"
+    ],
+    "includePrivate": true
   }
 }

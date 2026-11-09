@@ -58,7 +58,7 @@ Each runtime import between the packages goes to the same layer or to a lower la
 | `@mark1russell7/rigor-generators` | 2 | none |
 | `@mark1russell7/structures` | 3 | the core: none. `./laws`: rigor-generators (2). `./catalog`: rational (1), rigor-generators (2) |
 | `@mark1russell7/rigor-statistics` | 5 | rigor-generators (2) |
-| `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), interval (1), rigor-generators (2) |
+| `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), interval (1), rigor-generators (2), structures (3) |
 | `@algebra/polynomial` | 6 | rational (1), expression (6) |
 | `@algebra/evaluator-select` | 6 | rational (1), bigfloat (1), expression (6) |
 | `@mark1russell7/predicates` | 7 | none |

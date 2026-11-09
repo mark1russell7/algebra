@@ -16,7 +16,7 @@ export const STUDY_WORKFLOW = ".github/workflows/study-monthly.yml";
 export const STUDY_LIMIT_DAYS = 33;
 
 /** The reason of the limit, in plain words. The stamp line of the page shows it. */
-export const STUDY_LIMIT_REASON = "The workflow study-monthly.yml measures the census and the bench again on day 4 of each month.";
+export const STUDY_LIMIT_REASON = "The workflow study-monthly.yml measures the census and the benches again on day 4 of each month.";
 
 /** The review that accepted the limit. */
 export const STUDY_RULING = "https://github.com/mark1russell7/algebra/pull/112";
@@ -28,7 +28,7 @@ export const STUDY_STARTS_AT = "2026-12-07T00:00:00Z";
 export interface StampData {
   readonly census: { readonly highways: { readonly census: string }; readonly packing: { readonly census: string } };
   readonly nearMisses: { readonly records: readonly { readonly source: { readonly census: string } }[] };
-  readonly kept: Pick<KeptRuns, "bench" | "runs">;
+  readonly kept: Pick<KeptRuns, "bench" | "bigfloat" | "runs">;
 }
 
 /** One run of the stamp. */
@@ -53,7 +53,7 @@ function stampRun(id: string, runs: Readonly<Record<string, KeptRun>>): StampRun
 
 /** This function gives the stamps of the site, from the runs that its data files name. */
 export function siteDataStamps(data: StampData): { schema: "data-stamp/1"; pages: PageStamp[] } {
-  const named = [data.kept.bench.run, data.census.highways.census, data.census.packing.census, ...data.nearMisses.records.map((record) => record.source.census)];
+  const named = [data.kept.bench.run, data.kept.bigfloat.run, data.census.highways.census, data.census.packing.census, ...data.nearMisses.records.map((record) => record.source.census)];
   return {
     schema: "data-stamp/1",
     pages: [

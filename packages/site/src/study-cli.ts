@@ -5,7 +5,7 @@
  *   node packages/site/src/study-cli.ts refresh --artifacts <dir> --run <id> --started <iso> --commit <sha>
  *     --highways-dump <id> --sets <json list> --packing-dump <id> --packing-set <set>
  *
- * The folder of `--artifacts` has one folder for each artifact of the run: `census-kept-<set>` and `a6-bench`.
+ * The folder of `--artifacts` has one folder for each artifact of the run: `census-kept-<set>`, `a6-bench` and `a7-bench`.
  *
  * @packageDocumentation
  */
@@ -51,6 +51,7 @@ if (command === "float-wrong") {
     highways: { dump: need("highways-dump"), sets: sets.map((set) => ({ set, dir: join(artifacts, `census-kept-${set}`) })) },
     packing: { dump: need("packing-dump"), set: packingSet, dir: join(artifacts, `census-kept-${packingSet}`) },
     bench: join(artifacts, "a6-bench"),
+    bigfloat: join(artifacts, "a7-bench"),
   });
   console.log(JSON.stringify(kept, null, 2));
 } else {

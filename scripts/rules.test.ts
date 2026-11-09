@@ -45,9 +45,9 @@ describe("the job report of the monthly study opens an issue on a failure", () =
     const always = study.replace("    if: failure()\n", "    if: always()\n");
     assert.notEqual(always, study);
     assert.deepEqual(studyReportsFailure(always), ["the job report does not have if: failure()"]);
-    const missing = study.replace("needs: [plan, census-highways, census-packing, bench, refresh, branch, issue]", "needs: [plan, refresh, branch, issue]");
+    const missing = study.replace("needs: [plan, census-highways, census-packing, bench, bench-bigfloat, refresh, branch, issue]", "needs: [plan, refresh, branch, issue]");
     assert.notEqual(missing, study);
-    assert.equal(studyReportsFailure(missing).length, 3);
+    assert.equal(studyReportsFailure(missing).length, 4);
     assert.deepEqual(studyReportsFailure("jobs:\n  plan:\n    runs-on: ubuntu-latest\n"), ["the workflow has no job report"]);
   });
 });

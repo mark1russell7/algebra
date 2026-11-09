@@ -10,6 +10,7 @@ import { parseNearMisses } from "./presets.ts";
 import {
   censusFile,
   censusSites,
+  checkMachine,
   checkReport,
   isFloatWrong,
   nearMissFile,
@@ -132,6 +133,13 @@ describe("the parts of the refresh", () => {
     expect(() => checkReport("r", report({ dirty: null }), "a".repeat(40))).toThrow("no git status");
   });
 
+  it("stops at a bench of another commit", () => {
+    const machine = `Model name: x\nv26.13.0\n${"a".repeat(40)}\n`;
+    expect(() => checkMachine("a7-bench", machine, "a".repeat(40))).not.toThrow();
+    expect(() => checkMachine("a7-bench", machine, "b".repeat(40))).toThrow("The bench a7-bench is of the commit");
+    expect(() => checkMachine("a7-bench", "", "b".repeat(40))).toThrow("is of the commit");
+  });
+
   it("sums the sites over the sets, by class and then the most tests first", () => {
     expect(censusSites([report(), report({ floatWrongSites: { "2 geom.h src/c.ts:3": 5 } })])).toEqual([
       { class: 1, fn: "geom.g", via: "src/b.ts:2", tests: 1 },
@@ -170,10 +178,11 @@ describe("the parts of the refresh", () => {
         writeFileSync(path, text);
       };
       const commit = "c".repeat(40);
+      write(at("packages/bigfloat/package.json"), '{"version":"0.1.1"}');
       write(at("packages/evaluator-select/package.json"), '{"version":"0.2.0"}');
       write(at("packages/predicate-census/package.json"), '{"version":"0.3.0"}');
-      write(at("packages/site/data/kept-runs.json"), JSON.stringify({ bench: { run: "1", folder: "2026-01-01" }, census: { highways: "2026-01-01-highways", packing: "2026-01-01-packing" }, runs: {} }));
-      for (const old of ["evaluator-bench/results/2026-01-01/report.json", "predicate-census/results/2026-01-01-highways/x.json", "predicate-census/results/2026-01-01-packing/x.json", "predicate-census/results/2025-12-01-highways/x.json"]) write(at("packages", old), "{}");
+      write(at("packages/site/data/kept-runs.json"), JSON.stringify({ bench: { run: "1", folder: "2026-01-01" }, bigfloat: { run: "2", folder: "2026-01-02" }, census: { highways: "2026-01-01-highways", packing: "2026-01-01-packing" }, runs: {} }));
+      for (const old of ["evaluator-bench/results/2026-01-01/report.json", "bigfloat-bench/results/2026-01-02/report.json", "predicate-census/results/2026-01-01-highways/x.json", "predicate-census/results/2026-01-01-packing/x.json", "predicate-census/results/2025-12-01-highways/x.json"]) write(at("packages", old), "{}");
       const art = at("artifacts");
       write(join(art, "census-kept-h1/report-h1.json"), JSON.stringify(report({ commit })));
       write(join(art, "census-kept-h1/float-wrong-h1.jsonl.gz"), gzipSync(`${JSON.stringify(record(4))}\n`));
@@ -184,6 +193,10 @@ describe("the parts of the refresh", () => {
       write(join(art, "census-kept-p1/float-wrong-p1.jsonl.gz"), gzipSync(""));
       write(join(art, "a6-bench/report.json"), '{"pairs":[]}\n');
       write(join(art, "a6-bench/records-aa.jsonl"), "");
+      write(join(art, "a6-bench/machine.txt"), `cpu\n${commit}\n`);
+      write(join(art, "a7-bench/report.json"), '{"pairs":[],"costs":[]}\n');
+      write(join(art, "a7-bench/errors.jsonl"), '{"point":1}\n');
+      write(join(art, "a7-bench/machine.txt"), `cpu\n${commit}\n`);
 
       const got = refresh({
         root,
@@ -191,16 +204,22 @@ describe("the parts of the refresh", () => {
         highways: { dump: "50", sets: [{ set: "h1", dir: join(art, "census-kept-h1") }] },
         packing: { dump: "60", set: "p1", dir: join(art, "census-kept-p1") },
         bench: join(art, "a6-bench"),
+        bigfloat: join(art, "a7-bench"),
       });
 
       expect(got).toEqual({
         bench: { run: "99", folder: "2026-12-04" },
+        bigfloat: { run: "99", folder: "2026-12-04" },
         census: { highways: "2026-12-04-highways", packing: "2026-12-04-packing" },
-        runs: { "99": { date: "2026-12-04T06:50:00Z", commit, engines: { "@algebra/evaluator-select": "0.2.0", "@mark1russell7/predicate-census": "0.3.0" } } },
+        runs: { "99": { date: "2026-12-04T06:50:00Z", commit, engines: { "@algebra/bigfloat": "0.1.1", "@algebra/evaluator-select": "0.2.0", "@mark1russell7/predicate-census": "0.3.0" } } },
       });
       expect(readJson<KeptRuns>(new URL(`file:///${at("packages/site/data/kept-runs.json").replaceAll("\\", "/")}`))).toEqual(got);
       expect(readdirSync(at("packages/predicate-census/results")).sort()).toEqual(["2025-12-01-highways", "2026-12-04-highways", "2026-12-04-packing"]);
       expect(readdirSync(at("packages/evaluator-bench/results"))).toEqual(["2026-12-04"]);
+      expect(readdirSync(at("packages/bigfloat-bench/results"))).toEqual(["2026-12-04"]);
+      expect(readdirSync(at("packages/bigfloat-bench/results/2026-12-04")).sort()).toEqual(["errors.jsonl.gz", "machine.txt", "report.json"]);
+      expect(gunzipSync(readFileSync(at("packages/bigfloat-bench/results/2026-12-04/errors.jsonl.gz"))).toString("utf8")).toBe('{"point":1}\n');
+      expect(readFileSync(at("packages/site/data/a7-report.json"), "utf8")).toBe('{"pairs":[],"costs":[]}\n');
       expect(readdirSync(at("packages/predicate-census/results/2026-12-04-highways")).sort()).toEqual(["float-wrong-h1.jsonl.gz", "predicate-dump-h1.md", "report-h1.json", "time-h1.txt"]);
       expect(readdirSync(at("packages/predicate-census/results/2026-12-04-packing")).sort()).toEqual(["report-p1.json.gz", "time-p1.txt"]);
       expect(readFileSync(at("packages/site/data/a6-report.json"), "utf8")).toBe('{"pairs":[]}\n');
@@ -217,7 +236,7 @@ describe("the parts of the refresh", () => {
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, "report-h1.json"), JSON.stringify(report({ commit: "d".repeat(40) })));
       expect(() =>
-        refresh({ root, run: { id: "1", started: "2026-12-04T00:00:00Z", commit: "e".repeat(40) }, highways: { dump: "1", sets: [{ set: "h1", dir }] }, packing: { dump: "1", set: "p", dir }, bench: dir }),
+        refresh({ root, run: { id: "1", started: "2026-12-04T00:00:00Z", commit: "e".repeat(40) }, highways: { dump: "1", sets: [{ set: "h1", dir }] }, packing: { dump: "1", set: "p", dir }, bench: dir, bigfloat: dir }),
       ).toThrow("is of the commit");
       expect(existsSync(join(root, "packages"))).toBe(false);
     });

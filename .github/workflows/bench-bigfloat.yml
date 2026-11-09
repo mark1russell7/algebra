@@ -2,9 +2,24 @@
 # @algebra/evaluator-select against the verbs exact and interval, with an A/A pair. It starts packages/bigfloat-bench,
 # and keeps the raw PairedTime records, the error records of the stage, the facts of each process and the report.
 # Start it with: gh workflow run bench-bigfloat.yml -R mark1russell7/algebra --ref main
+# The monthly study (study-monthly.yml) calls it too.
 name: Bench bigfloat
 
 on:
+  workflow_call:
+    inputs:
+      rounds:
+        type: string
+        default: "31"
+      ms:
+        type: string
+        default: "10"
+      precisions:
+        type: string
+        default: "64,128,256,512,1024,2048,4096"
+      limit:
+        type: string
+        default: "4096"
   workflow_dispatch:
     inputs:
       rounds:
@@ -23,9 +38,10 @@ on:
 permissions:
   contents: read
 
-# One bench at a time, so two benches do not share the runner.
+# One bench at a time, so two benches do not share the runner. The name is literal: in a called workflow,
+# github.workflow is the name of the caller, and the group of the caller would hold this run for ever.
 concurrency:
-  group: ${{ github.workflow }}
+  group: bench-bigfloat
   cancel-in-progress: false
 
 jobs:
@@ -43,7 +59,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26

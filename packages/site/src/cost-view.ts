@@ -7,14 +7,17 @@ import type { Question } from "@algebra/evaluator-select";
 import { logPlace, overallText, planAt, questionName, questionsOf, rawRecordsLink, scaleExact, stageRows } from "./cost.ts";
 import type { CostReport } from "./cost.ts";
 
-const LABELS: Readonly<Record<string, string>> = {
+/** The name of each question of the benches on the page. */
+export const LABELS: Readonly<Record<string, string>> = {
   sign: "The sign",
   "abs 1e-9": "Absolute 1e-9",
   "rel 1e-12": "Relative 1e-12",
   "rel 0": "Relative 0",
+  "rel 1e-30": "Relative 1e-30",
 };
 
-const FAMILIES: Readonly<Record<string, string>> = {
+/** The name of each family of the corpus. */
+export const FAMILIES: Readonly<Record<string, string>> = {
   small: "Small",
   large: "Large",
   well: "Well-conditioned",

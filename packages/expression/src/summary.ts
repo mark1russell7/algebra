@@ -6,6 +6,10 @@
  */
 import { interval as I } from "@mark1russell7/interval";
 import type { Interval } from "@mark1russell7/interval";
+import { recordMonoid, sortedUnionMonoid, stringOrder, sumMonoid } from "@mark1russell7/structures";
+import type { Monoid } from "@mark1russell7/structures";
+
+export type { Monoid };
 
 /** The name of each kind of an expression. */
 export type ExpressionKind = "num" | "var" | "add" | "sub" | "mul" | "div" | "neg" | "pow" | "root" | "min" | "max";
@@ -31,53 +35,11 @@ export interface Summary {
   readonly cost: Readonly<Record<string, number>>;
 }
 
-/** A monoid: an identity element and an associative operation. */
-export interface Monoid<T> {
-  readonly empty: T;
-  combine(a: T, b: T): T;
-}
+/** The monoid of the free variables: the union of sorted lists of the core. It is also commutative and idempotent. */
+export const freeMonoid: Monoid<readonly string[]> = sortedUnionMonoid(stringOrder);
 
-/** The monoid of the free variables: the union of sorted lists. It is also commutative and idempotent. */
-export const freeMonoid: Monoid<readonly string[]> = {
-  empty: [],
-  combine(a, b) {
-    const out: string[] = [];
-    let i = 0;
-    let j = 0;
-    while (i < a.length || j < b.length) {
-      const x = a[i];
-      const y = b[j];
-      if (y === undefined || (x !== undefined && x < y)) {
-        out.push(x as string);
-        i++;
-      } else if (x === undefined || y < x) {
-        out.push(y);
-        j++;
-      } else {
-        out.push(x);
-        i++;
-        j++;
-      }
-    }
-    return out;
-  },
-};
-
-/** The monoid of the costs: the sum of the counts of each kind. It is also commutative. */
-export const costMonoid: Monoid<Readonly<Record<string, number>>> = {
-  empty: {},
-  combine(a, b) {
-    const out: Record<string, number> = { ...a };
-    for (const [k, n] of Object.entries(b)) out[k] = (out[k] ?? 0) + n;
-    return sortKeys(out);
-  },
-};
-
-function sortKeys(r: Record<string, number>): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const k of Object.keys(r).sort()) out[k] = r[k] as number;
-  return out;
-}
+/** The monoid of the costs: the sum of the counts of each kind, with the keys sorted. It is also commutative. */
+export const costMonoid: Monoid<Readonly<Record<string, number>>> = recordMonoid(sumMonoid);
 
 /**
  * This function gives the summary of a number literal.

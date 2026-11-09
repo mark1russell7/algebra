@@ -1,0 +1,2061 @@
+{
+  "pairs": [
+    {
+      "pair": "verbs",
+      "outcome": "slower",
+      "reason": "The interval of the candidate median over the A/A median is [2.3529, 2.4645]. The interval is above 1.",
+      "medianRatio": 2.3695686974939965,
+      "families": [
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 3.749198423301391
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 2.4149181389139516
+        },
+        {
+          "family": "orient-random",
+          "outcome": "slower",
+          "medianRatio": 2.343099396035413
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 2.3388903880615226
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "slower",
+          "medianRatio": 2.318376818339273
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 2.314489800132063
+        },
+        {
+          "family": "expand-v2-d4-t4",
+          "outcome": "slower",
+          "medianRatio": 2.3732687520516818
+        },
+        {
+          "family": "expand-v3-d6-t8",
+          "outcome": "slower",
+          "medianRatio": 2.596802201305376
+        },
+        {
+          "family": "expand-v4-d8-t16",
+          "outcome": "slower",
+          "medianRatio": 2.510469668942256
+        }
+      ]
+    },
+    {
+      "pair": "points-1",
+      "outcome": "slower",
+      "reason": "The interval of the candidate median over the A/A median is [2.1196, 2.845]. The interval is above 1.",
+      "medianRatio": 2.466240948651738,
+      "families": [
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 2.380284750001131
+        },
+        {
+          "family": "ill",
+          "outcome": "slower",
+          "medianRatio": 1.2505241401724794
+        },
+        {
+          "family": "orient-random",
+          "outcome": "slower",
+          "medianRatio": 1.4176212067356038
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 1.7029373645552264
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "slower",
+          "medianRatio": 2.6387720316696024
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 3.521129688003936
+        },
+        {
+          "family": "expand-v2-d4-t4",
+          "outcome": "slower",
+          "medianRatio": 1.2236028726436117
+        },
+        {
+          "family": "expand-v3-d6-t8",
+          "outcome": "slower",
+          "medianRatio": 1.8220563395107139
+        },
+        {
+          "family": "expand-v4-d8-t16",
+          "outcome": "slower",
+          "medianRatio": 3.1067728037159696
+        },
+        {
+          "family": "quotient-v1-d4-t3",
+          "outcome": "slower",
+          "medianRatio": 2.0057576600696443
+        },
+        {
+          "family": "quotient-v2-d3-t4",
+          "outcome": "slower",
+          "medianRatio": 3.035688714088871
+        },
+        {
+          "family": "quotient-v3-d3-t6",
+          "outcome": "slower",
+          "medianRatio": 12.10249290919386
+        },
+        {
+          "family": "sum-v1-d3-t3",
+          "outcome": "slower",
+          "medianRatio": 4.08058137771132
+        },
+        {
+          "family": "sum-v2-d2-t3",
+          "outcome": "slower",
+          "medianRatio": 6.926286263656872
+        }
+      ]
+    },
+    {
+      "pair": "points-64",
+      "outcome": "slower",
+      "reason": "The interval of the candidate median over the A/A median is [1.708, 2.2227]. The interval is above 1.",
+      "medianRatio": 1.8327537284663769,
+      "families": [
+        {
+          "family": "well",
+          "outcome": "slower",
+          "medianRatio": 1.7015486448631314
+        },
+        {
+          "family": "ill",
+          "outcome": "cannot decide",
+          "medianRatio": 0.9643708707027487
+        },
+        {
+          "family": "orient-random",
+          "outcome": "slower",
+          "medianRatio": 1.812795774037788
+        },
+        {
+          "family": "orient-near",
+          "outcome": "slower",
+          "medianRatio": 2.2253882737211175
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "slower",
+          "medianRatio": 4.17298082184294
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "slower",
+          "medianRatio": 5.258299993430627
+        },
+        {
+          "family": "expand-v2-d4-t4",
+          "outcome": "cannot decide",
+          "medianRatio": 0.9703914939841877
+        },
+        {
+          "family": "expand-v3-d6-t8",
+          "outcome": "slower",
+          "medianRatio": 2.42200915418341
+        },
+        {
+          "family": "expand-v4-d8-t16",
+          "outcome": "slower",
+          "medianRatio": 5.703601085869784
+        },
+        {
+          "family": "quotient-v1-d4-t3",
+          "outcome": "faster",
+          "medianRatio": 0.7106846764214176
+        },
+        {
+          "family": "quotient-v2-d3-t4",
+          "outcome": "cannot decide",
+          "medianRatio": 0.897209343811517
+        },
+        {
+          "family": "quotient-v3-d3-t6",
+          "outcome": "slower",
+          "medianRatio": 2.079447820229533
+        },
+        {
+          "family": "sum-v1-d3-t3",
+          "outcome": "slower",
+          "medianRatio": 1.7286020674317606
+        },
+        {
+          "family": "sum-v2-d2-t3",
+          "outcome": "slower",
+          "medianRatio": 2.919258223597682
+        }
+      ]
+    },
+    {
+      "pair": "equal",
+      "outcome": "faster",
+      "reason": "The interval of the candidate median over the A/A median is [0.1283, 0.1593]. The interval is below 1.",
+      "medianRatio": 0.14015121253595264,
+      "families": [
+        {
+          "family": "well",
+          "outcome": "faster",
+          "medianRatio": 0.04475009295403742
+        },
+        {
+          "family": "ill",
+          "outcome": "faster",
+          "medianRatio": 0.07382042754177552
+        },
+        {
+          "family": "orient-random",
+          "outcome": "faster",
+          "medianRatio": 0.09801821384799125
+        },
+        {
+          "family": "orient-near",
+          "outcome": "faster",
+          "medianRatio": 0.1090112462767672
+        },
+        {
+          "family": "incircle-random",
+          "outcome": "faster",
+          "medianRatio": 0.12875011570906952
+        },
+        {
+          "family": "incircle-near",
+          "outcome": "faster",
+          "medianRatio": 0.07818891710441428
+        },
+        {
+          "family": "expand-v2-d4-t4",
+          "outcome": "faster",
+          "medianRatio": 0.13709446475358733
+        },
+        {
+          "family": "expand-v3-d6-t8",
+          "outcome": "faster",
+          "medianRatio": 0.14077937542448998
+        },
+        {
+          "family": "expand-v4-d8-t16",
+          "outcome": "faster",
+          "medianRatio": 0.16423215841111907
+        },
+        {
+          "family": "quotient-v1-d4-t3",
+          "outcome": "faster",
+          "medianRatio": 0.32476913599104273
+        },
+        {
+          "family": "quotient-v2-d3-t4",
+          "outcome": "faster",
+          "medianRatio": 0.43658127906380173
+        },
+        {
+          "family": "quotient-v3-d3-t6",
+          "outcome": "cannot decide",
+          "medianRatio": 1.2885375916818314
+        },
+        {
+          "family": "sum-v1-d3-t3",
+          "outcome": "faster",
+          "medianRatio": 0.5436454564461812
+        },
+        {
+          "family": "sum-v2-d2-t3",
+          "outcome": "cannot decide",
+          "medianRatio": 1.009673252430712
+        }
+      ]
+    },
+    {
+      "pair": "solve",
+      "outcome": "slower",
+      "reason": "The interval of the candidate median over the A/A median is [1.0993, 1.2741]. The interval is above 1.",
+      "medianRatio": 1.1965180387951637,
+      "families": [
+        {
+          "family": "rational-roots-d8",
+          "outcome": "same",
+          "medianRatio": 1.0005306326884926
+        },
+        {
+          "family": "rational-roots-d16",
+          "outcome": "same",
+          "medianRatio": 0.9999281466737489
+        },
+        {
+          "family": "mixed-roots-d12",
+          "outcome": "slower",
+          "medianRatio": 1.4471458475064176
+        },
+        {
+          "family": "mixed-roots-d24",
+          "outcome": "slower",
+          "medianRatio": 1.258631334163535
+        },
+        {
+          "family": "dense-roots-d8",
+          "outcome": "slower",
+          "medianRatio": 2.141836903206584
+        },
+        {
+          "family": "dense-roots-d16",
+          "outcome": "slower",
+          "medianRatio": 1.4728150490425564
+        },
+        {
+          "family": "dense-roots-d32",
+          "outcome": "slower",
+          "medianRatio": 1.1929183874264666
+        },
+        {
+          "family": "dense-roots-d64",
+          "outcome": "slower",
+          "medianRatio": 1.0768068427031343
+        }
+      ]
+    }
+  ],
+  "breakEven": [
+    {
+      "family": "well",
+      "cases": 8,
+      "exactFixed": 0.10468880555555415,
+      "exactPoint": 0.1976392702132921,
+      "formFixed": 0.38122284920634936,
+      "formPoint": 0.33404167423115144,
+      "points": null
+    },
+    {
+      "family": "ill",
+      "cases": 8,
+      "exactFixed": 0.07645323115079236,
+      "exactPoint": 0.028319577442956562,
+      "formFixed": 0.10811348511904703,
+      "formPoint": 0.026871835193452508,
+      "points": 22
+    },
+    {
+      "family": "orient-random",
+      "cases": 8,
+      "exactFixed": 0.03218361557539659,
+      "exactPoint": 0.009070101934523766,
+      "formFixed": 0.041420564484126884,
+      "formPoint": 0.016779375589037658,
+      "points": null
+    },
+    {
+      "family": "orient-near",
+      "cases": 8,
+      "exactFixed": 0.034525880208333,
+      "exactPoint": 0.008224836526537683,
+      "formFixed": 0.05482446800595194,
+      "formPoint": 0.01853532617187495,
+      "points": null
+    },
+    {
+      "family": "incircle-random",
+      "cases": 8,
+      "exactFixed": 0.2658399246031711,
+      "exactPoint": 0.09658212872023908,
+      "formFixed": 0.5440263055555516,
+      "formPoint": 0.408389213541666,
+      "points": null
+    },
+    {
+      "family": "incircle-near",
+      "cases": 8,
+      "exactFixed": 0.28032721428571894,
+      "exactPoint": 0.19475184821428537,
+      "formFixed": 0.6608954285714259,
+      "formPoint": 1.0392381495535719,
+      "points": null
+    },
+    {
+      "family": "expand-v2-d4-t4",
+      "cases": 8,
+      "exactFixed": 0.12440282738095193,
+      "exactPoint": 0.02092347544642853,
+      "formFixed": 0.16171389980158574,
+      "formPoint": 0.01987304873511913,
+      "points": 36
+    },
+    {
+      "family": "expand-v3-d6-t8",
+      "cases": 8,
+      "exactFixed": 0.30021575992063865,
+      "exactPoint": 0.06570013938492056,
+      "formFixed": 0.49558558134920655,
+      "formPoint": 0.16554996999007995,
+      "points": null
+    },
+    {
+      "family": "expand-v4-d8-t16",
+      "cases": 8,
+      "exactFixed": 0.7169651746031731,
+      "exactPoint": 0.18189073660714236,
+      "formFixed": 1.6905062301587255,
+      "formPoint": 1.0891806200396839,
+      "points": null
+    },
+    {
+      "family": "quotient-v1-d4-t3",
+      "cases": 8,
+      "exactFixed": 0.09873813690476249,
+      "exactPoint": 0.012375399925595262,
+      "formFixed": 0.22629999751984248,
+      "formPoint": 0.006509131138392995,
+      "points": 22
+    },
+    {
+      "family": "quotient-v2-d3-t4",
+      "cases": 8,
+      "exactFixed": 0.1251231413690484,
+      "exactPoint": 0.01736906467013899,
+      "formFixed": 0.43861072867063466,
+      "formPoint": 0.011724756014385117,
+      "points": 56
+    },
+    {
+      "family": "quotient-v3-d3-t6",
+      "cases": 8,
+      "exactFixed": 0.1813824414682572,
+      "exactPoint": 0.03244498053075416,
+      "formFixed": 2.7352124573412686,
+      "formPoint": 0.025831098338293293,
+      "points": 387
+    },
+    {
+      "family": "sum-v1-d3-t3",
+      "cases": 7,
+      "exactFixed": 0.1686338214285696,
+      "exactPoint": 0.024005928571428272,
+      "formFixed": 0.7203836488095238,
+      "formPoint": 0.032975194940476286,
+      "points": null
+    },
+    {
+      "family": "sum-v2-d2-t3",
+      "cases": 8,
+      "exactFixed": 0.152404319444442,
+      "exactPoint": 0.02383233680555576,
+      "formFixed": 1.2482496597222217,
+      "formPoint": 0.055618395957341346,
+      "points": null
+    }
+  ],
+  "claims": [
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.175016499999998
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.88450499999999
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.0427045000000135
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.889032
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.776282000000009
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.276513499999993
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.331870500000008
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "well",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.800118999999967
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7560479999999643
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.9116055000000358
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7182970000000637
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.8212449999999762
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7104049999999802
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.9306734999999833
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.9004080000000272
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "ill",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.8817404999999781
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3994910000000118
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.45792350000004944
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3778785000000653
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.47462799999993877
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3987599999999816
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4535414999999716
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.35443850000001476
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "orient-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4883340000000089
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.38744300000001886
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.44650599999994256
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3446089999999913
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4277234999999564
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3340384999999628
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.3884845000000041
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.33945649999998295
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "orient-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4016239999999698
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.3620710000000145
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.261329999999987
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.288075500000048
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.893316500000026
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.440054500000031
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.115978499999983
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.542207500000018
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "incircle-random",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 5.149263000000019
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 10.423687499999971
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.01721950000001
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 10.76186750000005
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 10.971480499999927
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 10.62434200000007
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.182715500000029
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 10.519165499999986
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "incircle-near",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.597220500000049
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6040839999998298
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.8378555000001597
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5508574999998928
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7377060000000029
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5204935000000432
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6469375000000355
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5493515000000571
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "expand-v2-d4-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6936560000000327
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.532448000000045
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 3.0210700000001225
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.277181999999925
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.6831945000000132
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.2789739999999483
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 3.2138945000000376
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.3240654999999606
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "expand-v3-d6-t8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.669849499999941
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.855188999999882
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 12.891390000000001
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.780328499999769
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 12.734729000000016
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.34585849999985
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 12.532681499999853
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 11.547305499999993
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "expand-v4-d8-t16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 12.616636499999913
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15237749999982952
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7913810000000012
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15769550000004529
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.9265924999999697
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.16437999999993735
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7464140000001862
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15128099999992628
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "quotient-v1-d4-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6743515000000571
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.16007399999989502
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.3807700000002114
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15949799999998504
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.1152390000002015
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.1609555000002274
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.1910820000000513
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.16294799999991483
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "quotient-v2-d3-t4",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.468566500000179
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.21194100000002436
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 2,
+      "noValue": 0,
+      "medianMs": 3.634017999999969
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.20489100000008875
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.3332414999999855
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.2114804999998796
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 3.2789630000002035
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.19016900000019632
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "quotient-v3-d3-t6",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 3.9090084999998
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 7,
+      "noValue": 1,
+      "medianMs": 0.19029900000009548
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 1,
+      "medianMs": 1.5476244999997562
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 7,
+      "noValue": 1,
+      "medianMs": 0.17649299999993673
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 1,
+      "medianMs": 1.3916214999999283
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 7,
+      "noValue": 1,
+      "medianMs": 0.17178599999988364
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 1,
+      "medianMs": 1.0568719999998848
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 7,
+      "noValue": 1,
+      "medianMs": 0.15944300000001022
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "sum-v1-d3-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 1,
+      "medianMs": 1.2811570000001211
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/256",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15512699999976576
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 3,
+      "noValue": 0,
+      "medianMs": 2.0239954999999554
+    },
+    {
+      "verb": "polynomial",
+      "tier": "products/16",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15528700000004392
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.3660605000000032
+    },
+    {
+      "verb": "polynomial",
+      "tier": "bits/8",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.1655874999999014
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.006614500000069
+    },
+    {
+      "verb": "polynomial",
+      "tier": "default",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 0.15665399999966212
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "sum-v2-d2-t3",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.9791084999999384
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4869615000000067
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.8829375000000255
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.4889894999998887
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.9258715000000848
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.473010499999873
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.791580999999951
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5211874999999964
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "rational-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.8651914999998098
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.3818164999997862
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.158145500000046
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.3848520000001372
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.10415450000005
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.3215570000002117
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 3.9036654999999882
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.4233394999998836
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "rational-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.149126499999966
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6759389999999712
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 6.288022499999897
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.7056775000000926
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 6.240055999999868
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6814569999999094
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 7.091100500000039
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.6879910000002383
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "mixed-roots-d12",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 6.447515499999781
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.2783489999999347
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 8,
+      "noValue": 0,
+      "medianMs": 5.479630999999927
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.382780500000081
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 84.02988399999981
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.4247775000001184
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 83.12240500000007
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 2.458573500000057
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "mixed-roots-d24",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 84.36139900000035
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5363505000000259
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.220612499999788
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5234359999999469
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.263701500000025
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5043569999997999
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.088074499999948
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 0.5177225000002181
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "dense-roots-d8",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 4.164188499999909
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.9394585000000006
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 16.69693350000034
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.9778615000000173
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 16.8984989999999
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.8867795000001024
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 16.644114000000172
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 1.943560499999876
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "dense-roots-d16",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 16.73439899999994
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 7.684350500000164
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 84.2575939999997
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 7.6051080000002
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 84.32929100000001
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 7.41980599999988
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 82.64062650000005
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 7.601266500000293
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "dense-roots-d32",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 84.18939749999936
+    },
+    {
+      "verb": "rational",
+      "tier": "products/256",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 32.13404900000114
+    },
+    {
+      "verb": "solve",
+      "tier": "products/256",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 7,
+      "noValue": 0,
+      "medianMs": 36.472327499999665
+    },
+    {
+      "verb": "rational",
+      "tier": "products/16",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 33.35592499999984
+    },
+    {
+      "verb": "solve",
+      "tier": "products/16",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 948.6739534999988
+    },
+    {
+      "verb": "rational",
+      "tier": "bits/8",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 31.734771000000364
+    },
+    {
+      "verb": "solve",
+      "tier": "bits/8",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 953.9467364999991
+    },
+    {
+      "verb": "rational",
+      "tier": "default",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 32.015612500000316
+    },
+    {
+      "verb": "solve",
+      "tier": "default",
+      "family": "dense-roots-d64",
+      "records": 8,
+      "losers": 0,
+      "noValue": 0,
+      "medianMs": 965.7592560000021
+    }
+  ],
+  "wrong": 0,
+  "checked": 9602,
+  "skipped": [
+    {
+      "case": "sum-v1-d3-t3/s1",
+      "reason": "The case has no form or no roots at the default limits, so its arms have no work to compare."
+    }
+  ]
+}
