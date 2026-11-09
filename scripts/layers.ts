@@ -141,6 +141,9 @@ export function layerFindings(packages: readonly WorkspaceManifest[], layers: re
   return findings;
 }
 
+/** The path of a test helper. Only the tests import a test helper, so its imports are test imports. */
+export const TEST_HELPER = "\\.test-helper\\.[cm]?[jt]sx?$";
+
 /** This function gives a regular expression that matches the text `s` and nothing more. */
 function escaped(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -149,7 +152,8 @@ function escaped(s: string): string {
 /**
  * This function gives one `forbidden` rule of dependency-cruiser for each layer below the top layer. The rule stops an
  * import from the source of a package of the layer to a package of a higher layer. That package is in the workspace or
- * in `node_modules`. dependency-cruiser does not examine the tests, so a test import can go up.
+ * in `node_modules`. dependency-cruiser does not examine the tests, so a test import can go up. A test helper
+ * (`*.test-helper.ts`) is test code too, so the rule does not examine it.
  */
 export function layerRules(packages: readonly WorkspaceManifest[], layers: readonly Layer[] = LAYERS): Rule[] {
   const dirOf = new Map(packages.map((p) => [p.manifest.name, p.dir]));
@@ -166,7 +170,7 @@ export function layerRules(packages: readonly WorkspaceManifest[], layers: reado
       name: `layer-${layer.level}-imports-up`,
       severity: "error",
       comment: `A package of the layer ${layer.name} (${layer.level}) imports a package of a higher layer at run time. See docs/LAYERS.md.`,
-      from: { path: `^(${from.map(escaped).join("|")})/` },
+      from: { path: `^(${from.map(escaped).join("|")})/`, pathNot: TEST_HELPER },
       to: { path: `(${to.join("|")})` },
     });
   }

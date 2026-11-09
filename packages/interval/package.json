@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/interval",
   "version": "0.1.0",
+  "private": true,
   "description": "Float error bounds: outward-rounded intervals, midpoint-radius balls, nextUp and nextDown, and the error-free transforms of a sum and a product.",
   "keywords": [
     "interval-arithmetic",
