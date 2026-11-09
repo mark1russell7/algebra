@@ -50,7 +50,7 @@ describe("the layers of the packages", () => {
     const findings = layerFindings(testUp);
     assert.equal(findings.length, 1);
     assert.match(findings[0]!, /^The imports make a cycle: .*@mark1russell7\/rational/);
-    const noCycle = changed("@mark1russell7/structures", (m) => ({ ...m, devDependencies: { ...m.devDependencies, "@algebra/polynomial": "workspace:*" } }));
+    const noCycle = changed("@mark1russell7/structures", (m) => ({ ...m, devDependencies: { ...m.devDependencies, "@algebra/rational-bench": "workspace:*" } }));
     assert.deepEqual(layerFindings(noCycle), []);
   });
 
