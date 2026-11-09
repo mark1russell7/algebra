@@ -95,4 +95,14 @@ describe("the rules of dependency-cruiser", () => {
     assert.ok(!expressions.to.test("packages/expression/src/index.ts"));
     assert.ok(!expressions.to.test("node_modules/.pnpm/x/node_modules/@mark1russell7/rigor-statistics/build/index.js"));
   });
+
+  it("does not examine a test helper, because only the tests import it", () => {
+    for (const rule of rules) {
+      const helper = new RegExp(rule.from["pathNot"] as string);
+      assert.ok(helper.test("packages/interval/src/width.test-helper.ts"), rule.name);
+      assert.ok(helper.test("packages/rational/src/random.test-helper.mts"), rule.name);
+      assert.ok(!helper.test("packages/rational/src/index.ts"), rule.name);
+      assert.ok(!helper.test("packages/rational/src/test-helper.ts"), rule.name);
+    }
+  });
 });
