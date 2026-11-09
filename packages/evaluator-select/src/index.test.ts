@@ -4,6 +4,7 @@ import { type BigfloatFunction, compileBigfloat, compileExact, type Expression, 
 import { incircleSign, orient2dSign } from "@mark1russell7/predicates";
 import * as Q from "@mark1russell7/rational";
 import type { Rational } from "@mark1russell7/rational";
+import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
   type Answer,
@@ -22,7 +23,9 @@ import {
   type Question,
   raise,
   select,
+  sharesOf,
   signOf,
+  type Stage,
   STAGES,
   START_PRECISION,
   stitch,
@@ -500,4 +503,44 @@ describe("the selector with the stage bigfloat", () => {
     expect(select(sign, { cost: { ...cost, bigfloat: 5000 }, shares: [...shares] }).plan).not.toContain("bigfloat");
   });
 
+});
+
+describe("the shares of each stage", () => {
+  const value = (tolerance: { relative: number } | { absolute: number }): Question => ({ kind: "value", tolerance });
+  const model: CostModel = {
+    cost: { float: 15, ball: 28, interval: 77, exact: 859, bigfloat: 2460 },
+    shares: [
+      { question: value({ relative: 0 }), stage: "interval", share: 0.216 },
+      { question: value({ relative: 0 }), stage: "exact", share: 0.9 },
+      { question: value({ relative: 1e-30 }), stage: "bigfloat", share: 1 },
+    ],
+  };
+
+  it("keeps the row of each stage when only one stage has a row at a nearer bound", () => {
+    expect(sharesOf(rel(1e-30), model)).toEqual({ interval: 0.216, exact: 0.9, bigfloat: 1 });
+    const s = select(rel(1e-30), model);
+    expect(s.plan).toEqual(["interval", "exact"]);
+    expect(s.expectedCost).toBeCloseTo(77 + (1 - 0.216) * 859, 9);
+    expect(sharesOf(rel(0), model)).toEqual({ interval: 0.216, exact: 0.9 });
+    expect(sharesOf(value({ absolute: 1 }), model)).toBeUndefined();
+  });
+
+  it("gives each stage the share of its own rows, whatever the rows of the other stages", () => {
+    const stage = fc.constantFrom<Stage>("float", "ball", "interval", "exact", "bigfloat");
+    const tolerance = fc.oneof(
+      fc.constantFrom(0, 1e-30, 1e-12, 1e-9, 1e-6).map((relative) => ({ relative })),
+      fc.constantFrom(0, 1e-12, 1e-9, 1).map((absolute) => ({ absolute })),
+    );
+    const row = fc.record({ question: tolerance.map(value), stage, share: fc.double({ min: 0, max: 1, noNaN: true }) });
+    fc.assert(
+      fc.property(fc.array(row, { maxLength: 12 }), tolerance, (rows, t) => {
+        const all = sharesOf(value(t), { cost: model.cost, shares: rows }) ?? {};
+        for (const s of ["float", "ball", "interval", "exact", "bigfloat"] as const) {
+          const own = sharesOf(value(t), { cost: model.cost, shares: rows.filter((r) => r.stage === s) }) ?? {};
+          expect(all[s]).toBe(own[s]);
+        }
+      }),
+      { seed: 20261109, numRuns: 500 },
+    );
+  });
 });

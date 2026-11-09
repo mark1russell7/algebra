@@ -13,7 +13,7 @@ export { bigWithin, checkTolerance, meets, signOf, within } from "./question.ts"
 export type { Question, Tolerance } from "./question.ts";
 export { precisions, raise, START_PRECISION } from "./raise.ts";
 export type { PrecisionLimit } from "./raise.ts";
-export { planCost, select } from "./select.ts";
+export { planCost, select, sharesOf } from "./select.ts";
 export type { CostModel, Selection, ShareRow, StageCost } from "./select.ts";
 export { stitch } from "./stitch.ts";
 export type { Answer, StitchOptions, Stitched } from "./stitch.ts";

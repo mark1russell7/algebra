@@ -42,20 +42,28 @@ const bound = (t: Tolerance): number => ("absolute" in t ? t.absolute : t.relati
 const sameType = (a: Tolerance, b: Tolerance): boolean => "absolute" in a === "absolute" in b;
 
 /**
- * This function gives the shares of the model for a question. A value question uses the rows of the same type of
- * tolerance with the largest bound that is not more than its bound. A stricter tolerance answers fewer points, so these
- * shares are not more than the real shares.
+ * This function gives the shares of the model for a question. For a value question, each stage uses its own row. That
+ * row has the same type of tolerance and the largest bound that is not more than the bound of the question. A stricter
+ * tolerance answers fewer points, so these shares are not more than the real shares. A row of one stage does not hide
+ * the rows of the other stages.
+ *
+ * @param question - The question, with its tolerance.
+ * @param model - The cost model.
+ * @returns The share of each stage with a row, or `undefined` when no row fits the question.
  */
-function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, number>> | undefined {
+export function sharesOf(question: Question, model: CostModel): Partial<Record<Stage, number>> | undefined {
   let rows: readonly ShareRow[];
   if (question.kind === "sign") rows = model.shares.filter((r) => r.question.kind === "sign");
   else {
     const t = question.tolerance;
-    const fit = model.shares.flatMap((r) =>
-      r.question.kind === "value" && sameType(r.question.tolerance, t) && bound(r.question.tolerance) <= bound(t) ? [{ r, b: bound(r.question.tolerance) }] : [],
-    );
-    const best = Math.max(...fit.map((f) => f.b));
-    rows = fit.filter((f) => f.b === best).map((f) => f.r);
+    const best = new Map<Stage, { readonly r: ShareRow; readonly b: number }>();
+    for (const r of model.shares) {
+      if (r.question.kind !== "value" || !sameType(r.question.tolerance, t)) continue;
+      const b = bound(r.question.tolerance);
+      const old = best.get(r.stage);
+      if (b <= bound(t) && (old === undefined || b > old.b)) best.set(r.stage, { r, b });
+    }
+    rows = [...best.values()].map((f) => f.r);
   }
   if (rows.length === 0) return undefined;
   return Object.fromEntries(rows.map((r) => [r.stage, r.share]));
