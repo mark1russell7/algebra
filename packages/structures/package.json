@@ -1,12 +1,71 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "@algebra/structures",
+  "name": "@mark1russell7/structures",
   "version": "0.1.0",
-  "private": true,
+  "description": "Plain interfaces of semigroup, monoid, group, order, lattice, functor and monad, with standard instances, helpers and law checks. The catalog has the structures as data with their constructions.",
+  "keywords": [
+    "algebra",
+    "monoid",
+    "semigroup",
+    "group",
+    "order",
+    "lattice",
+    "functor",
+    "monad",
+    "laws",
+    "property-testing"
+  ],
+  "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/structures#readme",
+  "bugs": {
+    "url": "https://github.com/mark1russell7/algebra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mark1russell7/algebra.git",
+    "directory": "packages/structures"
+  },
+  "license": "MIT",
+  "author": "Mark Russell (https://github.com/mark1russell7)",
   "type": "module",
-  "description": "Monoid, group, ring, field, order and lattice as data instances with law tests, and the constructions: products, quotients, polynomial rings and field extensions.",
+  "sideEffects": false,
   "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./laws": "./src/laws-entry.ts",
+    "./catalog": "./src/catalog-entry.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "build",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "./laws": {
+        "types": "./build/laws.d.ts",
+        "default": "./build/laws.js"
+      },
+      "./catalog": {
+        "types": "./build/catalog.d.ts",
+        "default": "./build/catalog.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json"
@@ -19,6 +78,7 @@
     "@mark1russell7/cue": "^2.1.1",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.5",
+    "tsdown": "^0.23.4",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   }

@@ -1,0 +1,54 @@
+{
+  "seed": "interval-width/1",
+  "cases": 256,
+  "rows": {
+    "interval.sum32": {
+      "median": 22,
+      "max": 65536
+    },
+    "ball.sum32": {
+      "median": 9,
+      "max": 32768
+    },
+    "interval.horner8": {
+      "median": 4,
+      "max": 7168
+    },
+    "ball.horner8": {
+      "median": 1.391384234963088,
+      "max": 2921.3282302672606
+    },
+    "interval.product16": {
+      "median": 30,
+      "max": 47
+    },
+    "ball.product16": {
+      "median": 7.558478576298654,
+      "max": 13.948783323082628
+    },
+    "interval.quotient8": {
+      "median": 16,
+      "max": 24
+    },
+    "ball.quotient8": {
+      "median": 7.502444182851551,
+      "max": 11.801032565505897
+    },
+    "interval.sqrt4": {
+      "median": 4,
+      "max": 6
+    },
+    "ball.sqrt4": {
+      "median": 6,
+      "max": 6
+    },
+    "interval.wideHorner8": {
+      "median": 32108915307.5,
+      "max": 1184110645664
+    },
+    "ball.wideHorner8": {
+      "median": 32108949677.7241,
+      "max": 1184112646166.6086
+    }
+  }
+}

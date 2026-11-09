@@ -4,8 +4,8 @@
  *
  * @packageDocumentation
  */
-export * as interval from "./interval.ts";
-export type { Interval } from "./interval.ts";
+export { interval } from "@mark1russell7/interval";
+export type { Interval } from "@mark1russell7/interval";
 export { costMonoid, freeMonoid, combine, numSummary, varSummary } from "./summary.ts";
 export type { ComparisonKind, ExpressionKind, KindName, Monoid, NodeData, Summary } from "./summary.ts";
 export { comparisonSchema, documentSchema, expressionSchema, VARIABLE_NAME } from "./schema.ts";

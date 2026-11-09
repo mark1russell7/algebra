@@ -20,9 +20,9 @@ export interface Layer {
  * Their imports from npm obey the same rule.
  */
 export const LAYERS: readonly Layer[] = [
-  { level: 1, name: "numbers", packages: ["@mark1russell7/rational", "@algebra/bigfloat", "@mark1russell7/quantity"] },
+  { level: 1, name: "numbers", packages: ["@mark1russell7/rational", "@algebra/bigfloat", "@mark1russell7/interval", "@mark1russell7/quantity"] },
   { level: 2, name: "random", packages: ["@mark1russell7/rigor-generators"] },
-  { level: 3, name: "structures", packages: ["@algebra/structures", "@mark1russell7/structures"] },
+  { level: 3, name: "structures", packages: ["@mark1russell7/structures"] },
   { level: 4, name: "probability", packages: [] },
   { level: 5, name: "statistics", packages: ["@mark1russell7/rigor-statistics"] },
   { level: 6, name: "expressions", packages: ["@mark1russell7/expression", "@algebra/polynomial", "@algebra/evaluator-select"] },

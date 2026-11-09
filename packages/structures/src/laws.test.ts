@@ -15,8 +15,8 @@ import {
   isPrime,
   partsOf,
   primeField,
-} from "./index.ts";
-import type { AnyStructure, LawReport } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, LawReport } from "./catalog-entry.ts";
 
 /** CI can raise the count of samples of a long run. The default run stays short. */
 const SAMPLES = Number(process.env["STRUCTURE_SAMPLES"] ?? DEFAULT_SAMPLES);

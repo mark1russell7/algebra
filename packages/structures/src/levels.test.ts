@@ -24,8 +24,8 @@ import {
   primeField,
   product,
   requiredLaws,
-} from "./index.ts";
-import type { BoundedLattice, Field, Group, Lattice, Level, Magma, Monoid, Order, Ring, Semigroup, UnitalMagma } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { BoundedLattice, Field, Group, Lattice, Level, Magma, Monoid, Order, Ring, Semigroup, UnitalMagma } from "./catalog-entry.ts";
 
 /** This function reads only the fields of a monoid. A group goes in with no change: this is the reduction in use. */
 const fold = <T>(monoid: Monoid<T>, values: readonly T[]): T =>

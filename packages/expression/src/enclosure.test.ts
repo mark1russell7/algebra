@@ -340,7 +340,7 @@ describe("the undecided cases", () => {
   });
 
   it("has no eval and no new Function in the source of the two evaluators", () => {
-    for (const file of ["interval-evaluator.ts", "ball.ts", "interval.ts"]) {
+    for (const file of ["interval-evaluator.ts", "ball.ts"]) {
       const text = readFileSync(new URL(`./${file}`, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
       expect(text).not.toMatch(/\beval\s*\(|\bnew\s+Function\b|\bFunction\s*\(/);
     }

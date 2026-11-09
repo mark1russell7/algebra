@@ -23,8 +23,8 @@ import {
   quotientGroup,
   quotientRing,
   symmetricGroup,
-} from "./index.ts";
-import type { AnyStructure, Carrier, Group, LawReport, Permutation, Ring } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, Carrier, Group, LawReport, Permutation, Ring } from "./catalog-entry.ts";
 
 const failuresOf = (structure: AnyStructure): readonly LawReport[] => checkClaims(structure).filter((report) => report.failure !== null);
 

@@ -20,8 +20,8 @@ import {
   primeField,
   quotientRing,
   showPolynomial,
-} from "./index.ts";
-import type { AnyStructure, Carrier, CommutativeRing, Field, Polynomial, Ring } from "./index.ts";
+} from "./catalog-entry.ts";
+import type { AnyStructure, Carrier, CommutativeRing, Field, Polynomial, Ring } from "./catalog-entry.ts";
 
 const passes = (structure: AnyStructure): void => {
   expect(conforms(structure)).toEqual([]);
