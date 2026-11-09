@@ -19,7 +19,7 @@ The lowest layer is first.
 | --- | --- | --- | --- | --- |
 | 1 numbers | Exact numbers and bounded numbers: rationals, floats with a selected precision, amounts with units. | `@mark1russell7/rational`, `@algebra/bigfloat` | `@mark1russell7/quantity`, from systems | A21: intervals and balls |
 | 2 random | Seeded random numbers, seeds from names, draws and input families. | none | `@mark1russell7/rigor-generators`, from rigor | none |
-| 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | none | none |
+| 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
 | 5 statistics | Quantiles, means, tests, bootstrap intervals and calibration. | none | `@mark1russell7/rigor-statistics`, from rigor | A20: summaries as monoids. A22: results with error bounds. |
 | 6 expressions | Expression documents, the evaluators and the cost and error model. | `@mark1russell7/expression`, `@algebra/polynomial`, `@algebra/evaluator-select` | none | none |
@@ -93,3 +93,6 @@ After the gate, the old folder goes, with no copy. The role systems removes quan
 | A21 | Intervals and balls move to the layer numbers | 2026-11-22 | 2026-11-28 |
 | A22 | Statistics results with error bounds | 2026-11-29 | 2026-12-05 |
 | A23 | Distributions as structures, with law tests | 2026-12-06 | 2026-12-12 |
+| A24 | R5 of rigor: input families with dimensions, ranges and a distribution for each dimension, and stratified, Latin hypercube and Saltelli designs | 2026-11-09 | 2026-11-16 |
+| A25 | The core of `@mark1russell7/structures`: plain interfaces, standard instances, helpers and law checks. The first release is on 2026-11-21. | 2026-11-13 | 2026-11-21 |
+| A26 | `@mark1russell7/expression` uses the monoid of the core | 2026-11-22 | 2026-11-28 |

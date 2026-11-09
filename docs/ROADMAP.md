@@ -29,3 +29,6 @@ Each item writes its prediction before its code: the claims, how each claim is m
 | A21 | Intervals and balls in the layer numbers | later, from 2026-11-22 | The intervals and the balls of `@mark1russell7/expression` move to the layer numbers, so that the layer statistics can use them. |
 | A22 | Statistics results with error bounds | later, from 2026-11-29 | Each statistic gives its error bound, with the intervals of A21. |
 | A23 | Distributions as structures | later, from 2026-12-06 | Distributions in the layer probability, with law tests. |
+| A24 | Input families of rigor (R5) | in progress | Rigor-generators gets input families: dimensions with ranges, a distribution for each dimension, and stratified, Latin hypercube and Saltelli designs. The layout families use them from 2026-11-20, so the date is 2026-11-16. |
+| A25 | The core of the structures | not started, from 2026-11-13 | `@mark1russell7/structures` becomes the home of the structures for each repository. Its core has plain interfaces (semigroup, monoid, group, order, lattice, functor, monad), standard instances, helpers and law checks. The first release is on 2026-11-21. |
+| A26 | Expression uses the core monoid | later, from 2026-11-22 | The monoid of `@mark1russell7/expression` becomes the monoid of the core of A25. |
