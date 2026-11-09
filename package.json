@@ -29,6 +29,7 @@
     "@mark1russell7/template-cli": "^0.1.4",
     "@swc/core": "^1.15.0",
     "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "^5.0.3",
     "dependency-cruiser": "^18.7.0",
     "publint": "^0.3.25",
     "tsx": "^4.23.15",
