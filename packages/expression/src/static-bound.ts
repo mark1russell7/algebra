@@ -22,7 +22,7 @@
  * @packageDocumentation
  */
 import { close, divUp, mulUp } from "./float.ts";
-import * as I from "./interval.ts";
+import { interval as I } from "@mark1russell7/interval";
 import { intervalNode, intervalVar, NO_CLAIM } from "./interval-evaluator.ts";
 import type { Enclosure, IntervalInput } from "./interval-evaluator.ts";
 import type { KindName, NodeData } from "./summary.ts";

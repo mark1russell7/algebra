@@ -1,7 +1,7 @@
 /**
  * The interval evaluator of the expression kinds (roadmap item A4). The verb `interval` compiles a document one time
  * into a tree of closures, as the verb `float` does. Each call gives an interval that contains the exact value. Each
- * operation is an operation of `interval.ts`, which rounds each bound outward by one float step at most.
+ * operation is an operation of `@mark1russell7/interval`, which rounds each bound outward by one float step at most.
  *
  * A result is one of three values:
  *
@@ -16,8 +16,8 @@
  * @packageDocumentation
  */
 import type { Truth } from "./ball.ts";
-import * as I from "./interval.ts";
-import type { Interval } from "./interval.ts";
+import { interval as I } from "@mark1russell7/interval";
+import type { Interval } from "@mark1russell7/interval";
 import type { KindName, NodeData } from "./summary.ts";
 
 /** The result that makes no claim. */
