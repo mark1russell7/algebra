@@ -610,6 +610,37 @@ importers:
         specifier: ^5.0.3
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/quantity:
+    dependencies:
+      '@mark1russell7/rational':
+        specifier: workspace:^
+        version: link:../rational
+    devDependencies:
+      '@mark1russell7/cue':
+        specifier: github:mark1russell7/cue#da04dd56699a2ae806ab64da5b1d677476afe69e
+        version: https://codeload.github.com/mark1russell7/cue/tar.gz/da04dd56699a2ae806ab64da5b1d677476afe69e
+      '@mark1russell7/rigor-generators':
+        specifier: ^0.1.8
+        version: 0.1.8
+      '@types/node':
+        specifier: ^26.6.4
+        version: 26.6.6
+      '@vitest/coverage-v8':
+        specifier: ^5.0.3
+        version: 5.0.5(vitest@5.0.5)
+      tsdown:
+        specifier: ^0.23.1
+        version: 0.23.4(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.7
+
   packages/rational:
     devDependencies:
       '@mark1russell7/cue':
@@ -954,6 +985,12 @@ packages:
 
   '@mark1russell7/cue@2.1.2':
     resolution: {integrity: sha512-PjEWeyq353cz3gZyNmYkv/rUChybd3h9BWRW3UWP+fs0s7/CwGeVRzCpYLnvLR4gyHC367G/PS3kqWJO9GEAkg==}
+    engines: {node: '>=22'}
+    hasBin: true
+
+  '@mark1russell7/cue@https://codeload.github.com/mark1russell7/cue/tar.gz/da04dd56699a2ae806ab64da5b1d677476afe69e':
+    resolution: {gitHosted: true, integrity: sha512-qEi0JRgyXKmNAiLlIKy1mKKeaEc/4AIUh8pNKR+JfMooaq/Ovpztp4tVNY1e23yi6PeuacrrR2e8/j0AA0f0nA==, tarball: https://codeload.github.com/mark1russell7/cue/tar.gz/da04dd56699a2ae806ab64da5b1d677476afe69e}
+    version: 1.0.0
     engines: {node: '>=22'}
     hasBin: true
 
@@ -2172,6 +2209,8 @@ snapshots:
       yaml: 2.9.1
 
   '@mark1russell7/cue@2.1.2': {}
+
+  '@mark1russell7/cue@https://codeload.github.com/mark1russell7/cue/tar.gz/da04dd56699a2ae806ab64da5b1d677476afe69e': {}
 
   '@mark1russell7/rigor-bench@0.2.32(esbuild@0.28.2)':
     dependencies:
