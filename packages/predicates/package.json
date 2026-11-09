@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/predicates",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Exact geometric predicates for float inputs: orientation, in-circle and segment intersection. A float filter with a stated bound answers first, and an exact dyadic sign answers the rest.",
   "keywords": [
     "geometry",
