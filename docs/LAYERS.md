@@ -37,6 +37,14 @@ The order of the strategist is numbers, structures, expressions, geometry checks
 - Probability and statistics are below expressions. Then the cost and error model of `@algebra/evaluator-select` can use statistics at run time, for example the median of a cost. Statistics does not use expressions.
 - Intervals and balls are in `@mark1russell7/expression` at this time. Statistics with error bounds (A22) needs them. So A21 moves them to the layer numbers first.
 
+## The normal law
+
+`normalCdf` and `normalQuantile` have one home: `@mark1russell7/rigor-generators` 0.1.11, in the layer random. Rigor-statistics exports them from there with the same API.
+
+- A cdf and a quantile are functions of a distribution. So their final home is the layer probability.
+- A23 moves them to that layer. Rigor-generators and rigor-statistics then export them from the new home. No API breaks.
+- The tests hold the measured errors: the cdf within 2 epsilon of 7 table values, and within 5 epsilon of `mpmath` from -38 to 9.
+
 ## The runtime imports of today
 
 Each runtime import between the packages goes to the same layer or to a lower layer. The table has the 3 packages that come on 2026-11-21.
@@ -74,7 +82,7 @@ The source of quantity can move before the milestones. Its pull request waits un
 
 ## The gate of a move
 
-The tool of item A17 examines each moved package. The move is good only when each line is true.
+The tool of item A17 examines each moved package. The tool is the command `move-check` of `mark1russell7/release-train`, because other moves use it too. The move is good only when each line is true.
 
 - The build files are byte-equal to the files of the last release from the old repository. Only `package.json` is different.
 - The API report is equal to the report of the old repository.
