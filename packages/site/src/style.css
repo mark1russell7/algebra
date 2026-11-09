@@ -1533,6 +1533,103 @@ button:disabled {
   background: var(--ink);
 }
 
+.cost-rows li.is-verb .cost-bar {
+  background: var(--muted);
+}
+
+/* The tables of the precision section scroll inside their box, so the page does not scroll to the side. The shadow
+   of the class scroll-cue shows that a table continues past a side. */
+.precision-scroll {
+  overflow-x: auto;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.precision-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: 0.92rem;
+}
+
+.precision-table caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--muted);
+  padding-bottom: 6px;
+}
+
+.precision-table th,
+.precision-table td {
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.precision-table thead th {
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.precision-grid td {
+  min-width: 4.6em;
+  text-align: center;
+  border-bottom: 0;
+  border-radius: 4px;
+  background: var(--sunk);
+}
+
+.precision-grid thead th:not(:first-child) {
+  text-align: center;
+  font-family: var(--mono);
+}
+
+.precision-grid tbody th {
+  white-space: nowrap;
+}
+
+.precision-grid td.is-faster {
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.precision-grid td.is-slower {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.precision-grid td.is-open {
+  color: var(--muted);
+  background: repeating-linear-gradient(45deg, var(--sunk) 0 4px, transparent 4px 8px);
+}
+
+.precision-grid tr.is-all th,
+.precision-grid tr.is-all td {
+  font-weight: 600;
+}
+
+.grid-ratio {
+  display: block;
+  font-family: var(--mono);
+}
+
+.grid-word {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.precision-grid td .grid-word {
+  color: inherit;
+}
+
+.precision-table .cost-plan {
+  font-size: 1rem;
+}
+
 @media (max-width: 640px) {
   .cost-rows li {
     grid-template-columns: minmax(0, 1fr) auto;

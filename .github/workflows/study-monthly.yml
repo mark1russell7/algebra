@@ -28,12 +28,12 @@ concurrency:
   cancel-in-progress: false
 
 # The size of one run, for the watch of the runners. The measured runs of 2026-11 took 30 job-minutes for the
-# bench, 41 for the census of highways (the longest set 20) and 1 for packing.
+# bench of A6, 56 for the bench of A7, 41 for the census of highways (the longest set 20) and 1 for packing.
 env:
-  STATED_JOBS: "13"
-  STATED_JOB_MINUTES: "100"
-  STATED_LONGEST_MIN: "40"
-  STATED_REASON: "The monthly study: the census of 7 sets of highways and 1 of packing, the A6 bench, and the checks of the site."
+  STATED_JOBS: "14"
+  STATED_JOB_MINUTES: "170"
+  STATED_LONGEST_MIN: "70"
+  STATED_REASON: "The monthly study: the census of 7 sets of highways and 1 of packing, the benches of A6 and A7, and the checks of the site."
   HIGHWAYS_SETS: '["exact-v1","exact-v1-bounds","fixtures","fixtures-large","screen-v1","screen-v2","screen-v3"]'
   PACKING_SET: pack-select-v2
 
@@ -120,9 +120,21 @@ jobs:
       rounds: "31"
       ms: "10"
 
+  bench-bigfloat:
+    name: Bench of A7
+    needs: plan
+    permissions:
+      contents: read
+    uses: ./.github/workflows/bench-bigfloat.yml
+    with:
+      rounds: "31"
+      ms: "10"
+      precisions: "64,128,256,512,1024,2048,4096"
+      limit: "4096"
+
   refresh:
     name: Write the data and check the site
-    needs: [plan, census-highways, census-packing, bench]
+    needs: [plan, census-highways, census-packing, bench, bench-bigfloat]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -149,13 +161,17 @@ jobs:
         with:
           name: a6-bench
           path: ${{ runner.temp }}/artifacts/a6-bench
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: a7-bench
+          path: ${{ runner.temp }}/artifacts/a7-bench
       - name: The start of the run
         id: run
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "started=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" -q .run_started_at)" >> "$GITHUB_OUTPUT"
       # The refresh writes the data files of the site and the kept folders, and removes the kept folders of the last
-      # run. It stops when a report is not of the commit of this run.
+      # run. It stops when a report or a bench is not of the commit of this run.
       - name: Write the data
         env:
           STARTED: ${{ steps.run.outputs.started }}
@@ -170,7 +186,7 @@ jobs:
         run: pnpm --filter @algebra/site run typecheck
       - name: Test the packages that read the data
         run: |
-          for p in @algebra/site @mark1russell7/predicates @mark1russell7/predicate-census @algebra/evaluator-bench; do
+          for p in @algebra/site @mark1russell7/predicates @mark1russell7/predicate-census @algebra/evaluator-bench @algebra/bigfloat-bench; do
             pnpm --filter "$p" run test
           done
       - name: Build the site
@@ -187,7 +203,7 @@ jobs:
           HIGHWAYS: ${{ needs.plan.outputs.highways }}
           PACKING: ${{ needs.plan.outputs.packing }}
         run: |
-          git add -A -- packages/site/data packages/predicate-census/results packages/evaluator-bench/results
+          git add -A -- packages/site/data packages/predicate-census/results packages/evaluator-bench/results packages/bigfloat-bench/results
           other=$(git status --porcelain=v1 --untracked-files=all | grep -v '^[AMDR]  ' || true)
           if [ -n "$other" ]; then
             echo "::warning::The run changed files outside the data of the study. The change does not include them."
@@ -211,14 +227,18 @@ jobs:
               const c = JSON.parse(fs.readFileSync("packages/site/data/census-classes.json", "utf8"));
               const n = JSON.parse(fs.readFileSync("packages/site/data/near-misses.json", "utf8"));
               const r = JSON.parse(fs.readFileSync("packages/site/data/a6-report.json", "utf8"));
+              const b = JSON.parse(fs.readFileSync("packages/site/data/a7-report.json", "utf8"));
+              const s = b.pairs.find((p) => p.pair === "stage-exact");
+              const wrong = b.stage.reduce((n, x) => n + x.wrong, 0);
               const e = r.pairs.find((p) => p.stage === "exact");
               const fw = c.highways.sets.reduce((s, x) => s + x.floatWrong, 0);
               console.log(`- highways: ${fw} float-wrong tests over ${c.highways.sets.length} sets. packing: ${c.packing.floatWrong} float-wrong tests.`);
               console.log(`- The explorer: ${n.records.length} near misses.`);
               console.log(`- The bench: the stitched plan against exact is ${e.outcome}, median x ${e.medianRatio.toPrecision(3)}, with ${r.stitchedFailures} wrong answers.`);
+              console.log(`- The bench of A7: the stage against exact is ${s.outcome}, median x ${s.medianRatio.toPrecision(3)}, with ${wrong} wrong answers.`);
             '
             echo
-            echo "The checks of the run: the typecheck of the site, the tests of the site, predicates, predicate-census and evaluator-bench, and the build of the site."
+            echo "The checks of the run: the typecheck of the site, the tests of the site, predicates, predicate-census, evaluator-bench and bigfloat-bench, and the build of the site."
             echo
             echo "A failing cell of the census is a finding: write it in docs/ROADMAP.md."
           } > "$RUNNER_TEMP/out/body.md"
@@ -263,7 +283,7 @@ jobs:
           fi
           # The patch can change only the data of the site and the kept folders.
           git apply --numstat "$PATCH" | cut -f3 > "$RUNNER_TEMP/paths.txt"
-          if grep -Ev '^packages/(site/data/|predicate-census/results/|evaluator-bench/results/)' "$RUNNER_TEMP/paths.txt"; then
+          if grep -Ev '^packages/(site/data/|predicate-census/results/|evaluator-bench/results/|bigfloat-bench/results/)' "$RUNNER_TEMP/paths.txt"; then
             echo "::error::The patch changes a file outside the data of the study."
             exit 1
           fi
@@ -320,7 +340,7 @@ jobs:
   # person about a failed run on the same day, so the deploys do not stop first.
   report:
     name: Report a failed run
-    needs: [plan, census-highways, census-packing, bench, refresh, branch, issue]
+    needs: [plan, census-highways, census-packing, bench, bench-bigfloat, refresh, branch, issue]
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 5

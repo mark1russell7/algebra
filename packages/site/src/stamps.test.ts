@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import { parseDataStamps } from "@mark1russell7/site-pages";
+import { checkFreshness, parseDataStamps } from "@mark1russell7/site-pages";
 import { describe, expect, it } from "vitest";
 import { overallText, rawRecordsLink, type CostReport } from "./cost.ts";
 import { siteDataStamps, STUDY_LIMIT_DAYS, STUDY_STARTS_AT, STUDY_WORKFLOW, type StampData } from "./stamps.ts";
@@ -40,6 +40,17 @@ describe("the data stamp of the page", () => {
     expect(STUDY_LIMIT_DAYS).toBe(31 + 2);
   });
 
+  it("names the run of the bigfloat bench, so its age counts for the freshness gate", () => {
+    const at = (date: string) => ({ ...kept, runs: Object.fromEntries(Object.entries(kept.runs).map(([id, run]) => [id, { ...run, date }])) });
+    const now = "2026-12-20T00:00:00Z";
+    const check = (runs: StampData["kept"]) => checkFreshness(siteDataStamps({ ...data, kept: runs }), { now, times: [], schedules: { [STUDY_WORKFLOW]: 31 } }).faults;
+    const fresh = at("2026-12-04T06:50:00Z");
+    expect(siteDataStamps(data).pages[0]!.runs.map((run) => run.id)).toContain(kept.bigfloat.run);
+    expect(check(fresh)).toEqual([]);
+    const old = { ...fresh, runs: { ...fresh.runs, [kept.bigfloat.run]: { ...fresh.runs[kept.bigfloat.run]!, date: "2026-11-09T18:51:13Z" } } };
+    expect(check(old).join(" ")).toContain(kept.bigfloat.run);
+  });
+
   it("stops the build when the data names a run with no line in data/kept-runs.json", () => {
     const newer = { ...data, census: { ...data.census, packing: { census: "1" } } };
     expect(() => siteDataStamps(newer)).toThrow("The data names the run 1");
@@ -48,6 +59,8 @@ describe("the data stamp of the page", () => {
   it("names the kept folders of the runs, on the days of the runs", () => {
     expect(kept.runs[kept.bench.run]?.date.slice(0, 10)).toBe(kept.bench.folder);
     expect(folders("evaluator-bench")).toContain(kept.bench.folder);
+    expect(kept.runs[kept.bigfloat.run]?.date.slice(0, 10)).toBe(kept.bigfloat.folder);
+    expect(folders("bigfloat-bench")).toContain(kept.bigfloat.folder);
     expect(folders("predicate-census")).toContain(kept.census.highways);
     expect(folders("predicate-census")).toContain(kept.census.packing);
     expect(`${kept.runs[data.census.highways.census]?.date.slice(0, 10)}-highways`).toBe(kept.census.highways);

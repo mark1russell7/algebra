@@ -1,5 +1,6 @@
 import "./style.css";
 import costReport from "../data/a6-report.json";
+import precisionReport from "../data/a7-report.json";
 import censusJson from "../data/census-classes.json";
 import nearMissJson from "../data/near-misses.json";
 import keptRuns from "../data/kept-runs.json";
@@ -7,6 +8,8 @@ import { startClasses, startRecords } from "./census-view.ts";
 import type { CensusFile } from "./census-view.ts";
 import type { CostReport } from "./cost.ts";
 import { startCost } from "./cost-view.ts";
+import type { PrecisionReport } from "./precision.ts";
+import { startPrecision } from "./precision-view.ts";
 import { Explorer } from "./explorer.ts";
 import { inlineHtml, type PackageInfo, type RoadmapItem, type StatusKind } from "./index.ts";
 import { startPlayground } from "./playground.ts";
@@ -38,6 +41,7 @@ if (asked) explorer.load(asked);
 
 startPlayground();
 startCost(costReport as unknown as CostReport, keptRuns.bench);
+startPrecision(precisionReport as unknown as PrecisionReport, (costReport as unknown as CostReport).model, keptRuns.bigfloat);
 startClasses(censusJson as CensusFile);
 startRecords(file, (index) => {
   explorer.load(`record-${index}`);

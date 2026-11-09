@@ -182,6 +182,38 @@
         </div>
       </section>
 
+      <section id="precision" class="wrap block" aria-labelledby="precision-title">
+        <div class="block-head">
+          <h2 id="precision-title">What a precision costs</h2>
+          <p>
+            A7 measured the verb bigfloat at seven precisions on the same 4096 points, in CI. It also measured the stage
+            bigfloat, which raises the precision until the answer meets the question, to <span id="precision-limit"></span> bits.
+            The verbs interval and exact are the base.
+          </p>
+        </div>
+        <div class="cost">
+          <h3>The cost of one node and one point</h3>
+          <p class="cost-note">Each bar uses a logarithmic scale.</p>
+          <ul class="cost-rows" id="precision-costs" aria-label="The cost of each verb and precision"></ul>
+          <h3>Each precision against a verb, by family</h3>
+          <div class="chips" id="precision-baseline" role="group" aria-label="The verb of the comparison"></div>
+          <p class="cost-note">
+            Each cell gives the median time of bigfloat over the time of the verb. Below 1, bigfloat is faster. The verdict
+            comes from the paired times of the run. A pair that the run cannot decide gives no claim.
+          </p>
+          <div class="precision-scroll scroll-cue" role="region" aria-label="The verdict of each precision, by family" tabindex="0"><table class="precision-table precision-grid" id="precision-grid"></table></div>
+          <h3>The stage and the plan of the selector</h3>
+          <p class="cost-note">
+            The selector adds the cost and the shares of the stage to the model of A6, and gives the plan with the least
+            expected cost. <span id="precision-verdict"></span>
+          </p>
+          <div class="precision-scroll scroll-cue" role="region" aria-label="The stage and the plan of each question" tabindex="0"><table class="precision-table" id="precision-stage"></table></div>
+          <p class="cost-note">
+            <a id="precision-raw" href="https://github.com/mark1russell7/algebra/tree/main/packages/bigfloat-bench/results/">The raw records of the run</a>
+          </p>
+        </div>
+      </section>
+
       <section id="census" class="wrap block" aria-labelledby="census-title">
         <div class="block-head">
           <h2 id="census-title">The census of A13: real inputs of highways and packing</h2>

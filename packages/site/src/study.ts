@@ -1,7 +1,7 @@
 /**
  * The monthly study of the site (`.github/workflows/study-monthly.yml`). One run of the workflow starts the census of
- * highways, the census of packing and the evaluator bench at one commit. This module turns the artifacts of that run
- * into the data files of the page and the kept folders of the results.
+ * highways, the census of packing, the evaluator bench and the bigfloat bench at one commit. This module turns the
+ * artifacts of that run into the data files of the page and the kept folders of the results.
  *
  * @packageDocumentation
  */
@@ -60,6 +60,8 @@ export interface KeptRun {
 export interface KeptRuns {
   /** The run of the evaluator bench, and its folder in `packages/evaluator-bench/results/`. */
   readonly bench: { readonly run: string; readonly folder: string };
+  /** The run of the bigfloat bench, and its folder in `packages/bigfloat-bench/results/`. */
+  readonly bigfloat: { readonly run: string; readonly folder: string };
   /** The folders of the census in `packages/predicate-census/results/`. */
   readonly census: { readonly highways: string; readonly packing: string };
   /** Each run that a data file names. */
@@ -219,6 +221,15 @@ export function checkReport(name: string, report: CensusReport, commit: string):
   if (report.dirty !== false) throw new Error(`The report ${name} is of a tree with changes, or of a tree with no git status.`);
 }
 
+/**
+ * This function stops the refresh when a bench is not of the commit of the run. The last line of the file
+ * `machine.txt` of a bench is the commit of its checkout.
+ */
+export function checkMachine(name: string, machine: string, commit: string): void {
+  const last = machine.trim().split("\n").at(-1)?.trim();
+  if (last !== commit) throw new Error(`The bench ${name} is of the commit ${String(last)}, and the run is of ${commit}.`);
+}
+
 /** The input of one refresh: the folders of the artifacts of one run of the workflow. */
 export interface RefreshInput {
   /** The root of the repository. */
@@ -230,6 +241,8 @@ export interface RefreshInput {
   readonly packing: { readonly dump: string; readonly set: string; readonly dir: string };
   /** The folder of the artifact `a6-bench`. */
   readonly bench: string;
+  /** The folder of the artifact `a7-bench`. */
+  readonly bigfloat: string;
 }
 
 const json = (value: unknown): string => `${JSON.stringify(value, null, 2)}\n`;
@@ -247,6 +260,7 @@ export function refresh(input: RefreshInput): KeptRuns {
   const site = join(root, "packages/site/data");
   const censusRoot = join(root, "packages/predicate-census/results");
   const benchRoot = join(root, "packages/evaluator-bench/results");
+  const bigfloatRoot = join(root, "packages/bigfloat-bench/results");
   const version = (pkg: string): string => readJson<{ version: string }>(join(root, "packages", pkg, "package.json")).version;
 
   const highways = input.highways.sets.map(({ set, dir }) => {
@@ -262,20 +276,27 @@ export function refresh(input: RefreshInput): KeptRuns {
     source,
   );
   if (nearMisses.length === 0) throw new Error("The census gave no record for the explorer.");
+  checkMachine("a6-bench", readFileSync(join(input.bench, "machine.txt"), "utf8"), run.commit);
+  checkMachine("a7-bench", readFileSync(join(input.bigfloat, "machine.txt"), "utf8"), run.commit);
 
   const old = readJson<KeptRuns>(join(site, "kept-runs.json"));
-  for (const folder of [join(benchRoot, old.bench.folder), join(censusRoot, old.census.highways), join(censusRoot, old.census.packing)]) {
+  for (const folder of [join(benchRoot, old.bench.folder), join(bigfloatRoot, old.bigfloat.folder), join(censusRoot, old.census.highways), join(censusRoot, old.census.packing)]) {
     rmSync(folder, { recursive: true, force: true });
   }
 
   const kept: KeptRuns = {
     bench: { run: run.id, folder: day },
+    bigfloat: { run: run.id, folder: day },
     census: { highways: `${day}-highways`, packing: `${day}-packing` },
     runs: {
       [run.id]: {
         date: run.started,
         commit: run.commit,
-        engines: { "@algebra/evaluator-select": version("evaluator-select"), "@mark1russell7/predicate-census": version("predicate-census") },
+        engines: {
+          "@algebra/bigfloat": version("bigfloat"),
+          "@algebra/evaluator-select": version("evaluator-select"),
+          "@mark1russell7/predicate-census": version("predicate-census"),
+        },
       },
     },
   };
@@ -294,7 +315,16 @@ export function refresh(input: RefreshInput): KeptRuns {
   mkdirSync(bench, { recursive: true });
   for (const name of readdirSync(input.bench)) copyFileSync(join(input.bench, name), join(bench, name));
 
+  // The error records of the stage are large, so the kept folder has them with gzip.
+  const bigfloat = join(bigfloatRoot, day);
+  mkdirSync(bigfloat, { recursive: true });
+  for (const name of readdirSync(input.bigfloat)) {
+    if (name === "errors.jsonl") writeFileSync(join(bigfloat, "errors.jsonl.gz"), gzipSync(readFileSync(join(input.bigfloat, name)), { level: 9 }));
+    else copyFileSync(join(input.bigfloat, name), join(bigfloat, name));
+  }
+
   writeFileSync(join(site, "a6-report.json"), readFileSync(join(input.bench, "report.json")));
+  writeFileSync(join(site, "a7-report.json"), readFileSync(join(input.bigfloat, "report.json")));
   writeFileSync(
     join(site, "census-classes.json"),
     json(censusFile({ census: run.id, dump: input.highways.dump, reports: highways.map(({ set, report }) => ({ set, report })) }, { census: run.id, dump: input.packing.dump, set: input.packing.set, report: packingReport })),
