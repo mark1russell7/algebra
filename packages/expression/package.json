@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@algebra/bigfloat": "workspace:*",
-    "@mark1russell7/coeval": "^0.24.0",
+    "@mark1russell7/coeval": "^0.29.0",
     "@mark1russell7/interval": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
     "@mark1russell7/rigor-generators": "^0.1.8",
@@ -23,7 +23,7 @@
     "@mark1russell7/cue": "^2.1.1",
     "@mark1russell7/rigor-statistics": "^0.1.2",
     "@types/node": "^26.6.5",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/coverage-v8": "^5.0.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"
   },
