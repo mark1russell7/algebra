@@ -31,9 +31,9 @@ The lowest layer is first.
 
 ## Why this order
 
-The order of the strategist is numbers, structures, expressions, geometry checks, probability and statistics. This plan changes the order in 3 places. The imports of today are the reason.
+The order of the maintainer is numbers, structures, expressions, geometry checks, probability and statistics. This plan changes the order in 3 places. The imports of today are the reason.
 
-- Random is a layer of its own, below structures. The entries `./laws` and `./catalog` of `@mark1russell7/structures` draw the values of their law tests with `Random` of rigor-generators. The core entry imports no package. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the strategist, these imports go up.
+- Random is a layer of its own, below structures. The entries `./laws` and `./catalog` of `@mark1russell7/structures` draw the values of their law tests with `Random` of rigor-generators. The core entry imports no package. `@mark1russell7/expression` draws its random expressions with `mulberry32`. In the order of the maintainer, these imports go up.
 - Probability and statistics are below expressions. Then the cost and error model of `@algebra/evaluator-select` can use statistics at run time, for example the median of a cost. Statistics does not use expressions.
 - A21 moves the intervals and the balls from `@mark1russell7/expression` to `@mark1russell7/interval` in the layer numbers. Then statistics with error bounds (A22) can use them.
 
@@ -91,7 +91,7 @@ The tool of item A17 examines each moved package. The tool is the command `move-
 - The report of a kept bench run, made again from its raw records, is byte-equal. This line is for rigor-statistics.
 - The `repository` field and the provenance of the release name `mark1russell7/math`.
 
-After the gate, the old folder goes, with no copy. The role systems removes quantity. The strategist removes the folders of rigor and changes the npm trust.
+After the gate, the old folder goes, with no copy. The role systems removes quantity. The maintainer removes the folders of rigor and changes the npm trust.
 
 ## The items
 
