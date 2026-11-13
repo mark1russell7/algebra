@@ -13,7 +13,7 @@
     "census": "node src/cli.ts"
   },
   "dependencies": {
-    "@mark1russell7/coeval": "^0.30.0",
+    "@mark1russell7/coeval": "^0.34.0",
     "@mark1russell7/expression": "workspace:*",
     "@mark1russell7/predicates": "workspace:*",
     "zod": "^4.6.7"

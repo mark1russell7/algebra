@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@algebra/bigfloat": "workspace:*",
-    "@mark1russell7/coeval": "^0.30.0",
+    "@mark1russell7/coeval": "^0.34.0",
     "@mark1russell7/interval": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
     "@mark1russell7/rigor-generators": "^0.1.8",
