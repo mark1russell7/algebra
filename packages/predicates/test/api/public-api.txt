@@ -11,6 +11,8 @@ INCIRCLE_BOUND: build/index.d.ts#INCIRCLE_BOUND
 INCIRCLE_UNDERFLOW_TERM: build/index.d.ts#INCIRCLE_UNDERFLOW_TERM
 ORIENT_BOUND: build/index.d.ts#ORIENT_BOUND
 ORIENT_SHIFTED_BOUND: build/index.d.ts#ORIENT_SHIFTED_BOUND
+type PointLocation: build/index.d.ts#PointLocation
+type PolygonRing: build/index.d.ts#PolygonRing
 type SegmentIntersection: build/index.d.ts#SegmentIntersection
 type SegmentRelation: build/index.d.ts#SegmentRelation
 type Sign: build/index.d.ts#Sign
@@ -25,6 +27,7 @@ dyadic: build/index.d.ts#dyadic_d_exports
 incircle: build/index.d.ts#incircle
 incircleExact: build/index.d.ts#incircleExact
 incircleSign: build/index.d.ts#incircleSign
+locateInRings: build/index.d.ts#locateInRings
 orient2d: build/index.d.ts#orient2d
 orient2dExact: build/index.d.ts#orient2dExact
 orient2dShifted: build/index.d.ts#orient2dShifted
@@ -50,6 +53,12 @@ export declare const ORIENT_BOUND: number;
 
 ### build/index.d.ts#ORIENT_SHIFTED_BOUND
 export declare const ORIENT_SHIFTED_BOUND: number;
+
+### build/index.d.ts#PointLocation
+type PointLocation = "inside" | "boundary" | "outside";
+
+### build/index.d.ts#PolygonRing
+type PolygonRing = readonly (readonly number[])[];
 
 ### build/index.d.ts#SegmentIntersection
 interface SegmentIntersection {
@@ -101,6 +110,9 @@ export declare function incircleExact(ax: number, ay: number, bx: number, by: nu
 
 ### build/index.d.ts#incircleSign
 export declare function incircleSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): Sign;
+
+### build/index.d.ts#locateInRings
+export declare function locateInRings(rings: readonly PolygonRing[], x: number, y: number, tx?: number, ty?: number): PointLocation;
 
 ### build/index.d.ts#orient2d
 export declare function orient2d(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): SignResult;
