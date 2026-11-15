@@ -30,17 +30,18 @@ export interface SegmentIntersection {
 }
 
 const RELATIONS: readonly SegmentRelation[] = ["disjoint", "cross", "touch", "overlap"];
-const DISJOINT = 0;
-const CROSS = 1;
-const TOUCH = 2;
-const OVERLAP = 3;
+/** The codes of the relations, inside this package. */
+export const DISJOINT = 0;
+export const CROSS = 1;
+export const TOUCH = 2;
+export const OVERLAP = 3;
 /** The frozen results, at the index `4 relation + 2 collinear + exact`. The function makes no object for a result. */
 const RESULTS: readonly SegmentIntersection[] = RELATIONS.flatMap((relation) =>
   [false, true].flatMap((collinear) => (["filter", "exact"] as const).map((stage) => Object.freeze({ relation, collinear, stage }))),
 );
 
 /** This function gives the frozen result of a relation code. */
-function result(relation: number, collinear: boolean, exact: boolean): SegmentIntersection {
+export function result(relation: number, collinear: boolean, exact: boolean): SegmentIntersection {
   return RESULTS[relation * 4 + (collinear ? 2 : 0) + (exact ? 1 : 0)] as SegmentIntersection;
 }
 

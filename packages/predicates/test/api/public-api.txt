@@ -10,6 +10,7 @@ type Dyadic: build/index.d.ts#Dyadic
 INCIRCLE_BOUND: build/index.d.ts#INCIRCLE_BOUND
 INCIRCLE_UNDERFLOW_TERM: build/index.d.ts#INCIRCLE_UNDERFLOW_TERM
 ORIENT_BOUND: build/index.d.ts#ORIENT_BOUND
+ORIENT_SHIFTED_BOUND: build/index.d.ts#ORIENT_SHIFTED_BOUND
 type SegmentIntersection: build/index.d.ts#SegmentIntersection
 type SegmentRelation: build/index.d.ts#SegmentRelation
 type Sign: build/index.d.ts#Sign
@@ -18,12 +19,16 @@ type Stage: build/index.d.ts#Stage
 UNDERFLOW_TERM: build/index.d.ts#UNDERFLOW_TERM
 UNIT_ROUNDOFF: build/index.d.ts#UNIT_ROUNDOFF
 classifySegments: build/index.d.ts#classifySegments
+classifySegmentsShifted: build/index.d.ts#classifySegmentsShifted
+compareShifted: build/index.d.ts#compareShifted
 dyadic: build/index.d.ts#dyadic_d_exports
 incircle: build/index.d.ts#incircle
 incircleExact: build/index.d.ts#incircleExact
 incircleSign: build/index.d.ts#incircleSign
 orient2d: build/index.d.ts#orient2d
 orient2dExact: build/index.d.ts#orient2dExact
+orient2dShifted: build/index.d.ts#orient2dShifted
+orient2dShiftedSign: build/index.d.ts#orient2dShiftedSign
 orient2dSign: build/index.d.ts#orient2dSign
 
 ## Declarations
@@ -42,6 +47,9 @@ export declare const INCIRCLE_UNDERFLOW_TERM: number;
 
 ### build/index.d.ts#ORIENT_BOUND
 export declare const ORIENT_BOUND: number;
+
+### build/index.d.ts#ORIENT_SHIFTED_BOUND
+export declare const ORIENT_SHIFTED_BOUND: number;
 
 ### build/index.d.ts#SegmentIntersection
 interface SegmentIntersection {
@@ -74,6 +82,12 @@ export declare const UNIT_ROUNDOFF: number;
 ### build/index.d.ts#classifySegments
 export declare function classifySegments(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number): SegmentIntersection;
 
+### build/index.d.ts#classifySegmentsShifted
+export declare function classifySegmentsShifted(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, dx: number, dy: number, tx: number, ty: number): SegmentIntersection;
+
+### build/index.d.ts#compareShifted
+export declare function compareShifted(x: number, t: number, y: number): Sign;
+
 ### build/index.d.ts#dyadic_d_exports
 declare namespace dyadic_d_exports {
   export { Dyadic, add, compare, compareBound, fromFloat, mul, neg, sign, sub };
@@ -93,6 +107,12 @@ export declare function orient2d(ax: number, ay: number, bx: number, by: number,
 
 ### build/index.d.ts#orient2dExact
 export declare function orient2dExact(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign;
+
+### build/index.d.ts#orient2dShifted
+export declare function orient2dShifted(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, tx: number, ty: number): SignResult;
+
+### build/index.d.ts#orient2dShiftedSign
+export declare function orient2dShiftedSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number, tx: number, ty: number): Sign;
 
 ### build/index.d.ts#orient2dSign
 export declare function orient2dSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign;
