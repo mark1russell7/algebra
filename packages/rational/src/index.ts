@@ -2,6 +2,7 @@
 export type { Rational } from "./rational.ts";
 export {
   ONE,
+  RATIONAL_RING,
   ZERO,
   abs,
   add,

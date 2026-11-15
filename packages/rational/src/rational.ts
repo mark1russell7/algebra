@@ -212,6 +212,20 @@ export const compare = (a: Rational, b: Rational): -1 | 0 | 1 => {
 /** This function is `compare`, with the name that `@mark1russell7/quantity` uses. */
 export const cmp: (a: Rational, b: Rational) => -1 | 0 | 1 = compare;
 
+/**
+ * The rationals as a ring with an order: `zero`, `one`, `add`, `sub`, `mul` and `compare`. Each operation is exact.
+ * The record fits each interface with these fields, for example `OrderedRing` of `@mark1russell7/collections/graph`.
+ * Then a generic calculation over that ring gives an exact result.
+ */
+export const RATIONAL_RING: {
+  readonly zero: Rational;
+  readonly one: Rational;
+  readonly add: (a: Rational, b: Rational) => Rational;
+  readonly sub: (a: Rational, b: Rational) => Rational;
+  readonly mul: (a: Rational, b: Rational) => Rational;
+  readonly compare: (a: Rational, b: Rational) => -1 | 0 | 1;
+} = Object.freeze({ zero: ZERO, one: ONE, add, sub, mul, compare });
+
 /** This function tells if `a = b`. Each rational is in lowest terms, so the test compares the fields. */
 export const equals = (a: Rational, b: Rational): boolean => a.n === b.n && a.d === b.d;
 
