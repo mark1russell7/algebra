@@ -41,8 +41,14 @@ function relationOracle(ax: number, ay: number, bx: number, by: number, cx: numb
   return o1 === 0 || o2 === 0 || o3 === 0 || o4 === 0 ? "touch" : "cross";
 }
 
+/**
+ * A value in `[0, 1)` with 53 random bits. The source gives multiples of `2^-32`, and a sum of such a value and 360 has no
+ * rounding. So the cases join two values of the source.
+ */
+const fine = (rnd: Random): number => (Math.floor(rnd() * 2 ** 21) * 2 ** 32 + Math.floor(rnd() * 2 ** 32)) / 2 ** 53;
+
 /** A float with many bits, from `-scale / 2` to `scale / 2`. A sum with a multiple of 360 rounds for most of them. */
-const wide = (rnd: Random, scale: number): number => (rnd() - 0.5) * scale;
+const wide = (rnd: Random, scale: number): number => (fine(rnd) - 0.5) * scale;
 
 /** A shift: a multiple of 360 up to two turns, as across the antimeridian, or a float with many bits. */
 const shift = (rnd: Random): number => (rnd() < 0.7 ? 360 * (Math.floor(rnd() * 5) - 2) : wide(rnd, 1000));
@@ -144,9 +150,9 @@ describe("orient2dShifted", () => {
       stages[result.stage] += 1;
       if (orient2dSign(ax, ay, bx, by, cx + tx, cy + ty) !== expected) floatWrong += 1;
     }
+    console.log(`A27 orient: ${RUNS} cases, filter ${stages.filter}, exact ${stages.exact}, float form wrong ${floatWrong}`);
     expect(floatWrong).toBeGreaterThan(0);
     // The families put many points on one line, so each stage decides a part of the cases.
-    console.log(`A27 orient: ${RUNS} cases, filter ${stages.filter}, exact ${stages.exact}, float form wrong ${floatWrong}`);
     expect(stages.exact).toBeGreaterThan(RUNS / 10);
     expect(stages.filter).toBeGreaterThan(RUNS / 10);
   });
@@ -206,9 +212,9 @@ describe("classifySegmentsShifted", () => {
       const key = `${result.relation}${result.collinear ? " collinear" : ""}`;
       seen.set(key, (seen.get(key) ?? 0) + 1);
     }
+    console.log(`A27 classify: ${RUNS} cases, float form wrong ${floatWrong}, relations ${JSON.stringify(Object.fromEntries(seen))}`);
     // Each relation occurs, and the collinear relations too, so the oracle tests each branch.
     for (const key of ["disjoint", "cross", "touch", "disjoint collinear", "touch collinear", "overlap collinear"]) expect(seen.get(key) ?? 0, key).toBeGreaterThan(0);
-    console.log(`A27 classify: ${RUNS} cases, float form wrong ${floatWrong}, relations ${JSON.stringify(Object.fromEntries(seen))}`);
     expect(floatWrong).toBeGreaterThan(0);
   });
 
