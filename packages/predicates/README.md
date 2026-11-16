@@ -21,6 +21,7 @@ The package has no runtime dependencies. The entry `@mark1russell7/predicates/co
 | `classifySegmentsShifted(ax, ay, bx, by, cx, cy, dx, dy, tx, ty)` | The relation of the segment `ab` and the segment `cd` moved by `t` | Exact |
 | `compareShifted(x, t, y)` | The sign of `x + t - y` | Exact |
 | `locateInRings(rings, x, y, tx?, ty?)` | The location of the point against the rings moved by `t`: `"inside"`, `"boundary"` or `"outside"` | Exact |
+| `rayEdge(ax, ay, bx, by, x, y, tx?, ty?)` | The test of the edge `ab` moved by `t` and the ray from the point to the east: `"boundary"`, `"crosses"` or `"misses"` | Exact |
 | `dyadic` | The dyadic numbers `m * 2^e` over `bigint`: `fromFloat`, `add`, `sub`, `mul`, `sign`, `compare` | Exact |
 
 The inputs must be finite. Each function refuses `NaN` and an infinite value with a `RangeError`.
@@ -96,6 +97,25 @@ const square = [[0, 0], [10, 0], [10, 10], [0, 10]];
 locateInRings([square], 5, 5);              // "inside"
 locateInRings([square], 10, 5);             // "boundary"
 locateInRings([square], 5 + 360, 5, 360);   // "inside": the square moves by 360
+```
+
+### The test of one edge
+
+An index of the edges examines only some edges of a ring. `rayEdge` gives the test of one edge, with the rule of `locateInRings`.
+
+- The result is `"boundary"` when the point is on the edge.
+- The result is `"crosses"` when the edge crosses the ray from the point to the east. One end is at or below `y`, and the other end is above `y`.
+- Each other edge gives `"misses"`. The order of the ends does not change the result.
+- An edge with `y` out of its range of y always misses. Thus an index can skip it.
+
+A point that is not on the boundary is in the rings when an odd count of their edges crosses the ray.
+
+```ts
+import { rayEdge } from "@mark1russell7/predicates";
+
+rayEdge(10, 0, 10, 10, 5, 5);   // "crosses": the edge is east of the point
+rayEdge(0, 0, 0, 10, 5, 5);     // "misses": the edge is west of the point
+rayEdge(10, 0, 10, 10, 10, 5);  // "boundary"
 ```
 
 ## The tests

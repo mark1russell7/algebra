@@ -13,6 +13,7 @@ ORIENT_BOUND: build/index.d.ts#ORIENT_BOUND
 ORIENT_SHIFTED_BOUND: build/index.d.ts#ORIENT_SHIFTED_BOUND
 type PointLocation: build/index.d.ts#PointLocation
 type PolygonRing: build/index.d.ts#PolygonRing
+type RayEdge: build/index.d.ts#RayEdge
 type SegmentIntersection: build/index.d.ts#SegmentIntersection
 type SegmentRelation: build/index.d.ts#SegmentRelation
 type Sign: build/index.d.ts#Sign
@@ -33,6 +34,7 @@ orient2dExact: build/index.d.ts#orient2dExact
 orient2dShifted: build/index.d.ts#orient2dShifted
 orient2dShiftedSign: build/index.d.ts#orient2dShiftedSign
 orient2dSign: build/index.d.ts#orient2dSign
+rayEdge: build/index.d.ts#rayEdge
 
 ## Declarations
 
@@ -59,6 +61,9 @@ type PointLocation = "inside" | "boundary" | "outside";
 
 ### build/index.d.ts#PolygonRing
 type PolygonRing = readonly (readonly number[])[];
+
+### build/index.d.ts#RayEdge
+type RayEdge = "boundary" | "crosses" | "misses";
 
 ### build/index.d.ts#SegmentIntersection
 interface SegmentIntersection {
@@ -128,3 +133,6 @@ export declare function orient2dShiftedSign(ax: number, ay: number, bx: number, 
 
 ### build/index.d.ts#orient2dSign
 export declare function orient2dSign(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Sign;
+
+### build/index.d.ts#rayEdge
+export declare function rayEdge(ax: number, ay: number, bx: number, by: number, x: number, y: number, tx?: number, ty?: number): RayEdge;

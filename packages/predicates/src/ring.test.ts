@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { random } from "@mark1russell7/expression";
 import type { Random } from "@mark1russell7/expression";
-import { dyadic as D, locateInRings } from "./index.ts";
-import type { PointLocation, PolygonRing } from "./index.ts";
+import { dyadic as D, locateInRings, rayEdge } from "./index.ts";
+import type { PointLocation, PolygonRing, RayEdge } from "./index.ts";
 import { RUNS } from "./corpus.test-helper.ts";
 import { fine, nextTo, shift, wide } from "./moved.test-helper.ts";
 
@@ -18,28 +18,39 @@ interface Case {
 }
 
 /**
- * The oracle: the even-odd rule over dyadic numbers, on the point moved by `-t`. A crossing counts when the x of the
- * edge at the height of the point is east of the point. This test is not the orientation rule of the code.
+ * The oracle of one edge: the half-open rule over dyadic numbers, on the point moved by `-t`. A crossing counts when
+ * the x of the edge at the height of the point is east of the point. This test is not the orientation rule of the code.
  */
-function locateOracle({ rings, x, y, tx, ty }: Case): PointLocation {
+function edgeOracle(a: readonly number[], b: readonly number[], x: number, y: number, tx: number, ty: number): RayEdge {
   const qx = D.sub(F(x), F(tx));
   const qy = D.sub(F(y), F(ty));
-  let inside = false;
+  const [ax, ay, bx, by] = [F(a[0] as number), F(a[1] as number), F(b[0] as number), F(b[1] as number)];
+  const cross = D.sign(D.sub(D.mul(D.sub(ax, qx), D.sub(by, qy)), D.mul(D.sub(ay, qy), D.sub(bx, qx))));
+  const [cax, cbx, cay, cby] = [D.compare(ax, qx), D.compare(bx, qx), D.compare(ay, qy), D.compare(by, qy)];
+  const inBox = Math.min(cax, cbx) <= 0 && Math.max(cax, cbx) >= 0 && Math.min(cay, cby) <= 0 && Math.max(cay, cby) >= 0;
+  if (cross === 0 && inBox) return "boundary";
+  if (cay <= 0 !== cby <= 0) {
+    // The x of the edge at the height qy, less qx, times (by - ay).
+    const east = D.add(D.mul(D.sub(ax, qx), D.sub(by, ay)), D.mul(D.sub(qy, ay), D.sub(bx, ax)));
+    if (D.sign(east) * D.sign(D.sub(by, ay)) > 0) return "crosses";
+  }
+  return "misses";
+}
+
+/** The edges of the rings: each position and the next position, and the last position and the first. */
+function* edgesOf(rings: readonly PolygonRing[]): Generator<readonly [readonly number[], readonly number[]]> {
   for (const ring of rings) {
-    for (let index = 0; index < ring.length; index++) {
-      const a = ring[index] as readonly number[];
-      const b = ring[(index + 1) % ring.length] as readonly number[];
-      const [ax, ay, bx, by] = [F(a[0] as number), F(a[1] as number), F(b[0] as number), F(b[1] as number)];
-      const cross = D.sign(D.sub(D.mul(D.sub(ax, qx), D.sub(by, qy)), D.mul(D.sub(ay, qy), D.sub(bx, qx))));
-      const [cax, cbx, cay, cby] = [D.compare(ax, qx), D.compare(bx, qx), D.compare(ay, qy), D.compare(by, qy)];
-      const inBox = Math.min(cax, cbx) <= 0 && Math.max(cax, cbx) >= 0 && Math.min(cay, cby) <= 0 && Math.max(cay, cby) >= 0;
-      if (cross === 0 && inBox) return "boundary";
-      if (cay <= 0 !== cby <= 0) {
-        // The x of the edge at the height qy, less qx, times (by - ay).
-        const east = D.add(D.mul(D.sub(ax, qx), D.sub(by, ay)), D.mul(D.sub(qy, ay), D.sub(bx, ax)));
-        if (D.sign(east) * D.sign(D.sub(by, ay)) > 0) inside = !inside;
-      }
-    }
+    for (let index = 0; index < ring.length; index++) yield [ring[index] as readonly number[], ring[(index + 1) % ring.length] as readonly number[]];
+  }
+}
+
+/** The oracle: the even-odd rule over all edges, with the oracle of one edge. */
+function locateOracle({ rings, x, y, tx, ty }: Case): PointLocation {
+  let inside = false;
+  for (const [a, b] of edgesOf(rings)) {
+    const edge = edgeOracle(a, b, x, y, tx, ty);
+    if (edge === "boundary") return "boundary";
+    if (edge === "crosses") inside = !inside;
   }
   return inside ? "inside" : "outside";
 }
@@ -55,6 +66,12 @@ function floatRayCast({ rings, x, y, tx, ty }: Case): boolean {
     }
   }
   return inside;
+}
+
+/** The base of one edge: the float test of the rounded moved edge, as in the ray cast of layout-contract. */
+function floatCrosses(a: readonly number[], b: readonly number[], { x, y, tx, ty }: Case): boolean {
+  const [xi, yi, xj, yj] = [(a[0] as number) + tx, (a[1] as number) + ty, (b[0] as number) + tx, (b[1] as number) + ty];
+  return yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
 }
 
 /** The ring with its first position again at its end, or without it when the ring has it. */
@@ -212,5 +229,83 @@ describe("locateInRings", () => {
       expect(() => locateInRings([[[0, 0], [1, 0], [1, 1], [bad, 50]]], 0.5, 0.25)).toThrow(RangeError);
       expect(() => locateInRings([[[0, 0], [1, 0], [1, 1], [0]]], 0.5, 0.25)).toThrow(RangeError);
     }
+  });
+});
+
+type EdgeArgs = [number, number, number, number, number, number, number, number];
+
+describe("rayEdge", () => {
+  it("is the exact test of one moved edge, in both directions, and its fold is locateInRings", () => {
+    const rnd = random(43);
+    const seen: Record<RayEdge, number> = { boundary: 0, crosses: 0, misses: 0 };
+    let edges = 0;
+    let disagree = 0;
+    let asymmetric = 0;
+    let foldDiffers = 0;
+    // The base: the float test of the rounded moved edge, on the edges that are not on the boundary.
+    let floatWrong = 0;
+    for (let i = 0; i < RUNS; i++) {
+      const c = draw(rnd);
+      let inside = false;
+      let boundary = false;
+      for (const [a, b] of edgesOf(c.rings)) {
+        const [ax, ay, bx, by] = [a[0] as number, a[1] as number, b[0] as number, b[1] as number];
+        const found = rayEdge(ax, ay, bx, by, c.x, c.y, c.tx, c.ty);
+        const expected = edgeOracle(a, b, c.x, c.y, c.tx, c.ty);
+        edges += 1;
+        seen[expected] += 1;
+        if (found !== expected) disagree += 1;
+        if (rayEdge(bx, by, ax, ay, c.x, c.y, c.tx, c.ty) !== found) asymmetric += 1;
+        if (expected !== "boundary" && floatCrosses(a, b, c) !== (expected === "crosses")) floatWrong += 1;
+        if (found === "boundary") boundary = true;
+        if (found === "crosses") inside = !inside;
+      }
+      const fold: PointLocation = boundary ? "boundary" : inside ? "inside" : "outside";
+      if (fold !== locateInRings(c.rings, c.x, c.y, c.tx, c.ty)) foldDiffers += 1;
+    }
+    console.log(`A29 edges: ${RUNS} cases, ${edges} edges, ${JSON.stringify(seen)}, disagreements ${disagree}, asymmetric ${asymmetric}, fold differs ${foldDiffers}, float test wrong ${floatWrong}`);
+    expect(disagree).toBe(0);
+    expect(asymmetric).toBe(0);
+    expect(foldDiffers).toBe(0);
+    expect(floatWrong).toBeGreaterThan(0);
+    for (const result of ["boundary", "crosses", "misses"] as const) expect(seen[result], result).toBeGreaterThan(0);
+  });
+
+  it("follows the half-open rule at a vertex and on a horizontal edge", () => {
+    // Each test uses the ray from the point to the east.
+    expect(rayEdge(2, 0, 2, 10, 0, 5)).toBe("crosses");
+    expect(rayEdge(-2, 0, -2, 10, 0, 5)).toBe("misses");
+    // An end at the height of the point is below it for the rule. So only the edge that goes above it crosses.
+    expect(rayEdge(2, 5, 2, 10, 0, 5)).toBe("crosses");
+    expect(rayEdge(2, 0, 2, 5, 0, 5)).toBe("misses");
+    // A horizontal edge at the height of the point does not cross. The point is on it, or it misses.
+    expect(rayEdge(2, 5, 8, 5, 0, 5)).toBe("misses");
+    expect(rayEdge(-2, 5, 8, 5, 0, 5)).toBe("boundary");
+    expect(rayEdge(0, 0, 4, 10, 2, 5)).toBe("boundary");
+    expect(rayEdge(0, 5, 0, 5, 0, 5)).toBe("boundary");
+  });
+
+  it("is exact when the float sum of an end and the move rounds", () => {
+    // Moved by -360, the edge x = 290 is x = -70, and UP is west of it. The float sum UP + 360 is on the edge.
+    expect(rayEdge(290, 10, 290, 30, UP, 20, -360)).toBe("crosses");
+    // Moved by -360, the edge x = EDGE is west of DOWN.
+    expect(rayEdge(EDGE, 10, EDGE, 20, DOWN, 15, -360)).toBe("misses");
+    expect(rayEdge(EDGE, 10, EDGE, 20, EDGE - 360, 15, -360)).toBe("boundary");
+    // The move on the y axis is exact too: the low end moves to y = 0.1 + 360, which is not a float.
+    const low = 0.1 + 360;
+    const below = D.compare(F(low), D.add(F(0.1), F(360))) < 0;
+    expect(rayEdge(0, 0.1, 10, 0.1, 5, low, 0, 360)).toBe("misses");
+    expect(rayEdge(10, 0.1, 10, 1, 5, low, 0, 360)).toBe(below ? "misses" : "crosses");
+  });
+
+  it("refuses a value that is not finite", () => {
+    const good: EdgeArgs = [0, 0, 1, 1, 0.25, 0.5, 0, 0];
+    for (const bad of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
+      for (let index = 0; index < good.length; index++) {
+        const values = good.map((value, at) => (at === index ? bad : value)) as EdgeArgs;
+        expect(() => rayEdge(...values), `index ${index}`).toThrow(RangeError);
+      }
+    }
+    expect(rayEdge(...good)).toBe("crosses");
   });
 });
