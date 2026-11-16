@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ONE,
+  RATIONAL_RING,
   type Rational,
   ZERO,
   abs,
@@ -302,6 +303,16 @@ describe("the other operations", () => {
       expect(b.n % g).toBe(0n);
       expect(gcd(a.n / g, b.n / g)).toBe(1n);
     }
+  });
+
+  it("gives the ring operations as one record", () => {
+    expect(RATIONAL_RING).toEqual({ zero: ZERO, one: ONE, add, sub, mul, compare });
+    expect(Object.isFrozen(RATIONAL_RING)).toBe(true);
+    const half = rational(1n, 2n);
+    const { zero, one, add: plus, sub: minus, mul: times, compare: order } = RATIONAL_RING;
+    expect(minus(one, times(half, half))).toEqual(rational(3n, 4n));
+    expect(plus(zero, half)).toEqual(half);
+    expect(order(half, one)).toBe(-1);
   });
 
   it("names cmp as compare", () => {
