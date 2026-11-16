@@ -16,6 +16,11 @@ The package has no runtime dependencies. The entry `@mark1russell7/predicates/co
 | `incircle(ax, ay, bx, by, cx, cy, dx, dy)` | The sign of the in-circle test of `d`, and the stage | Exact |
 | `incircleSign(...)`, `incircleExact(...)` | The same sign without the stage, and the exact stage alone | Exact |
 | `classifySegments(ax, ay, bx, by, cx, cy, dx, dy)` | The relation of the closed segments `ab` and `cd`, the collinear flag and the stage | Exact |
+| `orient2dShifted(ax, ay, bx, by, cx, cy, tx, ty)` | The sign of the orientation of `a`, `b` and the moved point `c + t`, and the stage | Exact |
+| `orient2dShiftedSign(...)` | The same sign without the stage, for a hot loop | Exact |
+| `classifySegmentsShifted(ax, ay, bx, by, cx, cy, dx, dy, tx, ty)` | The relation of the segment `ab` and the segment `cd` moved by `t` | Exact |
+| `compareShifted(x, t, y)` | The sign of `x + t - y` | Exact |
+| `locateInRings(rings, x, y, tx?, ty?)` | The location of the point against the rings moved by `t`: `"inside"`, `"boundary"` or `"outside"` | Exact |
 | `dyadic` | The dyadic numbers `m * 2^e` over `bigint`: `fromFloat`, `add`, `sub`, `mul`, `sign`, `compare` | Exact |
 
 The inputs must be finite. Each function refuses `NaN` and an infinite value with a `RangeError`.
@@ -43,10 +48,23 @@ The flag `collinear` is `true` when the four points are on one line. Then the or
 | --- | --- | --- |
 | `orient2d` | `abs(det) > ORIENT_BOUND * abs(left + right) + UNDERFLOW_TERM` | `ORIENT_BOUND = (3 + 32u) u` |
 | `incircle` | `abs(det) > INCIRCLE_BOUND * permanent + INCIRCLE_UNDERFLOW_TERM * (alift + blift + clift + 1)` | `INCIRCLE_BOUND = (10 + 128u) u` |
+| `orient2dShifted` | `abs(det) > ORIENT_SHIFTED_BOUND * (abs(left) + abs(right)) + 2k + 2 * UNDERFLOW_TERM` | `ORIENT_SHIFTED_BOUND = (4 + 64u) u` |
 
 The value `u` is `2^-53`, `UNDERFLOW_TERM` is `2^-1069`, and `INCIRCLE_UNDERFLOW_TERM` is `2^-1022`. The in-circle filter multiplies its term at each call, and a product with a subnormal result is slow on some processors. So its factor is the smallest normal float. The bounds are the bounds of Shewchuk (1997) with a larger second term. The term for underflow is new: Shewchuk assumes that no operation underflows. The TSDoc of each bound has the proof sketch.
 
 The filter of `orient2d` also decides an exact 0. When a factor of each product is a difference of two equal floats, the sign is 0. Two equal points `a` and `b` also give 0.
+
+## The moved points
+
+A test across the antimeridian moves a point or a polygon by 360 degrees. The float sum of a coordinate and 360 can round. Then a sign of the rounded point can be wrong, and the sign of each test changes with it.
+
+The shifted forms take the point `c` and the translation `t` as different inputs, and give the sign of the exact moved point `c + t`:
+
+- When the two sums have no rounding, the moved point is a float, and the stages of `orient2d` decide.
+- Otherwise the shifted filter decides most inputs. The orientation is affine in `c`, so the tails of the sums add the term `k`.
+- The exact sign over dyadic numbers decides the rest.
+
+`classifySegmentsShifted` moves `a` and `b` by `-t` for the orientations about `cd`, because a translation does not change an orientation. On one line, `compareShifted` gives the order of a float and a moved float. The TSDoc of `ORIENT_SHIFTED_BOUND` has the proof.
 
 ## The adaptive stage
 
@@ -62,6 +80,23 @@ When all tails are 0, the expansion of stage B is the exact value. These bounds 
 The stage accepts only inputs that are 0 or that have a magnitude from `2^-150` to `2^150`. So no operation underflows with an error or overflows. Other inputs get the exact sign over dyadic numbers.
 
 The file `src/adaptive.test.ts` compares the stage with the exact stage on near-degenerate inputs and on ties. It also compares each measured error with its bound.
+
+## The location of a point in rings
+
+`locateInRings` uses the even-odd rule over all rings. A point on an edge or a vertex is on the boundary. For a polygon with holes in its exterior ring, a point in a hole is outside.
+
+- Each position has `x` at index 0 and `y` at index 1. The next values are free, so a GeoJSON position fits.
+- The ring closes from its last position to its first. An open ring and the same ring closed give the same location.
+- The optional move `t = (tx, ty)` moves the rings with no rounding. The test moves the point by `-t` with the shifted forms.
+
+```ts
+import { locateInRings } from "@mark1russell7/predicates";
+
+const square = [[0, 0], [10, 0], [10, 10], [0, 10]];
+locateInRings([square], 5, 5);              // "inside"
+locateInRings([square], 10, 5);             // "boundary"
+locateInRings([square], 5 + 360, 5, 360);   // "inside": the square moves by 360
+```
 
 ## The tests
 

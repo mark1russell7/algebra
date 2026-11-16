@@ -19,6 +19,7 @@ This package holds the exact rationals of algebra (roadmap item A2). A rational 
 | `add`, `sub`, `mul`, `div`, `neg`, `abs`, `inverse` | The field operations | Exact |
 | `pow(a, e)` | The power of `a` to an integer `e` | Exact |
 | `compare`, `cmp`, `equals`, `sign`, `isInteger` | The order and the tests | Exact |
+| `RATIONAL_RING` | The record `{ zero, one, add, sub, mul, compare }` for a generic calculation over a ring | Exact |
 | `floor`, `ceil` | The nearest integer below or above | Exact |
 | `gcd(a, b)` | The greatest common divisor of two integers. It is not negative | Exact |
 | `toString(a)` | The text `"n/d"`, or `"n"` for an integer | Exact |

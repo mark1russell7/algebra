@@ -7,6 +7,7 @@
 ## . (build/index.d.ts): names
 
 ONE: build/index.d.ts#ONE
+RATIONAL_RING: build/index.d.ts#RATIONAL_RING
 type Rational: build/index.d.ts#Rational
 ZERO: build/index.d.ts#ZERO
 abs: build/index.d.ts#abs
@@ -38,6 +39,16 @@ toString: build/index.d.ts#toString
 
 ### build/index.d.ts#ONE
 export declare const ONE: Rational;
+
+### build/index.d.ts#RATIONAL_RING
+export declare const RATIONAL_RING: {
+  readonly zero: Rational;
+  readonly one: Rational;
+  readonly add: (a: Rational, b: Rational) => Rational;
+  readonly sub: (a: Rational, b: Rational) => Rational;
+  readonly mul: (a: Rational, b: Rational) => Rational;
+  readonly compare: (a: Rational, b: Rational) => -1 | 0 | 1;
+};
 
 ### build/index.d.ts#Rational
 interface Rational {
