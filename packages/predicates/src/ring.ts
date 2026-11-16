@@ -19,8 +19,8 @@ export type PointLocation = "inside" | "boundary" | "outside";
 export type PolygonRing = readonly (readonly number[])[];
 
 /**
- * The result of the test of one edge and the ray from a point to the east: the point is on the edge, the edge crosses
- * the ray, or the edge misses the ray.
+ * This type is the result of the test of one edge and the ray from a point to the east. The point is on the edge, the
+ * edge crosses the ray, or the edge misses the ray.
  */
 export type RayEdge = "boundary" | "crosses" | "misses";
 
@@ -67,12 +67,12 @@ function edgeCode(
 }
 
 /**
- * This function gives the exact test of the edge from `a` to `b`, moved by `t = (tx, ty)`, and the ray from the point
- * `(x, y)` to the east. The result has no error, also when a float sum of a position and `t` rounds.
+ * This function gives the exact test of the edge from `a` to `b`, moved by `t = (tx, ty)`, and the ray from `(x, y)`
+ * to the east. The result has no error, also when a float sum of a position and `t` rounds.
  *
  * The result is `"boundary"` when the point is on the moved edge. It is `"crosses"` when the edge crosses the ray
- * with the half-open rule: one end is at or below `y`, the other end is above `y`, and the crossing is east of the
- * point. Each other edge gives `"misses"`. The order of the ends does not change the result.
+ * with the half-open rule. With this rule, one end is at or below `y`, the other end is above `y`, and the crossing
+ * is east of the point. Each other edge gives `"misses"`. The order of the ends does not change the result.
  *
  * The rule is the rule of `locateInRings`. Thus a point that is not on the boundary is in a ring when an odd count of
  * its edges crosses the ray. An index can examine only the edges that have the height `y` in their range of y. Each
