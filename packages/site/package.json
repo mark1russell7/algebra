@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@mark1russell7/cue": "^2.1.1",
-    "@mark1russell7/site-pages": "^0.7.0",
+    "@mark1russell7/site-pages": "^0.8.0",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.3",
     "typescript": "^7.0.2",
@@ -30,6 +30,6 @@
     "@mark1russell7/predicate-census": "workspace:*",
     "@mark1russell7/predicates": "workspace:*",
     "@mark1russell7/rational": "workspace:*",
-    "@mark1russell7/text": "^0.0.13"
+    "@mark1russell7/text": "^0.0.15"
   }
 }
