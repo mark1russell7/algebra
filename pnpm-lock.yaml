@@ -180,7 +180,7 @@ importers:
         version: 0.5.14
       '@mark1russell7/boundaries':
         specifier: ^0.3.0
-        version: 0.3.0(@swc/core@1.16.22)(dependency-cruiser@18.7.2)
+        version: 0.3.2(@swc/core@1.16.22)(dependency-cruiser@18.7.2)
       '@mark1russell7/conventions':
         specifier: ^0.47.0
         version: 0.47.0
@@ -188,8 +188,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.4
       '@mark1russell7/ste-lint':
-        specifier: ^0.3.0
-        version: 0.3.2
+        specifier: ^0.4.0
+        version: 0.4.0
       '@mark1russell7/template-cli':
         specifier: ^0.1.4
         version: 0.1.9
@@ -364,7 +364,7 @@ importers:
         version: link:../bigfloat
       '@mark1russell7/coeval':
         specifier: ^0.38.0
-        version: 0.38.0(zod@4.6.7)
+        version: 0.38.1(zod@4.6.7)
       '@mark1russell7/interval':
         specifier: workspace:*
         version: link:../interval
@@ -502,7 +502,7 @@ importers:
     dependencies:
       '@mark1russell7/coeval':
         specifier: ^0.38.0
-        version: 0.38.0(zod@4.6.7)
+        version: 0.38.1(zod@4.6.7)
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -576,7 +576,7 @@ importers:
     dependencies:
       '@mark1russell7/coeval':
         specifier: ^0.38.0
-        version: 0.38.0(zod@4.6.7)
+        version: 0.38.1(zod@4.6.7)
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -717,7 +717,7 @@ importers:
         version: link:../evaluator-select
       '@mark1russell7/coeval':
         specifier: ^0.38.0
-        version: 0.38.0(zod@4.6.7)
+        version: 0.38.1(zod@4.6.7)
       '@mark1russell7/expression':
         specifier: workspace:*
         version: link:../expression
@@ -731,8 +731,8 @@ importers:
         specifier: workspace:*
         version: link:../rational
       '@mark1russell7/text':
-        specifier: ^0.0.15
-        version: 0.0.15
+        specifier: ^0.0.16
+        version: 0.0.16
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -1004,8 +1004,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/boundaries@0.3.0':
-    resolution: {integrity: sha512-khwslChlPQAayIKROsi2cpbcEA/q0xj3EGj+t6jHrAAkfcflcLZoXnibGsnimgi/l6eEoolWKu1WPoA9krXfnA==}
+  '@mark1russell7/boundaries@0.3.2':
+    resolution: {integrity: sha512-PlgXsF+iJ6EoOusW61gx5Om1Oq86xySyTeMgmxEon6MM4/Eyi2ylDhf5a2YiwoWfpYJqPQE9zWj6pCcXvezFtQ==}
     engines: {node: '>=22'}
     peerDependencies:
       '@swc/core': ^1.10.0
@@ -1016,8 +1016,8 @@ packages:
       dependency-cruiser:
         optional: true
 
-  '@mark1russell7/coeval@0.38.0':
-    resolution: {integrity: sha512-1K//GGD4cwmxqqA6c9sXsQYI9j6tNdVVIe6i+soNQmyQd8JIqMPQqC5wSJCtu1ZvcWRLA0+lKPY5pKx+rXrBOw==}
+  '@mark1russell7/coeval@0.38.1':
+    resolution: {integrity: sha512-e8hythmLZevMmTj7WNDBjK5shuGfgFFZcVMto89hEsTgS3vCrkC8GNOGS1zzFqcpBulkYJQ6eu+xpyxaiwjryA==}
 
   '@mark1russell7/collections@0.11.0':
     resolution: {integrity: sha512-s2DyC8i8JhP0Ue6oG+dLUHrjwvUjz+UQrrSIViLkDdU0t+LhLChLrkRpcwr/eof62ffOSPXifLVYuzM7alEEPw==}
@@ -1032,6 +1032,10 @@ packages:
     resolution: {integrity: sha512-+EEUBpLrTBcJoMIOF3C5XMVpzO7eYrermtdleEvWLGNJK9/HGPT9o6GgbsW+Vl+s3/0QrXksc0qOIUlE70HI9Q==}
     engines: {node: '>=22'}
     hasBin: true
+
+  '@mark1russell7/files@0.0.4':
+    resolution: {integrity: sha512-Pb978ZnvlAxzcdWtRtqTGb7mZFCvlNrdKnpZqhxQ7gafzeNGf1JqYFuB4RWiLbJzRuFUWjEoAVG5f2TndCIlSg==}
+    engines: {node: '>=22'}
 
   '@mark1russell7/optional@1.2.0':
     resolution: {integrity: sha512-vS5jF21WC/VApRv4p8afRZahcMl9cuNp03LxbVngY9nYkzq+S7Oit6ksySt2baML+tp46UF60sxnHxn1jlwtTg==}
@@ -1073,8 +1077,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/ste-lint@0.3.2':
-    resolution: {integrity: sha512-0WRNon1oYKX1mmTP/AhrPnpoGAGolmpkJWHaTkHXc4SKe1tQhUvPrY/0TQ4gvu7aN+TEPpypiZDIkOjYZG8qBA==}
+  '@mark1russell7/ste-lint@0.4.0':
+    resolution: {integrity: sha512-V58Mtpt7WOW2wRBreSuuIO4am0WOdrJq8603+NNtqyI5EY0/LpPiQFxEDx+yNOgkN5ddnpPTkjalRTmBF+9GXQ==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -1089,6 +1093,10 @@ packages:
 
   '@mark1russell7/text@0.0.15':
     resolution: {integrity: sha512-aNOINmlpbbHIO1VOVfZkMZf8Ts346sz7Y+iQOsclQPet4etHNjKm0KM1EW9K0UuxpbZEkUW2+qjrVFcoL1Juyw==}
+    engines: {node: '>=22.12'}
+
+  '@mark1russell7/text@0.0.16':
+    resolution: {integrity: sha512-hq2AWdtbKtXlibTTcVA/6GQAxgPj+6U3Hdmkh1I4sRMQZn/SiKh1k78UtcMgtcLJxwHHG9GVs2O2VNQxJP7R1Q==}
     engines: {node: '>=22.12'}
 
   '@napi-rs/wasm-runtime@1.2.6':
@@ -2359,12 +2367,12 @@ snapshots:
     dependencies:
       '@mark1russell7/conventions': 0.47.0
 
-  '@mark1russell7/boundaries@0.3.0(@swc/core@1.16.22)(dependency-cruiser@18.7.2)':
+  '@mark1russell7/boundaries@0.3.2(@swc/core@1.16.22)(dependency-cruiser@18.7.2)':
     optionalDependencies:
       '@swc/core': 1.16.22
       dependency-cruiser: 18.7.2
 
-  '@mark1russell7/coeval@0.38.0(zod@4.6.7)':
+  '@mark1russell7/coeval@0.38.1(zod@4.6.7)':
     dependencies:
       '@mark1russell7/collections': 0.11.0(zod@4.6.7)
       '@mark1russell7/rigor-generators': 0.2.0
@@ -2385,6 +2393,8 @@ snapshots:
       yaml: 2.9.1
 
   '@mark1russell7/cue@2.1.4': {}
+
+  '@mark1russell7/files@0.0.4': {}
 
   '@mark1russell7/optional@1.2.0': {}
 
@@ -2414,8 +2424,9 @@ snapshots:
     dependencies:
       '@mark1russell7/rigor-statistics': 0.2.10
 
-  '@mark1russell7/ste-lint@0.3.2':
+  '@mark1russell7/ste-lint@0.4.0':
     dependencies:
+      '@mark1russell7/files': 0.0.4
       typescript: 6.0.3
 
   '@mark1russell7/template-cli@0.1.9':
@@ -2425,6 +2436,8 @@ snapshots:
   '@mark1russell7/text@0.0.13': {}
 
   '@mark1russell7/text@0.0.15': {}
+
+  '@mark1russell7/text@0.0.16': {}
 
   '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)':
     dependencies:
