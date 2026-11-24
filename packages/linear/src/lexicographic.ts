@@ -32,6 +32,7 @@ export type LexicographicResult =
 /**
  * This function optimizes the objectives in their order, subject to the constraint rows and `x >= 0`. Stage `k` holds the
  * optimum of each earlier objective as an equality row. The function stops at the first stage with no optimum.
+ * Only the first stage can be infeasible. A later stage can be unbounded after optimal stages, because its objective is new.
  *
  * @throws {RangeError} The list of objectives is empty, or a row has a length that is not the length of the first objective.
  */

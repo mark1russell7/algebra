@@ -59,6 +59,8 @@ A Farkas ray proves that no point is feasible: for each `x >= 0` that meets the 
 
 `solveLexicographic(constraints, objectives)` optimizes each objective in its order. Stage `k` keeps the optimum of each earlier objective as an equality row. The result gives each stage with its program and its result, so `checkCertificate` examines each stage. The status `optimal` also gives the last point and the optimum of each objective. A stage with no optimum stops the solve, and its result has the certificate.
 
+Only the first stage can be infeasible, because each later stage keeps the optimal point of the stage before it. A later stage can be unbounded after optimal stages, because its objective is new.
+
 ## The tests
 
 - Each result of the simplex on 3 seeded families of small programs goes through `checkCertificate`. The families are random programs, programs with equality rows, and degenerate programs with many zero right sides.
