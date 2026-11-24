@@ -25,7 +25,7 @@ The lowest layer is first.
 | 3 structures | Monoid, group, ring, field, order and lattice as data, with law tests. | `@algebra/structures` | `@mark1russell7/structures`, the home of the structures for each repository | A25: the core interfaces, in the entry `.` with no imports |
 | 4 probability | Distributions as structures, with law tests. | none | none | A23: distributions |
 | 5 statistics | Quantiles, means, tests, bootstrap intervals and calibration. | none | `@mark1russell7/rigor-statistics`, from rigor | A20: summaries as monoids. A22: results with error bounds. |
-| 6 expressions | Expression documents, the evaluators and the cost and error model. | `@mark1russell7/expression`, `@algebra/polynomial`, `@algebra/evaluator-select` | none | none |
+| 6 expressions | Expression documents, the evaluators, the cost and error model, and exact linear algebra. | `@mark1russell7/expression`, `@algebra/polynomial`, `@algebra/evaluator-select` | `@mark1russell7/linear` (A30) | none |
 | 7 geometry checks | Exact geometric predicates and the census of their real inputs. | `@mark1russell7/predicates`, `@mark1russell7/predicate-census` | none | none |
 | 8 tools | The corpus, the benches and the site. These packages are private. | `@algebra/expression-corpus`, the 6 bench packages, `@algebra/site` | none | none |
 
@@ -61,6 +61,7 @@ Each runtime import between the packages goes to the same layer or to a lower la
 | `@mark1russell7/expression` | 6 | rational (1), bigfloat (1), interval (1), rigor-generators (2), structures (3) |
 | `@algebra/polynomial` | 6 | rational (1), expression (6) |
 | `@algebra/evaluator-select` | 6 | rational (1), bigfloat (1), expression (6) |
+| `@mark1russell7/linear` | 6 | rational (1) |
 | `@mark1russell7/predicates` | 7 | none |
 | `@mark1russell7/predicate-census` | 7 | expression (6), predicates (7) |
 | `@algebra/expression-corpus` | 8 | rational (1), rigor-generators (2), expression (6), predicates (7) |

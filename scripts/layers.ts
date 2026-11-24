@@ -25,7 +25,7 @@ export const LAYERS: readonly Layer[] = [
   { level: 3, name: "structures", packages: ["@mark1russell7/structures"] },
   { level: 4, name: "probability", packages: [] },
   { level: 5, name: "statistics", packages: ["@mark1russell7/rigor-statistics"] },
-  { level: 6, name: "expressions", packages: ["@mark1russell7/expression", "@algebra/polynomial", "@algebra/evaluator-select"] },
+  { level: 6, name: "expressions", packages: ["@mark1russell7/expression", "@algebra/polynomial", "@algebra/evaluator-select", "@mark1russell7/linear"] },
   { level: 7, name: "geometry checks", packages: ["@mark1russell7/predicates", "@mark1russell7/predicate-census"] },
   {
     level: 8,

@@ -1,0 +1,189 @@
+# The public API of @mark1russell7/linear
+#
+# The names of each entry of the exports field, and the declaration of each name, without comments
+# and private members. The command `api-report check` compares this file with the built .d.ts files.
+# To accept a change of the API, start the build, then `api-report update`, and review the diff.
+
+## . (build/index.d.ts): names
+
+type CertificateCheck: build/index.d.ts#CertificateCheck
+type Constraint: build/index.d.ts#Constraint
+type ConstraintInput: build/index.d.ts#ConstraintInput
+type LexicographicResult: build/index.d.ts#LexicographicResult
+type LexicographicStage: build/index.d.ts#LexicographicStage
+type LinearProgram: build/index.d.ts#LinearProgram
+type LinearProgramInput: build/index.d.ts#LinearProgramInput
+type LinearProgramResult: build/index.d.ts#LinearProgramResult
+type Matrix: build/index.d.ts#Matrix
+type Objective: build/index.d.ts#Objective
+type RationalInput: build/index.d.ts#RationalInput
+type Relation: build/index.d.ts#Relation
+type RowEchelon: build/index.d.ts#RowEchelon
+type Sense: build/index.d.ts#Sense
+type SolveResult: build/index.d.ts#SolveResult
+type Vector: build/index.d.ts#Vector
+checkCertificate: build/index.d.ts#checkCertificate
+columnsOf: build/index.d.ts#columnsOf
+dot: build/index.d.ts#dot
+linearProgram: build/index.d.ts#linearProgram
+matrix: build/index.d.ts#matrix
+multiply: build/index.d.ts#multiply
+nullSpace: build/index.d.ts#nullSpace
+rank: build/index.d.ts#rank
+rref: build/index.d.ts#rref
+solve: build/index.d.ts#solve
+solveLexicographic: build/index.d.ts#solveLexicographic
+solveLinearProgram: build/index.d.ts#solveLinearProgram
+toRational: build/index.d.ts#toRational
+transpose: build/index.d.ts#transpose
+vector: build/index.d.ts#vector
+
+## Declarations
+
+### build/index.d.ts#CertificateCheck
+interface CertificateCheck {
+  readonly valid: boolean;
+  readonly failures: readonly string[];
+}
+
+### build/index.d.ts#Constraint
+interface Constraint {
+  readonly coefficients: Vector;
+  readonly relation: Relation;
+  readonly rhs: Rational;
+}
+
+### build/index.d.ts#ConstraintInput
+interface ConstraintInput {
+  readonly coefficients: readonly RationalInput[];
+  readonly relation: Relation;
+  readonly rhs: RationalInput;
+}
+
+### build/index.d.ts#LexicographicResult
+type LexicographicResult = {
+  readonly status: "optimal";
+  readonly x: Vector;
+  readonly values: readonly Rational[];
+  readonly stages: readonly LexicographicStage[];
+} | {
+  readonly status: "infeasible" | "unbounded";
+  readonly stages: readonly LexicographicStage[];
+};
+
+### build/index.d.ts#LexicographicStage
+interface LexicographicStage {
+  readonly program: LinearProgram;
+  readonly result: LinearProgramResult;
+}
+
+### build/index.d.ts#LinearProgram
+interface LinearProgram {
+  readonly sense: Sense;
+  readonly objective: Vector;
+  readonly constraints: readonly Constraint[];
+}
+
+### build/index.d.ts#LinearProgramInput
+interface LinearProgramInput {
+  readonly sense: Sense;
+  readonly objective: readonly RationalInput[];
+  readonly constraints: readonly ConstraintInput[];
+}
+
+### build/index.d.ts#LinearProgramResult
+type LinearProgramResult = {
+  readonly status: "optimal";
+  readonly x: Vector;
+  readonly value: Rational;
+  readonly dual: Vector;
+} | {
+  readonly status: "infeasible";
+  readonly ray: Vector;
+} | {
+  readonly status: "unbounded";
+  readonly x: Vector;
+  readonly direction: Vector;
+};
+
+### build/index.d.ts#Matrix
+type Matrix = readonly Vector[];
+
+### build/index.d.ts#Objective
+interface Objective {
+  readonly sense: Sense;
+  readonly coefficients: Vector;
+}
+
+### build/index.d.ts#RationalInput
+type RationalInput = Rational | bigint | number | string;
+
+### build/index.d.ts#Relation
+type Relation = "<=" | ">=" | "=";
+
+### build/index.d.ts#RowEchelon
+interface RowEchelon {
+  readonly matrix: Matrix;
+  readonly pivots: readonly number[];
+}
+
+### build/index.d.ts#Sense
+type Sense = "max" | "min";
+
+### build/index.d.ts#SolveResult
+type SolveResult = {
+  readonly status: "solved";
+  readonly x: Vector;
+  readonly nullSpace: Matrix;
+} | {
+  readonly status: "inconsistent";
+  readonly certificate: Vector;
+};
+
+### build/index.d.ts#Vector
+type Vector = readonly Rational[];
+
+### build/index.d.ts#checkCertificate
+export declare function checkCertificate(program: LinearProgram, result: LinearProgramResult): CertificateCheck;
+
+### build/index.d.ts#columnsOf
+export declare function columnsOf(m: Matrix): number;
+
+### build/index.d.ts#dot
+export declare function dot(a: Vector, b: Vector): Rational;
+
+### build/index.d.ts#linearProgram
+export declare function linearProgram(input: LinearProgramInput): LinearProgram;
+
+### build/index.d.ts#matrix
+export declare function matrix(rows: readonly (readonly RationalInput[])[]): Matrix;
+
+### build/index.d.ts#multiply
+export declare function multiply(m: Matrix, x: Vector): Vector;
+
+### build/index.d.ts#nullSpace
+export declare function nullSpace(m: Matrix, columns?: number): Matrix;
+
+### build/index.d.ts#rank
+export declare function rank(m: Matrix): number;
+
+### build/index.d.ts#rref
+export declare function rref(m: Matrix): RowEchelon;
+
+### build/index.d.ts#solve
+export declare function solve(a: Matrix, b: Vector, columns?: number): SolveResult;
+
+### build/index.d.ts#solveLexicographic
+export declare function solveLexicographic(constraints: readonly Constraint[], objectives: readonly Objective[]): LexicographicResult;
+
+### build/index.d.ts#solveLinearProgram
+export declare function solveLinearProgram(program: LinearProgram): LinearProgramResult;
+
+### build/index.d.ts#toRational
+export declare function toRational(value: RationalInput): Rational;
+
+### build/index.d.ts#transpose
+export declare function transpose(m: Matrix, columns?: number): Matrix;
+
+### build/index.d.ts#vector
+export declare function vector(values: readonly RationalInput[]): Vector;
