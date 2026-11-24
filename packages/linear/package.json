@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/linear",
   "version": "0.1.0",
-  "private": true,
   "description": "Exact linear algebra and linear programs over exact rationals: solve, rank, null space, a two-phase simplex with the rule of Bland, lexicographic objectives and certificates with a check.",
   "keywords": [
     "linear-algebra",
