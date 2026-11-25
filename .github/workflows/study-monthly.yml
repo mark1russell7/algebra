@@ -82,8 +82,8 @@ jobs:
             echo "packing-sets=$(jq -cn --arg s "$PACKING_SET" '[$s]')"
           } >> "$GITHUB_OUTPUT"
           {
-            echo "- The dump of highways: https://github.com/mark1russell7/highways/actions/runs/$highways"
-            echo "- The dump of packing: https://github.com/mark1russell7/packing/actions/runs/$packing"
+            echo "- The dump of highways: https://github.com/metrograph-labs/highways/actions/runs/$highways"
+            echo "- The dump of packing: https://github.com/metrograph-labs/packing/actions/runs/$packing"
           } >> "$GITHUB_STEP_SUMMARY"
 
   census-highways:
@@ -221,7 +221,7 @@ jobs:
             echo "The workflow study-monthly.yml measured the data of the site again at the commit $GITHUB_SHA."
             echo
             echo "- The run: $RUN_URL"
-            echo "- The census of the highways dump https://github.com/mark1russell7/highways/actions/runs/$HIGHWAYS and the packing dump https://github.com/mark1russell7/packing/actions/runs/$PACKING"
+            echo "- The census of the highways dump https://github.com/metrograph-labs/highways/actions/runs/$HIGHWAYS and the packing dump https://github.com/metrograph-labs/packing/actions/runs/$PACKING"
             node -e '
               const fs = require("node:fs");
               const c = JSON.parse(fs.readFileSync("packages/site/data/census-classes.json", "utf8"));
