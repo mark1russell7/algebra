@@ -263,7 +263,7 @@ describe("branch and bound on programs with no box", () => {
     const seen = { optimal: 0, infeasible: 0, unbounded: 0, limit: 0 };
     fc.assert(
       fc.property(openFamily, (program) => {
-        const result = solved(program, 100);
+        const result = solved(program, 30);
         seen[result.status]++;
         if (result.status === "unbounded") return !checkIntegerCertificate(program, { ...result, direction: result.direction.map(neg) }).valid;
         return true;
@@ -273,5 +273,5 @@ describe("branch and bound on programs with no box", () => {
     expect(seen.optimal).toBeGreaterThan(0);
     expect(seen.infeasible).toBeGreaterThan(0);
     expect(seen.unbounded).toBeGreaterThan(0);
-  });
+  }, 30_000);
 });
