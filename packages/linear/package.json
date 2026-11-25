@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@mark1russell7/linear",
-  "version": "0.1.0",
-  "description": "Exact linear algebra and linear programs over exact rationals: solve, rank, null space, a two-phase simplex with the rule of Bland, lexicographic objectives and certificates with a check.",
+  "version": "0.1.1",
+  "description": "Exact linear algebra and linear programs over exact rationals: solve, rank, null space, a two-phase simplex with the rule of Bland, lexicographic objectives, integer programs by branch and bound, and certificates with a check.",
   "keywords": [
     "linear-algebra",
     "linear-programming",
@@ -11,7 +11,9 @@
     "rational",
     "certificate",
     "farkas",
-    "duality"
+    "duality",
+    "integer-programming",
+    "branch-and-bound"
   ],
   "homepage": "https://github.com/mark1russell7/algebra/tree/main/packages/linear#readme",
   "bugs": {

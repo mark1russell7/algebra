@@ -6,15 +6,21 @@
 
 ## . (build/index.d.ts): names
 
+type Branch: build/index.d.ts#Branch
+type BranchNode: build/index.d.ts#BranchNode
 type CertificateCheck: build/index.d.ts#CertificateCheck
 type Constraint: build/index.d.ts#Constraint
 type ConstraintInput: build/index.d.ts#ConstraintInput
+type IntegerOptions: build/index.d.ts#IntegerOptions
+type IntegerProgram: build/index.d.ts#IntegerProgram
+type IntegerProgramResult: build/index.d.ts#IntegerProgramResult
 type LexicographicResult: build/index.d.ts#LexicographicResult
 type LexicographicStage: build/index.d.ts#LexicographicStage
 type LinearProgram: build/index.d.ts#LinearProgram
 type LinearProgramInput: build/index.d.ts#LinearProgramInput
 type LinearProgramResult: build/index.d.ts#LinearProgramResult
 type Matrix: build/index.d.ts#Matrix
+type NodeOutcome: build/index.d.ts#NodeOutcome
 type Objective: build/index.d.ts#Objective
 type RationalInput: build/index.d.ts#RationalInput
 type Relation: build/index.d.ts#Relation
@@ -23,6 +29,7 @@ type Sense: build/index.d.ts#Sense
 type SolveResult: build/index.d.ts#SolveResult
 type Vector: build/index.d.ts#Vector
 checkCertificate: build/index.d.ts#checkCertificate
+checkIntegerCertificate: build/index.d.ts#checkIntegerCertificate
 columnsOf: build/index.d.ts#columnsOf
 dot: build/index.d.ts#dot
 linearProgram: build/index.d.ts#linearProgram
@@ -32,6 +39,7 @@ nullSpace: build/index.d.ts#nullSpace
 rank: build/index.d.ts#rank
 rref: build/index.d.ts#rref
 solve: build/index.d.ts#solve
+solveIntegerProgram: build/index.d.ts#solveIntegerProgram
 solveLexicographic: build/index.d.ts#solveLexicographic
 solveLinearProgram: build/index.d.ts#solveLinearProgram
 toRational: build/index.d.ts#toRational
@@ -39,6 +47,21 @@ transpose: build/index.d.ts#transpose
 vector: build/index.d.ts#vector
 
 ## Declarations
+
+### build/index.d.ts#Branch
+interface Branch {
+  readonly variable: number;
+  readonly relation: "<=" | ">=";
+  readonly value: Rational;
+}
+
+### build/index.d.ts#BranchNode
+interface BranchNode {
+  readonly parent: number | undefined;
+  readonly branch: Branch | undefined;
+  readonly outcome: NodeOutcome;
+  readonly result: LinearProgramResult | undefined;
+}
 
 ### build/index.d.ts#CertificateCheck
 interface CertificateCheck {
@@ -59,6 +82,37 @@ interface ConstraintInput {
   readonly relation: Relation;
   readonly rhs: RationalInput;
 }
+
+### build/index.d.ts#IntegerOptions
+interface IntegerOptions {
+  readonly nodeLimit?: number;
+}
+
+### build/index.d.ts#IntegerProgram
+interface IntegerProgram extends LinearProgram {
+  readonly integer: readonly number[];
+}
+
+### build/index.d.ts#IntegerProgramResult
+type IntegerProgramResult = {
+  readonly status: "optimal";
+  readonly x: Vector;
+  readonly value: Rational;
+  readonly tree: readonly BranchNode[];
+} | {
+  readonly status: "infeasible";
+  readonly tree: readonly BranchNode[];
+} | {
+  readonly status: "unbounded";
+  readonly x: Vector;
+  readonly direction: Vector;
+} | {
+  readonly status: "limit";
+  readonly x: Vector | undefined;
+  readonly value: Rational | undefined;
+  readonly bound: Rational | undefined;
+  readonly tree: readonly BranchNode[];
+};
 
 ### build/index.d.ts#LexicographicResult
 type LexicographicResult = {
@@ -109,6 +163,9 @@ type LinearProgramResult = {
 ### build/index.d.ts#Matrix
 type Matrix = readonly Vector[];
 
+### build/index.d.ts#NodeOutcome
+type NodeOutcome = "branched" | "integer" | "bound" | "infeasible" | "open";
+
 ### build/index.d.ts#Objective
 interface Objective {
   readonly sense: Sense;
@@ -146,6 +203,9 @@ type Vector = readonly Rational[];
 ### build/index.d.ts#checkCertificate
 export declare function checkCertificate(program: LinearProgram, result: LinearProgramResult): CertificateCheck;
 
+### build/index.d.ts#checkIntegerCertificate
+export declare function checkIntegerCertificate(program: IntegerProgram, result: IntegerProgramResult): CertificateCheck;
+
 ### build/index.d.ts#columnsOf
 export declare function columnsOf(m: Matrix): number;
 
@@ -172,6 +232,9 @@ export declare function rref(m: Matrix): RowEchelon;
 
 ### build/index.d.ts#solve
 export declare function solve(a: Matrix, b: Vector, columns?: number): SolveResult;
+
+### build/index.d.ts#solveIntegerProgram
+export declare function solveIntegerProgram(program: IntegerProgram, options?: IntegerOptions): IntegerProgramResult;
 
 ### build/index.d.ts#solveLexicographic
 export declare function solveLexicographic(constraints: readonly Constraint[], objectives: readonly Objective[]): LexicographicResult;

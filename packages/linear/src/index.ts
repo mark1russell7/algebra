@@ -18,3 +18,5 @@ export type { LexicographicResult, LexicographicStage, Objective } from "./lexic
 export { solveLexicographic } from "./lexicographic.ts";
 export type { CertificateCheck } from "./certificate.ts";
 export { checkCertificate } from "./certificate.ts";
+export type { Branch, BranchNode, IntegerOptions, IntegerProgram, IntegerProgramResult, NodeOutcome } from "./integer.ts";
+export { checkIntegerCertificate, solveIntegerProgram } from "./integer.ts";
