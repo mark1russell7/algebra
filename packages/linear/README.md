@@ -61,6 +61,44 @@ A Farkas ray proves that no point is feasible: for each `x >= 0` that meets the 
 
 Only the first stage can be infeasible, because each later stage keeps the optimal point of the stage before it. A later stage can be unbounded after optimal stages, because its objective is new.
 
+## Integer programs
+
+An `IntegerProgram` is a linear program with a list `integer` of variable indices. Each of these variables takes integer values only. The other variables stay continuous.
+
+`solveIntegerProgram(program, options)` uses branch and bound on the exact simplex. The search goes depth first. It branches on the fractional integer variable with the smallest index, and it takes the child `x_j <= k` first. A node is a leaf when its relaxation has no point or has no better optimum than the best integer point.
+
+```ts
+import { checkIntegerCertificate, linearProgram, solveIntegerProgram } from "@mark1russell7/linear";
+
+const program = {
+  ...linearProgram({
+    sense: "max",
+    objective: [5, 4],
+    constraints: [
+      { coefficients: [6, 4], relation: "<=", rhs: 24 },
+      { coefficients: [1, 2], relation: "<=", rhs: 6 },
+    ],
+  }),
+  integer: [0, 1],
+};
+const result = solveIntegerProgram(program);
+// result is optimal: x = (4, 0), value 20. The relaxation gives x = (3, 3/2), value 21.
+checkIntegerCertificate(program, result).valid; // true
+```
+
+| Status | Certificate | The conditions that `checkIntegerCertificate` examines |
+| --- | --- | --- |
+| `optimal` | The point `x`, its value and the tree | `x` is a feasible integer point with the value `c x`. The tree covers each integer point, and the value of each leaf is not better. |
+| `infeasible` | The tree | The tree covers each integer point, and each leaf has a Farkas ray. |
+| `unbounded` | An integer point `x` and a direction | The conditions of `checkCertificate`. Also, each integer variable of the point and of the direction is an integer. |
+| `limit` | The best point, if any, a bound and the tree | The point is a feasible integer point. Each closed leaf and the parent of each open node have a value that is not better than the bound. |
+
+The tree covers each integer point when each branched node has the two children `x_j <= k` and `x_j >= k + 1`. Each leaf has the certificate of its relaxation.
+
+An unbounded relaxation starts a search for one integer point with the objective 0. The rows are rational, so a program with an integer point has the unbounded directions of its relaxation. The direction times the common denominator of its entries is an integer direction.
+
+The search can go on with no end, for example on the line `2x - 2y = 1`. The option `nodeLimit` stops it, and the default is 10000 relaxations. The result `limit` then gives the best point that the search found and a proved bound of the optimum.
+
 ## The tests
 
 - Each result of the simplex on 3 seeded families of small programs goes through `checkCertificate`. The families are random programs, programs with equality rows, and degenerate programs with many zero right sides.
@@ -68,5 +106,8 @@ Only the first stage can be infeasible, because each later stage keeps the optim
 - Changed certificates fail the check: a new value, a moved point, a moved dual, a negated ray and a negated direction.
 - The cycling examples of Beale and of Chvátal end under the rule of Bland. The test also shows that the rule of the largest coefficient meets an earlier basis again on them.
 - Property tests on random matrices examine `rank`, `nullSpace` and `solve`.
+- Each result of `solveIntegerProgram` on 3 seeded families goes through `checkIntegerCertificate`. The families are integer programs in a box, mixed programs in a box and programs with no box.
+- In a box, an enumeration of each integer point gives the status and the optimal value. The enumeration uses the vertex enumeration for the continuous variables, not the simplex. The solver agrees with it on each case.
+- The optimum of the relaxation, rounded down, misses the integer optimum on some programs in a box. This is the base.
 
 The property tests use `fast-check` with a fixed seed. The variable `PROPERTY_RUNS` sets the count of cases of each property, and the default is 300.

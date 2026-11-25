@@ -23,8 +23,12 @@ function columnSums(program: LinearProgram, y: Vector): Rational[] {
   return program.objective.map((_, j) => dot(program.constraints.map((c) => c.coefficients[j]!), y));
 }
 
-/** This function adds a failure for each constraint row that `x` breaks, and for each negative entry of `x`. */
-function checkFeasible(program: LinearProgram, x: Vector, failures: string[]): void {
+/**
+ * This function adds a failure for each constraint row that `x` breaks, and for each negative entry of `x`.
+ *
+ * @internal
+ */
+export function checkFeasible(program: LinearProgram, x: Vector, failures: string[]): void {
   if (x.length !== program.objective.length) {
     failures.push(`the point has ${x.length} entries, and the program has ${program.objective.length} variables`);
     return;
