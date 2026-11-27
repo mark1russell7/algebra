@@ -182,8 +182,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.3(@swc/core@1.16.22)(dependency-cruiser@18.9.0)
       '@mark1russell7/conventions':
-        specifier: ^0.54.0
-        version: 0.54.1
+        specifier: ^0.55.2
+        version: 0.55.2
       '@mark1russell7/cue':
         specifier: ^2.1.1
         version: 2.1.4
@@ -192,7 +192,7 @@ importers:
         version: 0.6.0
       '@mark1russell7/template-cli':
         specifier: ^0.1.4
-        version: 0.1.11
+        version: 0.1.12
       '@swc/core':
         specifier: ^1.15.0
         version: 1.16.22
@@ -226,7 +226,7 @@ importers:
         version: 2.1.4
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -262,10 +262,10 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -299,10 +299,10 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -373,7 +373,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@mark1russell7/structures':
         specifier: workspace:*
         version: link:../structures
@@ -386,7 +386,7 @@ importers:
         version: 2.1.4
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -410,13 +410,13 @@ importers:
         version: link:../expression
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -447,14 +447,14 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
         version: 2.1.4
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -478,10 +478,10 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -546,7 +546,7 @@ importers:
         version: 2.1.4
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -576,13 +576,13 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@mark1russell7/rigor-statistics':
         specifier: ^0.2.1
-        version: 0.2.32
+        version: 0.2.34
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -668,7 +668,7 @@ importers:
         version: link:../predicates
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
       robust-predicates:
         specifier: ^3.0.3
         version: 3.0.3
@@ -696,7 +696,7 @@ importers:
         version: 2.1.4
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.11
@@ -720,7 +720,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-bench':
         specifier: ^0.3.1
-        version: 0.3.12(esbuild@0.28.2)
+        version: 0.3.13(esbuild@0.28.2)
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -791,7 +791,7 @@ importers:
         version: link:../rational
       '@mark1russell7/rigor-generators':
         specifier: ^0.2.0
-        version: 0.2.7
+        version: 0.2.8
     devDependencies:
       '@mark1russell7/cue':
         specifier: ^2.1.1
@@ -1055,11 +1055,6 @@ packages:
     resolution: {integrity: sha512-+NjFVF3LvChG2H1n24B+onQbVoETJGmQKrsvkuCGIo7vOgC5vR+8ysS4mQU8AeI/gHyWt1SZueg3o+ftdB0R2w==}
     engines: {node: '>=22.12'}
 
-  '@mark1russell7/conventions@0.54.1':
-    resolution: {integrity: sha512-E0yy1BWw6wM2Y2L2MysbgId+C2v1ACFMCvm3nXch1PUqYbWXkDrca9kN5OlBhMfohvsHyHgW2tZYI+KZxPMWBw==}
-    engines: {node: '>=22'}
-    hasBin: true
-
   '@mark1russell7/conventions@0.55.2':
     resolution: {integrity: sha512-LUOWcKY2a/7Vs/oHtQQjF/aTcmg8iyb1F8E9omW5tH7SoB0J4W60gyktkj5MWw8kkFZhz6ReykPhCgtVrTynHQ==}
     engines: {node: '>=22'}
@@ -1091,8 +1086,8 @@ packages:
     resolution: {integrity: sha512-S28nfQFfRax40wbV9UTw711ZwnVB3rCW/SPpAuJtyKBh/zFbQx69+qnAeLF7u2B9GccaY75nIMZtN8mvgSRA1Q==}
     engines: {node: '>=22'}
 
-  '@mark1russell7/rigor-bench@0.3.12':
-    resolution: {integrity: sha512-yptlEIy1I+wgDqpA+rkc3oJOIwIt75GJrhUHAYUI5K/GT2mKVf93+yTj5LDR3K6EtilEYSnD6IsgAd81y5+/+w==}
+  '@mark1russell7/rigor-bench@0.3.13':
+    resolution: {integrity: sha512-Y2qPlOAnJDWL90fjHM/GMMiTVZTz+XQBSxQOJv+4W7GPQ7SebNQoUxCw1Q+NR7OT7vnmIx/kPxSc20BpvyevgA==}
     engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
@@ -1101,12 +1096,12 @@ packages:
       esbuild:
         optional: true
 
-  '@mark1russell7/rigor-generators@0.2.7':
-    resolution: {integrity: sha512-7UwfykXyUqZBHZPNf/tHI2ExwsCTZLPmTqdl1FdmilkmWptdNy30PU8QEeF0u/LQ0W4OUv78r2rAS+PtQJOBug==}
+  '@mark1russell7/rigor-generators@0.2.8':
+    resolution: {integrity: sha512-mOAbp1MAeA691c+TykkkTOrESWj6JdoCAjzpx8Ffja4fvWaA9m0p+lo90W6kdRPiENyZmxy3iBle1VMPlbYBPg==}
     engines: {node: '>=22'}
 
-  '@mark1russell7/rigor-statistics@0.2.32':
-    resolution: {integrity: sha512-CERYoh7Azv+1EMgx5EriH6c17DDj6EVJljxNVaWPC0HnkmmkzUCCGtUTY+1UNO8a1/kreuUytoH/AnvleeyrDQ==}
+  '@mark1russell7/rigor-statistics@0.2.34':
+    resolution: {integrity: sha512-aLvXKUwYA8qcaQeuoTMMecN90ceIBLO1ua/3dm3Ae4PXGAeV35rQxvhHXmhJBYGLg7LNh4Xq/dPQjsfT+oxi+Q==}
     engines: {node: '>=22'}
 
   '@mark1russell7/site-pages@0.8.8':
@@ -1119,8 +1114,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  '@mark1russell7/template-cli@0.1.11':
-    resolution: {integrity: sha512-JtE2zvCx0tYI0nro3LkhPMLwiDd+sxARZz0dl9ifmQUjsXh0b3FLqXhI4RiI3jnPdg582mYAdDUwqhmq/DRbug==}
+  '@mark1russell7/template-cli@0.1.12':
+    resolution: {integrity: sha512-4156Bu2fW/1/Q8Oe4HmHxwOkiqn20MZmCeYHorWiNGbenNvZkB84JP5OK9ghm4koMyiPgKP0gBQUfj/8k/G0Tg==}
     engines: {node: '>=22.12'}
     hasBin: true
 
@@ -2394,7 +2389,7 @@ snapshots:
   '@mark1russell7/algebra@0.9.12(zod@4.6.7)':
     dependencies:
       '@mark1russell7/quantity': 0.5.1(zod@4.6.7)
-      '@mark1russell7/rigor-statistics': 0.2.32
+      '@mark1russell7/rigor-statistics': 0.2.34
     optionalDependencies:
       zod: 4.6.7
 
@@ -2412,7 +2407,7 @@ snapshots:
   '@mark1russell7/coeval@0.39.0(zod@4.6.7)':
     dependencies:
       '@mark1russell7/collections': 0.12.0(zod@4.6.7)
-      '@mark1russell7/rigor-generators': 0.2.7
+      '@mark1russell7/rigor-generators': 0.2.8
     transitivePeerDependencies:
       - zod
 
@@ -2420,14 +2415,9 @@ snapshots:
     dependencies:
       '@mark1russell7/algebra': 0.9.12(zod@4.6.7)
       '@mark1russell7/optional': 1.5.1
-      '@mark1russell7/rigor-statistics': 0.2.32
+      '@mark1russell7/rigor-statistics': 0.2.34
     transitivePeerDependencies:
       - zod
-
-  '@mark1russell7/conventions@0.54.1':
-    dependencies:
-      '@mark1russell7/text': 0.0.20
-      yaml: 2.9.1
 
   '@mark1russell7/conventions@0.55.2':
     dependencies:
@@ -2449,30 +2439,30 @@ snapshots:
 
   '@mark1russell7/rational@0.1.3': {}
 
-  '@mark1russell7/rigor-bench@0.3.12(esbuild@0.28.2)':
+  '@mark1russell7/rigor-bench@0.3.13(esbuild@0.28.2)':
     dependencies:
-      '@mark1russell7/rigor-generators': 0.2.7
-      '@mark1russell7/rigor-statistics': 0.2.32
+      '@mark1russell7/rigor-generators': 0.2.8
+      '@mark1russell7/rigor-statistics': 0.2.34
       '@mark1russell7/text': 0.0.20
     optionalDependencies:
       esbuild: 0.28.2
 
-  '@mark1russell7/rigor-generators@0.2.7': {}
+  '@mark1russell7/rigor-generators@0.2.8': {}
 
-  '@mark1russell7/rigor-statistics@0.2.32':
+  '@mark1russell7/rigor-statistics@0.2.34':
     dependencies:
-      '@mark1russell7/rigor-generators': 0.2.7
+      '@mark1russell7/rigor-generators': 0.2.8
 
   '@mark1russell7/site-pages@0.8.8':
     dependencies:
-      '@mark1russell7/rigor-statistics': 0.2.32
+      '@mark1russell7/rigor-statistics': 0.2.34
 
   '@mark1russell7/ste-lint@0.6.0':
     dependencies:
       '@mark1russell7/files': 0.0.6
       typescript: 6.0.3
 
-  '@mark1russell7/template-cli@0.1.11':
+  '@mark1russell7/template-cli@0.1.12':
     dependencies:
       '@clack/prompts': 1.9.0
 
